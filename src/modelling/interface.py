@@ -15,6 +15,7 @@ class Interface:
 
         codes = self.__training['hospital_code'].unique()
 
+        # DASK: computations = []
         for code in codes:
             """
             1. get data
