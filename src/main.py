@@ -57,6 +57,6 @@ if __name__ == '__main__':
 
     # Modelling arguments
     arguments = src.s3.configurations.Configurations(connector=connector).objects(
-        key_name=('architecture' + '/' + 'single' + '/' + 'difference' + '/' + 'arguments.json'))
+        key_name=('architecture' + '/' + 'single' + '/' + 'parts' + '/' + 'arguments.json'))
 
     main()
