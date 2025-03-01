@@ -25,4 +25,3 @@ class Interface:
             """
 
             data = self.__get_data(code=code)
-
