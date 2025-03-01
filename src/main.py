@@ -46,7 +46,6 @@ if __name__ == '__main__':
     import src.data.interface
     import src.functions.cache
     import src.functions.service
-    import src.modelling.interface
     import src.s3.configurations
     import src.s3.s3_parameters
     import src.setup
