@@ -12,6 +12,14 @@ class Interface:
         return self.__training.copy().loc[self.__training['hospital_code'] == code, :]
 
     def exc(self):
+        """
+        The testing data has <ahead> instances.  Altogether predict <2 * ahead> points
+        into the future.  The first set of ahead points are for weekly evaluations of
+        a week's model; the true value of the latter set of ahead points will be known
+        in future.
+
+        :return:
+        """
 
         codes = self.__training['hospital_code'].unique()
 
@@ -19,9 +27,10 @@ class Interface:
         for code in codes:
             """
             1. get data
-            2. seasonal component modelling: naive
-            3. trend component modelling: gaussian process
-            4. overarching estimate + futures
+            2. decompose
+            3. seasonal component modelling: naive
+            4. trend component modelling: gaussian process
+            5. overarching estimate + futures
             """
 
             data = self.__get_data(code=code)
