@@ -7,8 +7,13 @@ class Decompose:
 
     def __init__(self, arguments: dict):
 
-        self.__arguments = arguments
+        self.__arguments: dict = arguments
+        self.__decompose: dict = self.__arguments.get('decompose')
 
     def exc(self, data: pd.DataFrame):
 
-        res = stsl.STL(data['ln'], period=52, seasonal=51, trend_deg=1, seasonal_deg=0, robust=True).fit()
+        components = stsl.STL(data['ln'], period=self.__arguments.get('seasons'),
+                              seasonal=self.__decompose.get('smoother_seasonal'),
+                              trend_deg=self.__decompose.get('degree_trend'),
+                              seasonal_deg=self.__decompose.get('degree_seasonal'),
+                              robust=True).fit()
