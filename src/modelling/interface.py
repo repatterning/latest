@@ -1,7 +1,9 @@
 import typing
 import pandas as pd
+import dask
 
 import src.modelling.splits
+import src.modelling.decompose
 
 
 class Interface:
@@ -11,15 +13,10 @@ class Interface:
         self.__data = data
         self.__arguments = arguments
 
-        self.__splits = src.modelling.splits.Splits(arguments=self.__arguments)
-
+    @dask.delayed
     def __get_data(self, code: str) -> pd.DataFrame:
 
         return self.__data.copy().loc[self.__data['hospital_code'] == code, :]
-
-    def __get_splits(self, data: pd.DataFrame):
-
-        training, testing = self.__splits.exc(data=data.copy())
 
     def exc(self):
         """
@@ -33,6 +30,10 @@ class Interface:
 
         codes = self.__data['hospital_code'].unique()
 
+        # Additional delayed tasks
+        decompose = dask.delayed(src.modelling.decompose.Decompose(arguments=self.__arguments).exc)
+        splitting = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
+
         # DASK: computations = []
         for code in codes:
             """
@@ -45,3 +46,5 @@ class Interface:
             """
 
             data = self.__get_data(code=code)
+            decompositions = decompose(data=data)
+            training, testing = splitting(data=decompositions)
