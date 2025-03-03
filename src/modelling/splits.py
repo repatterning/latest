@@ -45,6 +45,7 @@ class Splits:
 
         frame = data.copy()
 
+        # Split
         training = self.__include(blob=frame)
         testing = self.__exclude(blob=frame)
 
