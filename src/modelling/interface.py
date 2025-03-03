@@ -1,15 +1,25 @@
+import typing
 import pandas as pd
+
+import src.modelling.splits
 
 
 class Interface:
 
-    def __init__(self, training: pd.DataFrame):
+    def __init__(self, data: pd.DataFrame, arguments: dict):
 
-        self.__training = training
+        self.__data = data
+        self.__arguments = arguments
+
+        self.__splits = src.modelling.splits.Splits(arguments=self.__arguments)
 
     def __get_data(self, code: str) -> pd.DataFrame:
 
-        return self.__training.copy().loc[self.__training['hospital_code'] == code, :]
+        return self.__data.copy().loc[self.__data['hospital_code'] == code, :]
+
+    def __get_splits(self, data: pd.DataFrame):
+
+        training, testing = self.__splits.exc(data=data.copy())
 
     def exc(self):
         """
@@ -21,16 +31,17 @@ class Interface:
         :return:
         """
 
-        codes = self.__training['hospital_code'].unique()
+        codes = self.__data['hospital_code'].unique()
 
         # DASK: computations = []
         for code in codes:
             """
             1. get data
             2. decompose
-            3. seasonal component modelling: naive
-            4. trend component modelling: gaussian process
-            5. overarching estimate + futures
+            3. split
+            4. seasonal component modelling: naive
+            5. trend component modelling: gaussian process
+            6. overarching estimate
             """
 
             data = self.__get_data(code=code)
