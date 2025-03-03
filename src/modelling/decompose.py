@@ -21,7 +21,27 @@ class Decompose:
         self.__arguments: dict = arguments
         self.__decompose: dict = self.__arguments.get('decompose')
 
-    def exc(self, data: pd.DataFrame):
+    def __add_components(self, frame: pd.DataFrame) -> pd.DataFrame:
+        """
+
+        :param frame:
+        :return:
+        """
+
+        components: stsl.DecomposeResult = stsl.STL(
+            frame['ln'], period=self.__arguments.get('seasons'),
+            seasonal=self.__decompose.get('smoother_seasonal'),
+            trend_deg=self.__decompose.get('degree_trend'),
+            seasonal_deg=self.__decompose.get('degree_seasonal'),
+            robust=True).fit()
+
+        frame['trend'] = components.trend
+        frame['residue'] = components.resid
+        frame['seasonal'] = components.seasonal
+
+        return frame
+
+    def exc(self, data: pd.DataFrame) -> pd.DataFrame:
         """
 
         :param data: The data set consisting of the attendance numbers of <b>an</b> institution/hospital.
@@ -29,14 +49,11 @@ class Decompose:
         """
 
         frame = data.copy()
+
+        # Natural Logarithm
         frame['ln'] = frame['n_attendances']
 
-        components: stsl.DecomposeResult = stsl.STL(frame['ln'], period=self.__arguments.get('seasons'),
-                              seasonal=self.__decompose.get('smoother_seasonal'),
-                              trend_deg=self.__decompose.get('degree_trend'),
-                              seasonal_deg=self.__decompose.get('degree_seasonal'),
-                              robust=True).fit()
+        # Decomposition Components
+        frame = self.__add_components(frame=frame.copy())
 
-        frame['trend'] = components.trend
-        frame['residue'] = components.resid
-        frame['seasonal'] = components.seasonal
+        return frame
