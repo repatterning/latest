@@ -13,6 +13,7 @@ class Decompose:
     def exc(self, data: pd.DataFrame):
 
         frame = data.copy()
+        frame['ln'] = frame['n_attendances']
 
         components: stsl.DecomposeResult = stsl.STL(frame['ln'], period=self.__arguments.get('seasons'),
                               seasonal=self.__decompose.get('smoother_seasonal'),
