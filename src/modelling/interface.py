@@ -53,8 +53,8 @@ class Interface:
         for code in codes:
             """
             1. get data
-            2. decompose
-            3. split
+            2. decompose data
+            3. split data
             4. seasonal component modelling: naive
             5. trend component modelling: gaussian process
             6. overarching estimate
@@ -63,3 +63,5 @@ class Interface:
             data = self.__get_data(code=code)
             decompositions = decompose(data=data)
             training, testing = splitting(data=decompositions)
+            training.info()
+            testing.info()
