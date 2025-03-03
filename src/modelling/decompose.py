@@ -5,6 +5,12 @@ import statsmodels.tsa.seasonal as stsl
 
 
 class Decompose:
+    """
+    Notes<br>
+    ------<br>
+
+    This class decomposes the <i>natural logarithm of the attendances series</i>, i.e., ln(# of attendances per week).
+    """
 
     def __init__(self, arguments: dict):
         """
