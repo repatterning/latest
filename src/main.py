@@ -19,11 +19,9 @@ def main():
     src.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
 
     # Steps
-    data, training, testing = src.data.interface.Interface(
+    data = src.data.interface.Interface(
         s3_parameters=s3_parameters, arguments=arguments).exc()
     data.info()
-    training.info()
-    testing.info()
 
     '''
     Cache
