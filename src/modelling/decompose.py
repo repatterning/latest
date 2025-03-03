@@ -6,11 +6,20 @@ import statsmodels.tsa.seasonal as stsl
 class Decompose:
 
     def __init__(self, arguments: dict):
+        """
+
+        :param arguments: The modelling arguments
+        """
 
         self.__arguments: dict = arguments
         self.__decompose: dict = self.__arguments.get('decompose')
 
     def exc(self, data: pd.DataFrame):
+        """
+
+        :param data: The data set consisting of the attendance numbers of <b>an</b> institution/hospital.
+        :return:
+        """
 
         frame = data.copy()
         frame['ln'] = frame['n_attendances']
