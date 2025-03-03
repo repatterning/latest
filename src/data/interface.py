@@ -1,13 +1,11 @@
 """Module interface.py"""
 import os
 import logging
-import typing
 
 import pandas as pd
 
 import config
-import src.data.features
-import src.data.splits
+
 import src.elements.s3_parameters as s3p
 import src.elements.text_attributes as txa
 import src.functions.streams
@@ -47,10 +45,12 @@ class Interface:
         uri = ('s3://' + self.__s3_parameters.internal + '/' + self.__s3_parameters.path_internal_data +
                self.__configurations.data_)
         text = txa.TextAttributes(uri=uri, header=0)
+        data = self.__streams.read(text=text)
 
-        return self.__streams.read(text=text)
+        return data[self.__configurations.fields]
 
-    def __structure(self, blob: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def __date_formatting(blob: pd.DataFrame) -> pd.DataFrame:
         """
 
         :param blob:
@@ -60,7 +60,7 @@ class Interface:
         blob['week_ending_date'] = pd.to_datetime(
             blob['week_ending_date'].astype(dtype=str), errors='coerce', format='%Y-%m-%d')
 
-        return blob[self.__configurations.fields]
+        return blob
 
     def __persist(self, blob: pd.DataFrame, name: str) -> str:
         """
@@ -73,7 +73,7 @@ class Interface:
         return src.functions.streams.Streams().write(
             blob=blob, path=os.path.join(self.__configurations.artefacts_data, f'{name}.csv'))
 
-    def exc(self) -> typing.Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def exc(self) -> pd.DataFrame:
         """
 
         :return:
@@ -81,16 +81,12 @@ class Interface:
 
         # The data
         data = self.__get_data()
-        data = self.__structure(blob=data.copy())
 
-        # Features, Splits
-        data = src.data.features.Features(data=data.copy(), arguments=self.__arguments).exc()
-        training, testing = src.data.splits.Splits(data=data.copy(), arguments=self.__arguments).exc()
+        # Format dates
+        data = self.__date_formatting(blob=data.copy())
 
         # Persist
-        computations: list[str] = [
-            self.__persist(blob=data, name='data'), self.__persist(blob=training, name='training'),
-            self.__persist(blob=testing, name='testing')]
-        logging.info(computations)
+        message = self.__persist(blob=data, name='data')
+        logging.info(message)
 
-        return data, training, testing
+        return data
