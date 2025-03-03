@@ -1,20 +1,35 @@
+"""Module interface.py"""
 import typing
-import pandas as pd
-import dask
 
-import src.modelling.splits
+import dask
+import pandas as pd
+
 import src.modelling.decompose
+import src.modelling.splits
 
 
 class Interface:
+    """
+    Interface
+    """
 
     def __init__(self, data: pd.DataFrame, arguments: dict):
+        """
+
+        :param data:
+        :param arguments:
+        """
 
         self.__data = data
         self.__arguments = arguments
 
     @dask.delayed
     def __get_data(self, code: str) -> pd.DataFrame:
+        """
+
+        :param code:
+        :return:
+        """
 
         return self.__data.copy().loc[self.__data['hospital_code'] == code, :]
 
