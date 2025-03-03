@@ -1,3 +1,4 @@
+"""Module decompose.py"""
 import pandas as pd
 
 import statsmodels.tsa.seasonal as stsl
