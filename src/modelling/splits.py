@@ -43,7 +43,9 @@ class Splits:
         :return:
         """
 
-        training = self.__include(blob=data)
-        testing = self.__exclude(blob=data)
+        frame = data.copy()
+
+        training = self.__include(blob=frame)
+        testing = self.__exclude(blob=frame)
 
         return training, testing
