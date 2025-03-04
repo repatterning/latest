@@ -36,8 +36,10 @@ class Config:
         '''
         The prefix.ending.string & key.name of the modelling data; ref.
             s3:// {bucket} / {prefix.starting.string} / {prefix.ending.string} / {key.name}
+        Additionally, the path to the artefacts metadata.
         '''
         self.source = f'modelling/{self.stamp}.csv'
+        self.artefacts_metadata_ = 'artefacts/metadata'
 
 
         '''
