@@ -1,9 +1,12 @@
 """Module interface.py"""
-import typing
+import logging
+import os
 
 import dask
 import pandas as pd
 
+import config
+import src.functions.directories
 import src.modelling.decompose
 import src.modelling.splits
 
@@ -23,6 +26,9 @@ class Interface:
         self.__data = data
         self.__arguments = arguments
 
+        self.__configurations = config.Config()
+        self.__directories = src.functions.directories.Directories()
+
     @dask.delayed
     def __get_data(self, code: str) -> pd.DataFrame:
         """
@@ -32,6 +38,20 @@ class Interface:
         """
 
         return self.__data.copy().loc[self.__data['hospital_code'] == code, :]
+
+    @dask.delayed
+    def __set_directories(self, code: str) -> bool:
+        """
+
+        :param code:
+        :return:
+        """
+
+        success = []
+        for pathway in ['data', 'models']:
+            success.append(
+                self.__directories.create(path=os.path.join(self.__configurations.artefacts_, pathway, code)))
+        return all(success)
 
     def exc(self):
         """
@@ -47,9 +67,9 @@ class Interface:
 
         # Additional delayed tasks
         decompose = dask.delayed(src.modelling.decompose.Decompose(arguments=self.__arguments).exc)
-        split = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
+        splits = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
 
-        # DASK: computations = []
+        computations = []
         for code in codes:
             """
             1. get institution data
@@ -61,7 +81,9 @@ class Interface:
             """
 
             data = self.__get_data(code=code)
+            success = self.__set_directories(code=code)
             decompositions = decompose(data=data)
-            training, testing = split(data=decompositions)
-            training.info()
-            testing.info()
+            training = splits(data=decompositions, code=code, success=success)
+            computations.append(training)
+        calculations = dask.compute(computations, scheduler='threads')[0]
+        logging.info(calculations)
