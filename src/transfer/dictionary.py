@@ -1,6 +1,7 @@
 """Module dictionary.py"""
 import glob
 import os
+import pathlib
 
 import pandas as pd
 
@@ -33,7 +34,7 @@ class Dictionary:
         details: list[dict] = [
             {'file': file,
              'vertex': file.rsplit(splitter, maxsplit=1)[1],
-             'section': os.path.basename(os.path.dirname(file))}
+             'section': os.path.basename(pathlib.PurePath(file).parent.parent)}
             for file in files]
 
         return pd.DataFrame.from_records(details)
