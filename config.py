@@ -37,7 +37,7 @@ class Config:
         The prefix.ending.string & key.name of the modelling data; ref.
             s3:// {bucket} / {prefix.starting.string} / {prefix.ending.string} / {key.name}
         '''
-        self.data_ = f'modelling/{self.stamp}.csv'
+        self.source = f'modelling/{self.stamp}.csv'
 
 
         '''
@@ -50,9 +50,7 @@ class Config:
         Local Paths
         '''
         self.warehouse: str = os.path.join(os.getcwd(), 'warehouse')
-        self.artefacts_data: str = os.path.join(self.warehouse, 'artefacts', self.stamp, 'data')
-        self.artefacts_models: str = os.path.join(self.warehouse, 'artefacts', self.stamp, 'models')
-        self.artefacts_: list = [self.artefacts_data, self.artefacts_models]
+        self.artefacts_: str = os.path.join(self.warehouse, 'artefacts', self.stamp)
 
 
         '''
