@@ -1,7 +1,8 @@
 """Module splits.py"""
-import typing
 import logging
 import os
+import typing
+
 import pandas as pd
 
 import config
