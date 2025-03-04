@@ -1,5 +1,6 @@
 """Module decompose.py"""
 import pandas as pd
+import numpy as np
 
 import statsmodels.tsa.seasonal as stsl
 
@@ -51,7 +52,7 @@ class Decompose:
         frame = data.copy()
 
         # Natural Logarithm
-        frame['ln'] = frame['n_attendances']
+        frame['ln'] = np.log(frame['n_attendances'])
 
         # Decomposition Components
         frame = self.__add_components(frame=frame.copy())
