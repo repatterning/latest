@@ -1,11 +1,9 @@
 """Module interface.py"""
-import os
 import logging
 
 import pandas as pd
 
 import config
-
 import src.elements.s3_parameters as s3p
 import src.elements.text_attributes as txa
 import src.functions.streams
@@ -43,7 +41,7 @@ class Interface:
         """
 
         uri = ('s3://' + self.__s3_parameters.internal + '/' + self.__s3_parameters.path_internal_data +
-               self.__configurations.data_)
+               self.__configurations.source)
         text = txa.TextAttributes(uri=uri, header=0)
         data = self.__streams.read(text=text)
 
@@ -62,17 +60,6 @@ class Interface:
 
         return blob
 
-    def __persist(self, blob: pd.DataFrame, name: str) -> str:
-        """
-
-        :param blob:
-        :param name:
-        :return:
-        """
-
-        return src.functions.streams.Streams().write(
-            blob=blob, path=os.path.join(self.__configurations.artefacts_data, f'{name}.csv'))
-
     def exc(self) -> pd.DataFrame:
         """
 
@@ -84,9 +71,6 @@ class Interface:
 
         # Format dates
         data = self.__date_formatting(blob=data.copy())
-
-        # Persist
-        message = self.__persist(blob=data, name='data')
-        logging.info(message)
+        logging.info(data)
 
         return data
