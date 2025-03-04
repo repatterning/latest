@@ -21,7 +21,8 @@ def main():
     # Steps
     data = src.data.interface.Interface(
         s3_parameters=s3_parameters, arguments=arguments).exc()
-    data.info()
+    src.modelling.interface.Interface(
+        data=data, arguments=arguments).exc()
 
     '''
     Cache
@@ -44,6 +45,7 @@ if __name__ == '__main__':
     import src.data.interface
     import src.functions.cache
     import src.functions.service
+    import src.modelling.interface
     import src.s3.configurations
     import src.s3.s3_parameters
     import src.setup
