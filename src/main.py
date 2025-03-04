@@ -24,9 +24,10 @@ def main():
     src.modelling.interface.Interface(
         data=data, arguments=arguments).exc()
 
-    '''
-    Cache
-    '''
+    # Transfer
+    src.transfer.interface.Interface(connector=connector, service=service, s3_parameters=s3_parameters).exc()
+
+    # Cache
     src.functions.cache.Cache().exc()
 
 
@@ -49,6 +50,7 @@ if __name__ == '__main__':
     import src.s3.configurations
     import src.s3.s3_parameters
     import src.setup
+    import src.transfer.interface
 
     # Amazon: Connector, S3 Parameters, Service
     connector = boto3.session.Session()
@@ -57,6 +59,6 @@ if __name__ == '__main__':
 
     # Modelling arguments
     arguments = src.s3.configurations.Configurations(connector=connector).objects(
-        key_name=('architecture' + '/' + 'single' + '/' + 'parts' + '/' + 'arguments.json'))
+        key_name=('artefacts' + '/' + 'architecture' + '/' + 'single' + '/' + 'arguments.json'))
 
     main()
