@@ -1,5 +1,6 @@
 """Module setup.py"""
 import sys
+import os
 
 import config
 import src.elements.s3_parameters as s3p
@@ -82,10 +83,7 @@ class Setup:
 
         self.__directories.cleanup(path=self.__configurations.warehouse)
 
-        states = [self.__directories.create(path=path)
-                  for path in self.__configurations.artefacts_]
-
-        return all(states)
+        return self.__directories.create(path=self.__configurations.warehouse)
 
     def exc(self) -> bool:
         """
