@@ -47,14 +47,14 @@ class Interface:
 
         # Additional delayed tasks
         decompose = dask.delayed(src.modelling.decompose.Decompose(arguments=self.__arguments).exc)
-        splitting = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
+        split = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
 
         # DASK: computations = []
         for code in codes:
             """
-            1. get data
-            2. decompose data
-            3. split data
+            1. get institution data
+            2. decompose institution data
+            3. split institution data
             4. seasonal component modelling: naive
             5. trend component modelling: gaussian process
             6. overarching estimate
@@ -62,6 +62,6 @@ class Interface:
 
             data = self.__get_data(code=code)
             decompositions = decompose(data=data)
-            training, testing = splitting(data=decompositions)
+            training, testing = split(data=decompositions)
             training.info()
             testing.info()
