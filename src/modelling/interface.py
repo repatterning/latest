@@ -73,6 +73,7 @@ class Interface:
         for code in codes:
             """
             1. get institution data
+            2. set up directories per institution
             2. decompose institution data
             3. split institution data
             4. seasonal component modelling: naive
