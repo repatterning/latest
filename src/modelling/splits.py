@@ -1,5 +1,6 @@
 """Module splits.py"""
 import typing
+import logging
 import os
 import pandas as pd
 
@@ -41,15 +42,16 @@ class Splits:
 
         return blob.copy()[-self.__arguments.get('ahead'):]
 
-    def __persist(self, blob: pd.DataFrame, string: str):
+    def __persist(self, blob: pd.DataFrame, pathstr: str) -> None:
         """
 
         :param blob:
-        :param string:
+        :param pathstr:
         :return:
         """
 
-        self.__streams.write(blob=blob, path=os.path.join(self.__configurations.data_, string))
+        message = self.__streams.write(blob=blob, path=os.path.join(self.__configurations.data_, pathstr))
+        logging.info(message)
 
     def exc(self, data: pd.DataFrame, code: str) -> typing.Tuple[pd.DataFrame, pd.DataFrame]:
         """
@@ -64,5 +66,9 @@ class Splits:
         # Split
         training = self.__include(blob=frame)
         testing = self.__exclude(blob=frame)
+
+        # Persist
+        for instances, name in zip([frame, training, testing], ['data.csv', 'training.csv', 'testing.csv']):
+            self.__persist(blob=instances, pathstr=os.path.join(code, name))
 
         return training, testing
