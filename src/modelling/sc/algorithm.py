@@ -1,8 +1,7 @@
 
 import pandas as pd
-
-import statsmodels.tsa.forecasting.stl as tfc
 import statsmodels.tsa.arima.model as tar
+import statsmodels.tsa.forecasting.stl as tfc
 
 
 class Algorithm:
@@ -12,7 +11,7 @@ class Algorithm:
         self.__arguments: dict = arguments
         self.__sc: dict = self.__arguments.get('sc')
 
-    def exc(self, data: pd.DataFrame):
+    def exc(self, data: pd.DataFrame) -> tfc.STLForecastResults:
         """
         <b>References</b><br>
         <a href="https://www.statsmodels.org/dev/generated/statsmodels.tsa.arima.model.ARIMA.html">
@@ -25,8 +24,8 @@ class Algorithm:
 
         data.index.freq = self.__arguments.get('frequency')
 
-        alg: tfc.STLForecast
-        alg = tfc.STLForecast(
+        architecture: tfc.STLForecast
+        architecture = tfc.STLForecast(
             data[['seasonal']], tar.ARIMA,
             model_kwargs=dict(
                 seasonal_order=(
@@ -41,4 +40,6 @@ class Algorithm:
             robust=False)
 
         system: tfc.STLForecastResults
-        system = alg.fit()
+        system = architecture.fit()
+        
+        return system
