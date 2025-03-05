@@ -20,7 +20,10 @@ class Forecasts:
         self.__code = code
 
     def __estimates(self):
-        pass
+
+        est: pd.DataFrame = self.__system.result.seasonal.to_frame()
+        est.rename(columns={'season': 'seasonal_est'}, inplace=True)
+        est = self.__data.copy()[['seasonal']].join(est.copy())
 
     def __tests(self):
         pass
