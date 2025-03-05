@@ -86,8 +86,8 @@ class Forecasts:
 
         # Hence, the seasonal forecasts (sfc)
         nodes = {
-            'health_board_code': code.board,
-            'hospital_code': code.institution,
+            'health_board_code': code.health_board_code,
+            'hospital_code': code.hospital_code,
             'estimates': self.__estimates(),
             'tests': self.__tests(projections=forecasts[-steps:-arguments.get('ahead')]),
             'futures': self.__futures(projections=forecasts[-arguments.get('ahead'):])
@@ -95,6 +95,6 @@ class Forecasts:
 
         message = self.__objects.write(
             nodes=nodes,
-            path=os.path.join(self.__configurations.artefacts_, 'models', code.institution, 'sfc.json'))
+            path=os.path.join(self.__configurations.artefacts_, 'models', code.hospital_code, 'sfc.json'))
 
         logging.info(message)
