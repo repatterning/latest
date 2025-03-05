@@ -73,7 +73,7 @@ class Forecasts:
     def exc(self, arguments: dict, health_board_code: str, hospital_code: str):
         """
 
-        :param arguments: A set of model development, and supplementary, arguments
+        :param arguments: A set of model development, and supplementary, arguments.
         :param health_board_code: The identification code of a health board
         :param hospital_code: The identification code of an institution/hospital
         :return:
