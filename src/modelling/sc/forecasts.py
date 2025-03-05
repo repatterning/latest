@@ -1,8 +1,11 @@
 import logging
+import os
 import pandas as pd
 
 import statsmodels.tsa.forecasting.stl as tfc
 
+import config
+import src.functions.objects
 
 class Forecasts:
 
@@ -17,6 +20,9 @@ class Forecasts:
         self.__data = data
         self.__testing = testing
         self.__system = system
+
+        self.__configurations = config.Config()
+        self.__objects = src.functions.objects.Objects()
 
     def __estimates(self) -> dict:
         """
@@ -47,7 +53,8 @@ class Forecasts:
 
         return values.to_dict(orient='tight')
 
-    def __futures(self, projections: pd.DataFrame) -> dict:
+    @staticmethod
+    def __futures(projections: pd.DataFrame) -> dict:
         """
 
         :param projections: Of future elements of unknown value
@@ -74,7 +81,7 @@ class Forecasts:
         forecasts = self.__system.forecast(steps=steps).to_frame()
         forecasts.rename(columns={0: 'seasonal_est'}, inplace=True)
 
-        # Hence
+        # Hence, the seasonal forecasts (sfc)
         nodes = {
             'health_board_code': health_board_code,
             'hospital_code': hospital_code,
@@ -82,3 +89,9 @@ class Forecasts:
             'tests': self.__tests(projections=forecasts[-steps:-arguments.get('ahead')]),
             'futures': self.__futures(projections=forecasts[-arguments.get('ahead'):])
         }
+
+        message = self.__objects.write(
+            nodes=nodes,
+            path=os.path.join(self.__configurations.artefacts_, 'models', hospital_code, 'sfc.json'))
+
+        logging.info(message)
