@@ -6,6 +6,7 @@ import pandas as pd
 import statsmodels.tsa.forecasting.stl as tfc
 
 import config
+import src.elements.codes as ce
 import src.functions.objects
 
 
@@ -70,12 +71,12 @@ class Forecasts:
 
         return values.to_dict(orient='tight')
 
-    def exc(self, arguments: dict, health_board_code: str, hospital_code: str):
+    def exc(self, arguments: dict, code: ce.Codes):
         """
 
         :param arguments: A set of model development, and supplementary, arguments.
-        :param health_board_code: The identification code of a health board
-        :param hospital_code: The identification code of an institution/hospital
+        :param code: The identification code of a health board (board), and the identification code of an
+                     institution/hospital (institution)
         :return:
         """
 
@@ -85,8 +86,8 @@ class Forecasts:
 
         # Hence, the seasonal forecasts (sfc)
         nodes = {
-            'health_board_code': health_board_code,
-            'hospital_code': hospital_code,
+            'health_board_code': code.board,
+            'hospital_code': code.institution,
             'estimates': self.__estimates(),
             'tests': self.__tests(projections=forecasts[-steps:-arguments.get('ahead')]),
             'futures': self.__futures(projections=forecasts[-arguments.get('ahead'):])
@@ -94,6 +95,6 @@ class Forecasts:
 
         message = self.__objects.write(
             nodes=nodes,
-            path=os.path.join(self.__configurations.artefacts_, 'models', hospital_code, 'sfc.json'))
+            path=os.path.join(self.__configurations.artefacts_, 'models', code.institution, 'sfc.json'))
 
         logging.info(message)
