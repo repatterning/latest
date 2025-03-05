@@ -6,6 +6,12 @@ import config
 
 
 class Page:
+    """
+    <b>Notes</b><br>
+    ------<br>
+
+    This class saves the details of an institution's seasonal component model.
+    """
 
     def __init__(self):
         """
