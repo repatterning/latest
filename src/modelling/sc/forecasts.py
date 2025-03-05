@@ -6,21 +6,23 @@ import statsmodels.tsa.forecasting.stl as tfc
 
 class Forecasts:
 
-    def __init__(self, data: pd.DataFrame, testing: pd.DataFrame, system: tfc.STLForecastResults, code: str):
+    def __init__(self, data: pd.DataFrame, testing: pd.DataFrame, system: tfc.STLForecastResults):
         """
 
         :param data:
         :param testing:
         :param system: The results of the seasonal component model
-        :param code: The identification code of an institution
         """
 
         self.__data = data
         self.__testing = testing
         self.__system = system
-        self.__code = code
 
-    def __estimates(self):
+    def __estimates(self) -> dict:
+        """
+
+        :return:
+        """
 
         values: pd.DataFrame = self.__system.result.seasonal.to_frame()
         values.rename(columns={'season': 'seasonal_est'}, inplace=True)
@@ -31,7 +33,12 @@ class Forecasts:
 
         return values.to_dict(orient='tight')
 
-    def __tests(self, projections: pd.DataFrame):
+    def __tests(self, projections: pd.DataFrame) -> dict:
+        """
+
+        :param projections: Of test elements, for evaluations of errors
+        :return:
+        """
 
         values = self.__testing.copy()[['seasonal']].join(projections.copy())
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
@@ -40,7 +47,12 @@ class Forecasts:
 
         return values.to_dict(orient='tight')
 
-    def __futures(self, projections: pd.DataFrame):
+    def __futures(self, projections: pd.DataFrame) -> dict:
+        """
+
+        :param projections: Of future elements of unknown value
+        :return:
+        """
 
         values = projections.copy()
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
@@ -49,10 +61,12 @@ class Forecasts:
 
         return values.to_dict(orient='tight')
 
-    def exc(self, arguments: dict):
+    def exc(self, arguments: dict, health_board_code: str, hospital_code: str):
         """
 
-        :param arguments:
+        :param arguments: A set of model development, and supplementary, arguments
+        :param health_board_code: The identification code of a health board
+        :param hospital_code: The identification code of an institution/hospital
         :return:
         """
 
@@ -61,6 +75,10 @@ class Forecasts:
         forecasts.rename(columns={0: 'seasonal_est'}, inplace=True)
 
         # Hence
-
-        self.__tests(projections=forecasts[-steps:-arguments.get('ahead')])
-        self.__futures(projections=forecasts[-arguments.get('ahead'):])
+        nodes = {
+            'health_board_code': health_board_code,
+            'hospital_code': hospital_code,
+            'estimates': self.__estimates(),
+            'tests': self.__tests(projections=forecasts[-steps:-arguments.get('ahead')]),
+            'futures': self.__futures(projections=forecasts[-arguments.get('ahead'):])
+        }
