@@ -22,13 +22,9 @@ def main():
     data = src.data.interface.Interface(
         s3_parameters=s3_parameters, arguments=arguments).exc()
 
-    # Codes
-    frame = data[['health_board_code', 'hospital_code']].drop_duplicates()
-    codes = frame.set_index('hospital_code').to_dict(orient='dict')['health_board_code']
-
     # Modelling
     src.modelling.interface.Interface(
-        data=data, codes=codes, arguments=arguments).exc()
+        data=data, arguments=arguments).exc()
 
     # Transfer
     src.transfer.interface.Interface(connector=connector, service=service, s3_parameters=s3_parameters).exc()
