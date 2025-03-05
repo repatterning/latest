@@ -7,21 +7,21 @@ import statsmodels.tsa.forecasting.stl as tfc
 
 import config
 import src.elements.codes as ce
+import src.elements.master as mr
 import src.functions.objects
 
 
 class Forecasts:
 
-    def __init__(self, data: pd.DataFrame, testing: pd.DataFrame, system: tfc.STLForecastResults):
+    def __init__(self, master: mr.Master, system: tfc.STLForecastResults):
         """
 
-        :param data:
-        :param testing:
+        :param master: A named tuple consisting of an institutions training & testing data
         :param system: The results of the seasonal component model
         """
 
-        self.__data = data
-        self.__testing = testing
+        self.__training = master.training
+        self.__testing = master.testing
         self.__system = system
 
         self.__configurations = config.Config()
@@ -35,7 +35,7 @@ class Forecasts:
 
         values: pd.DataFrame = self.__system.result.seasonal.to_frame()
         values.rename(columns={'season': 'seasonal_est'}, inplace=True)
-        values = self.__data.copy()[['seasonal']].join(values.copy())
+        values = self.__training.copy()[['seasonal']].join(values.copy())
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
 
         values.reset_index(drop=True, inplace=True)
