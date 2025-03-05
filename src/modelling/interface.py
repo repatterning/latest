@@ -87,11 +87,11 @@ class Interface:
             6. trend component modelling: gaussian process
             """
 
-            data = self.__get_data(code=code.institution)
-            success = self.__set_directories(code=code.institution)
+            data = self.__get_data(code=code.hospital_code)
+            success = self.__set_directories(code=code.hospital_code)
             decompositions = decompose(data=data)
-            master: mr.Master = splits(data=decompositions, code=code.institution, success=success)
-            message = sc(master=master)
+            master: mr.Master = splits(data=decompositions, code=code.hospital_code, success=success)
+            message = sc(master=master, code=code)
             computations.append(message)
 
         calculations = dask.compute(computations, scheduler='threads')[0]
