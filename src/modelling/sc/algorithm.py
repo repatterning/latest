@@ -37,4 +37,4 @@ class Algorithm:
             seasonal=self.__sc.get('smoother_seasonal'),
             seasonal_deg=self.__sc.get('degree_seasonal'),
             trend_deg=self.__sc.get('degree_trend'),
-            robust=True)
+            robust=False)
