@@ -14,5 +14,5 @@ class Codes(typing.NamedTuple):
 
     """
 
-    board: str
-    institution: str
+    health_board_code: str
+    hospital_code: str
