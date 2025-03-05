@@ -28,7 +28,8 @@ class Interface:
 
         algorithm = src.modelling.sc.algorithm.Algorithm(arguments=self.__arguments)
         system = algorithm.exc(data=master.training)
-        src.modelling.sc.page.Page().exc(system=system, code=code.institution)
+        
+        src.modelling.sc.page.Page().exc(system=system, code=code.hospital_code)
         src.modelling.sc.forecasts.Forecasts(data=master.training, testing=master.testing, system=system).exc(
             arguments=self.__arguments, code=code)
 
