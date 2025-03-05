@@ -42,8 +42,12 @@ class Forecasts:
         :return:
         """
 
-        forecasts = self.__system.forecast(steps=(2 * arguments.get('ahead'))).to_frame()
+        steps = (2 * arguments.get('ahead'))
+        forecasts = self.__system.forecast(steps=steps).to_frame()
         forecasts.rename(columns={0: 'seasonal_est'}, inplace=True)
+
+        # Hence
+        self.__tests(projections=forecasts[-steps:-arguments.get('ahead')])
 
 
 
