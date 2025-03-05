@@ -23,6 +23,8 @@ class Algorithm:
         :return:
         """
 
+        data.index.freq = self.__arguments.get('frequency')
+
         tfc.STLForecast(
             data[['seasonal']], tar.ARIMA,
             model_kwargs=dict(
