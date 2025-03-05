@@ -1,5 +1,6 @@
 """Module page.py"""
 import os
+
 import statsmodels.tsa.forecasting.stl as tfc
 
 import config
