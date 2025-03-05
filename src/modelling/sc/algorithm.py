@@ -25,7 +25,8 @@ class Algorithm:
 
         data.index.freq = self.__arguments.get('frequency')
 
-        tfc.STLForecast(
+        alg: tfc.STLForecast
+        alg = tfc.STLForecast(
             data[['seasonal']], tar.ARIMA,
             model_kwargs=dict(
                 seasonal_order=(
@@ -38,3 +39,6 @@ class Algorithm:
             seasonal_deg=self.__sc.get('degree_seasonal'),
             trend_deg=self.__sc.get('degree_trend'),
             robust=False)
+
+        system: tfc.STLForecastResults
+        system = alg.fit()
