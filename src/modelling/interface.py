@@ -6,9 +6,11 @@ import dask
 import pandas as pd
 
 import config
+import src.elements.master as mr
 import src.functions.directories
 import src.modelling.decompose
 import src.modelling.splits
+import src.modelling.sc.interface
 
 
 class Interface:
@@ -16,14 +18,16 @@ class Interface:
     Interface
     """
 
-    def __init__(self, data: pd.DataFrame, arguments: dict):
+    def __init__(self, data: pd.DataFrame, codes: dict, arguments: dict):
         """
 
         :param data:
+        :param codes:
         :param arguments:
         """
 
         self.__data = data
+        self.__codes = codes
         self.__arguments = arguments
 
         self.__configurations = config.Config()
@@ -63,28 +67,28 @@ class Interface:
         :return:
         """
 
-        codes = self.__data['hospital_code'].unique()
-
         # Additional delayed tasks
         decompose = dask.delayed(src.modelling.decompose.Decompose(arguments=self.__arguments).exc)
         splits = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
+        sc = dask.delayed(src.modelling.sc.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
-        for code in codes:
+        for code, board in self.__codes.items():
             """
             1. get institution data
             2. set up directories per institution
-            2. decompose institution data
-            3. split institution data
-            4. seasonal component modelling: naive
-            5. trend component modelling: gaussian process
-            6. overarching estimate
+            3. decompose institution data
+            4. split institution data
+            5. seasonal component modelling: naive model
+            6. trend component modelling: gaussian process
             """
 
             data = self.__get_data(code=code)
             success = self.__set_directories(code=code)
             decompositions = decompose(data=data)
-            training = splits(data=decompositions, code=code, success=success)
-            computations.append(training)
+            master: mr.Master = splits(data=decompositions, code=code, success=success)
+            message = sc(master=master)
+            computations.append(message)
+
         calculations = dask.compute(computations, scheduler='threads')[0]
         logging.info(calculations)
