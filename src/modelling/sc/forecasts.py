@@ -32,8 +32,9 @@ class Forecasts:
         values = self.__testing.copy()[['seasonal']].join(projections)
         logging.info(values)
 
-    def __futures(self):
-        pass
+    def __futures(self, projections: pd.DataFrame):
+
+        logging.info(projections)
 
     def exc(self, arguments: dict):
         """
@@ -48,6 +49,4 @@ class Forecasts:
 
         # Hence
         self.__tests(projections=forecasts[-steps:-arguments.get('ahead')])
-
-
-
+        self.__futures(projections=forecasts[-arguments.get('ahead'):])
