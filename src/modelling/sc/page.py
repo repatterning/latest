@@ -17,8 +17,8 @@ class Page:
     def exc(self, system: tfc.STLForecastResults, code: str):
         """
 
-        :param system:
-        :param code:
+        :param system: The results of the seasonal component model
+        :param code: The identification code of an institution
         :return:
         """
 
