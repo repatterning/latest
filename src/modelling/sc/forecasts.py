@@ -1,11 +1,13 @@
+"""Module forecasts.py"""
 import logging
 import os
-import pandas as pd
 
+import pandas as pd
 import statsmodels.tsa.forecasting.stl as tfc
 
 import config
 import src.functions.objects
+
 
 class Forecasts:
 
