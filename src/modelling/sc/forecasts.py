@@ -25,7 +25,9 @@ class Forecasts:
         values: pd.DataFrame = self.__system.result.seasonal.to_frame()
         values.rename(columns={'season': 'seasonal_est'}, inplace=True)
         values = self.__data.copy()[['seasonal']].join(values.copy())
-        logging.info(values)
+        values['date'] = values.index.strftime(date_format='%Y-%m-%d')
+
+        return values.reset_index(drop=True)
 
     def __tests(self, projections: pd.DataFrame):
 
