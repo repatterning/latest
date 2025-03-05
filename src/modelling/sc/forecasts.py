@@ -22,13 +22,15 @@ class Forecasts:
 
     def __estimates(self):
 
-        est: pd.DataFrame = self.__system.result.seasonal.to_frame()
-        est.rename(columns={'season': 'seasonal_est'}, inplace=True)
-        est = self.__data.copy()[['seasonal']].join(est.copy())
-        logging.info(est)
+        values: pd.DataFrame = self.__system.result.seasonal.to_frame()
+        values.rename(columns={'season': 'seasonal_est'}, inplace=True)
+        values = self.__data.copy()[['seasonal']].join(values.copy())
+        logging.info(values)
 
-    def __tests(self):
-        pass
+    def __tests(self, projections: pd.DataFrame):
+
+        values = self.__testing.copy()[['seasonal']].join(projections)
+        logging.info(values)
 
     def __futures(self):
         pass
@@ -40,4 +42,8 @@ class Forecasts:
         :return:
         """
 
-        self.__system.forecast(steps=(2 * arguments.get('ahead'))).to_frame()
+        forecasts = self.__system.forecast(steps=(2 * arguments.get('ahead'))).to_frame()
+        forecasts.rename(columns={0: 'seasonal_est'}, inplace=True)
+
+
+
