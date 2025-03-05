@@ -1,7 +1,8 @@
-
+"""Module master.py"""
 import typing
 
 import pandas as pd
+
 
 class Master(typing.NamedTuple):
     """
