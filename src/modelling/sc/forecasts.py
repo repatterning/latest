@@ -27,21 +27,27 @@ class Forecasts:
         values = self.__data.copy()[['seasonal']].join(values.copy())
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
 
-        return values.reset_index(drop=True)
+        values.reset_index(drop=True, inplace=True)
+
+        return values.to_dict(orient='tight')
 
     def __tests(self, projections: pd.DataFrame):
 
         values = self.__testing.copy()[['seasonal']].join(projections.copy())
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
 
-        return values.reset_index(drop=True)
+        values.reset_index(drop=True, inplace=True)
+
+        return values.to_dict(orient='tight')
 
     def __futures(self, projections: pd.DataFrame):
 
         values = projections.copy()
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
 
-        return values.reset_index(drop=True)
+        values.reset_index(drop=True, inplace=True)
+
+        return values.to_dict(orient='tight')
 
     def exc(self, arguments: dict):
         """
