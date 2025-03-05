@@ -11,22 +11,22 @@ class Algorithm:
         self.__arguments: dict = arguments
         self.__sc: dict = self.__arguments.get('sc')
 
-    def exc(self, data: pd.DataFrame) -> tfc.STLForecastResults:
+    def exc(self, training: pd.DataFrame) -> tfc.STLForecastResults:
         """
         <b>References</b><br>
         <a href="https://www.statsmodels.org/dev/generated/statsmodels.tsa.arima.model.ARIMA.html">
         ARIMA (Autoregressive Integrated Moving Average)</a><br>
         <a href="https://www.statsmodels.org/dev/generated/statsmodels.tsa.forecasting.stl.STLForecast.html">STLForecast</a><br><br>
 
-        :param data: The data of an institution, including the decompositions of its <i>ln(attendance numbers)</i> series.
+        :param training: The data of an institution, including the decompositions of its <i>ln(attendance numbers)</i> series.
         :return:
         """
 
-        data.index.freq = self.__arguments.get('frequency')
+        training.index.freq = self.__arguments.get('frequency')
 
         architecture: tfc.STLForecast
         architecture = tfc.STLForecast(
-            data[['seasonal']], tar.ARIMA,
+            training[['seasonal']], tar.ARIMA,
             model_kwargs=dict(
                 seasonal_order=(
                     self.__sc.get('P'),
