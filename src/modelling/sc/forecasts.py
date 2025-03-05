@@ -31,12 +31,17 @@ class Forecasts:
 
     def __tests(self, projections: pd.DataFrame):
 
-        values = self.__testing.copy()[['seasonal']].join(projections)
-        logging.info(values)
+        values = self.__testing.copy()[['seasonal']].join(projections.copy())
+        values['date'] = values.index.strftime(date_format='%Y-%m-%d')
+
+        return values.reset_index(drop=True)
 
     def __futures(self, projections: pd.DataFrame):
 
-        logging.info(projections)
+        values = projections.copy()
+        values['date'] = values.index.strftime(date_format='%Y-%m-%d')
+
+        return values.reset_index(drop=True)
 
     def exc(self, arguments: dict):
         """
@@ -50,5 +55,6 @@ class Forecasts:
         forecasts.rename(columns={0: 'seasonal_est'}, inplace=True)
 
         # Hence
+
         self.__tests(projections=forecasts[-steps:-arguments.get('ahead')])
         self.__futures(projections=forecasts[-arguments.get('ahead'):])
