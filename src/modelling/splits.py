@@ -6,6 +6,7 @@ import sys
 import pandas as pd
 
 import config
+import src.elements.master as mr
 import src.functions.streams
 
 
@@ -55,7 +56,7 @@ class Splits:
         message = self.__streams.write(blob=blob, path=os.path.join(self.__root, pathstr))
         logging.info(message)
 
-    def exc(self, data: pd.DataFrame, code: str, success: bool) -> pd.DataFrame:
+    def exc(self, data: pd.DataFrame, code: str, success: bool) -> mr.Master:
         """
 
         :param data: The data set consisting of the attendance numbers of <b>an</b> institution/hospital.
@@ -77,4 +78,4 @@ class Splits:
         else:
             sys.exit(f'Data and/or models directories unavailable: {code}')
 
-        return training
+        return mr.Master(training=training, testing=testing)
