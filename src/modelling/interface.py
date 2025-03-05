@@ -6,11 +6,13 @@ import dask
 import pandas as pd
 
 import config
+import src.elements.codes as ce
 import src.elements.master as mr
 import src.functions.directories
+import src.modelling.codes
 import src.modelling.decompose
-import src.modelling.splits
 import src.modelling.sc.interface
+import src.modelling.splits
 
 
 class Interface:
@@ -18,18 +20,20 @@ class Interface:
     Interface
     """
 
-    def __init__(self, data: pd.DataFrame, codes: dict, arguments: dict):
+    def __init__(self, data: pd.DataFrame, arguments: dict):
         """
 
         :param data:
-        :param codes:
         :param arguments:
         """
 
         self.__data = data
-        self.__codes = codes
         self.__arguments = arguments
 
+        # Settings
+        self.__codes: list[ce.Codes] = src.modelling.codes.Codes().exc(data=self.__data)
+
+        # Instances
         self.__configurations = config.Config()
         self.__directories = src.functions.directories.Directories()
 
@@ -73,7 +77,7 @@ class Interface:
         sc = dask.delayed(src.modelling.sc.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
-        for code, board in self.__codes.items():
+        for code in self.__codes:
             """
             1. get institution data
             2. set up directories per institution
@@ -83,10 +87,10 @@ class Interface:
             6. trend component modelling: gaussian process
             """
 
-            data = self.__get_data(code=code)
-            success = self.__set_directories(code=code)
+            data = self.__get_data(code=code.institution)
+            success = self.__set_directories(code=code.institution)
             decompositions = decompose(data=data)
-            master: mr.Master = splits(data=decompositions, code=code, success=success)
+            master: mr.Master = splits(data=decompositions, code=code.institution, success=success)
             message = sc(master=master)
             computations.append(message)
 
