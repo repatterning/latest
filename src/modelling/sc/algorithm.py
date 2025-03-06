@@ -1,9 +1,10 @@
 """Module algorithm.py"""
 import logging
+import warnings
+
 import pandas as pd
 import statsmodels.tsa.arima.model as tar
 import statsmodels.tsa.forecasting.stl as tfc
-import statsmodels.tools.sm_exceptions as sme
 
 import src.elements.codes as ce
 
@@ -13,6 +14,8 @@ class Algorithm:
     Class Algorithm
     """
 
+    warnings.filterwarnings(action='error')
+
     def __init__(self, arguments: dict):
         """
 
@@ -20,6 +23,8 @@ class Algorithm:
         """
 
         self.__arguments: dict = arguments
+
+        # Seasonal Components Arguments
         self.__sc: dict = self.__arguments.get('sc')
 
     def exc(self, training: pd.DataFrame, code: ce.Codes) -> tfc.STLForecastResults | None:
@@ -39,27 +44,26 @@ class Algorithm:
 
         training.index.freq = self.__arguments.get('frequency')
 
+
+        architecture: tfc.STLForecast
+        architecture = tfc.STLForecast(
+            training[['seasonal']], tar.ARIMA,
+            model_kwargs=dict(
+                seasonal_order=(
+                    self.__sc.get('P'),
+                    self.__sc.get('D'),
+                    self.__sc.get('Q'),
+                    self.__sc.get('m')),
+                trend='c'),
+            seasonal=self.__sc.get('smoother_seasonal'),
+            seasonal_deg=self.__sc.get('degree_seasonal'),
+            trend_deg=self.__sc.get('degree_trend'),
+            robust=False)
+
         try:
-            architecture: tfc.STLForecast
-            architecture = tfc.STLForecast(
-                training[['seasonal']], tar.ARIMA,
-                model_kwargs=dict(
-                    seasonal_order=(
-                        self.__sc.get('P'),
-                        self.__sc.get('D'),
-                        self.__sc.get('Q'),
-                        self.__sc.get('m')),
-                    trend='c'),
-                seasonal=self.__sc.get('smoother_seasonal'),
-                seasonal_deg=self.__sc.get('degree_seasonal'),
-                trend_deg=self.__sc.get('degree_trend'),
-                robust=False)
-        except sme.ConvergenceWarning as err:
-            logging.info('%s (%s)', err, code.hospital_code)
-            return None
-
-
-        system: tfc.STLForecastResults
-        system = architecture.fit()
+            system: tfc.STLForecastResults
+            system = architecture.fit(fit_kwargs={'method': 'statespace', 'cov_type': 'robust'})
+        except RuntimeWarning as err:
+            raise err from err
 
         return system
