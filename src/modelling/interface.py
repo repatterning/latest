@@ -98,5 +98,5 @@ class Interface:
             message = sc(master=master, code=code)
             computations.append(message)
 
-        messages = dask.compute(computations, scheduler='threads')[0]
+        messages = dask.compute(computations, scheduler='threads')
         logging.info(messages)
