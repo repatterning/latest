@@ -28,8 +28,6 @@ class Codes:
 
         # Codes
         frame = data[['health_board_code', 'hospital_code']].drop_duplicates()
-        frame.rename(columns={'health_board_code': 'board', 'hospital_code': 'institution'}, inplace=True)
-
         values: list[dict] = frame.reset_index(drop=True).to_dict(orient='records')
 
         return self.__structure(values=values)
