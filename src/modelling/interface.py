@@ -41,14 +41,14 @@ class Interface:
     def __get_data(self, code: ce.Codes) -> pd.DataFrame:
         """
 
-        :param code:
+        :param code: The health board & institution/hospital codes of an institution/hospital.
         :return:
         """
 
         return self.__data.copy().loc[self.__data['hospital_code'] == code.hospital_code, :]
 
     @dask.delayed
-    def __set_directories(self, code: str) -> bool:
+    def __set_directories(self, code: ce.Codes) -> bool:
         """
 
         :param code:
@@ -58,7 +58,7 @@ class Interface:
         success = []
         for pathway in ['data', 'models']:
             success.append(
-                self.__directories.create(path=os.path.join(self.__configurations.artefacts_, pathway, code)))
+                self.__directories.create(path=os.path.join(self.__configurations.artefacts_, pathway, code.hospital_code)))
         return all(success)
 
     def exc(self):
@@ -88,7 +88,7 @@ class Interface:
             """
 
             data = self.__get_data(code=code)
-            success = self.__set_directories(code=code.hospital_code)
+            success = self.__set_directories(code=code)
             decompositions = decompose(data=data)
             master: mr.Master = splits(data=decompositions, code=code.hospital_code, success=success)
             message = sc(master=master, code=code)
