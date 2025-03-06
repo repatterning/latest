@@ -1,5 +1,4 @@
 """Module splits.py"""
-import logging
 import os
 import sys
 
@@ -54,8 +53,7 @@ class Splits:
         :return:
         """
 
-        message = self.__streams.write(blob=blob, path=os.path.join(self.__root, pathstr))
-        logging.info(message)
+        self.__streams.write(blob=blob, path=os.path.join(self.__root, pathstr))
 
     def exc(self, data: pd.DataFrame, code: ce.Codes, success: bool) -> mr.Master:
         """
