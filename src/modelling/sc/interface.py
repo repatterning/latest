@@ -27,7 +27,10 @@ class Interface:
 
         # The seasonal forecasting algorithm
         algorithm = src.modelling.sc.algorithm.Algorithm(arguments=self.__arguments)
-        system = algorithm.exc(training=master.training)
+        system = algorithm.exc(training=master.training, code=code)
+
+        if system is None:
+            return f'Skipping: Seasonal forecasting for {code.hospital_code}'
 
         # Extract, and persist, the model's details (page) and forecasts (forecasts).
         src.modelling.sc.page.Page(system=system, code=code).exc()
