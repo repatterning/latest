@@ -18,7 +18,7 @@ class Interface:
 
         self.__arguments = arguments
 
-    def exc(self, master: mr.Master, code: ce.Codes) -> bool:
+    def exc(self, master: mr.Master, code: ce.Codes) -> str:
         """
 
         :param master: A named tuple consisting of an institutions training & testing data
@@ -26,11 +26,15 @@ class Interface:
         :return:
         """
 
+        # The seasonal forecasting algorithm
         algorithm = src.modelling.sc.algorithm.Algorithm(arguments=self.__arguments)
+
+        # Modelling
         system = algorithm.exc(training=master.training)
 
+        # Extract, and persist, the model's details (page) and forecasts (forecasts).
         src.modelling.sc.page.Page().exc(system=system, code=code.hospital_code)
         src.modelling.sc.forecasts.Forecasts(master=master, system=system).exc(
             arguments=self.__arguments, code=code)
 
-        return True
+        return f'Latest: Seasonal forecasting of {code.hospital_code}'
