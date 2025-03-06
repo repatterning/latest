@@ -80,10 +80,10 @@ class Interface:
         splits = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
         sc = dask.delayed(src.modelling.sc.interface.Interface(arguments=self.__arguments).exc)
 
-        print(self.__codes[5:8])
+        print(self.__codes[6:7])
 
         computations = []
-        for code in self.__codes[5:8]:
+        for code in self.__codes[6:7]:
             """
             1. get institution data
             2. set up directories per institution
