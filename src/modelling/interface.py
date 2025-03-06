@@ -45,7 +45,11 @@ class Interface:
         :return:
         """
 
-        return self.__data.copy().loc[self.__data['hospital_code'] == code.hospital_code, :]
+        frame = self.__data.copy().loc[self.__data['hospital_code'] == code.hospital_code, :]
+        frame.set_index(keys='week_ending_date', drop=True, inplace=True)
+        frame.sort_values(by=['week_ending_date'], ascending=True, ignore_index=False, inplace=True)
+
+        return frame
 
     @dask.delayed
     def __set_directories(self, code: ce.Codes) -> bool:
