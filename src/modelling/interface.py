@@ -87,7 +87,7 @@ class Interface:
             6. trend component modelling: gaussian processes
             """
 
-            data = self.__get_data(code=code.hospital_code)
+            data = self.__get_data(code=code)
             success = self.__set_directories(code=code.hospital_code)
             decompositions = decompose(data=data)
             master: mr.Master = splits(data=decompositions, code=code.hospital_code, success=success)
