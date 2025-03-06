@@ -33,7 +33,7 @@ class Algorithm:
         frequency = training.index.inferred_freq
         logging.info(frequency)
 
-        training.index.freq = frequency
+        training.index.freq = self.__arguments.get('frequency')
 
         architecture: tfc.STLForecast
         architecture = tfc.STLForecast(
