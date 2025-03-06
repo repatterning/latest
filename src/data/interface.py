@@ -1,5 +1,4 @@
 """Module interface.py"""
-import logging
 
 import pandas as pd
 
@@ -94,8 +93,5 @@ class Interface:
         
         # Skip institutions that have zero or negative n_attendances values
         data = self.__skip(data=data.copy())
-
-        # Preview
-        logging.info(data)
 
         return data
