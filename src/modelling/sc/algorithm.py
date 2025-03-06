@@ -1,12 +1,20 @@
-
+"""Module algorithm.py"""
+import logging
 import pandas as pd
 import statsmodels.tsa.arima.model as tar
 import statsmodels.tsa.forecasting.stl as tfc
 
 
 class Algorithm:
+    """
+    Class Algorithm
+    """
 
     def __init__(self, arguments: dict):
+        """
+
+        :param arguments:
+        """
 
         self.__arguments: dict = arguments
         self.__sc: dict = self.__arguments.get('sc')
@@ -22,7 +30,10 @@ class Algorithm:
         :return:
         """
 
-        training.index.freq = self.__arguments.get('frequency')
+        frequency = training.index.inferred_freq
+        logging.info(frequency)
+
+        training.index.freq = frequency
 
         architecture: tfc.STLForecast
         architecture = tfc.STLForecast(
