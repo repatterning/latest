@@ -1,6 +1,4 @@
 """Module interface.py"""
-import logging
-
 import src.elements.codes as ce
 import src.elements.master as mr
 import src.modelling.sc.algorithm
@@ -28,12 +26,11 @@ class Interface:
 
         # The seasonal forecasting algorithm
         algorithm = src.modelling.sc.algorithm.Algorithm(arguments=self.__arguments)
-
-        # Modelling
         system = algorithm.exc(training=master.training)
 
         # Extract, and persist, the model's details (page) and forecasts (forecasts).
-        src.modelling.sc.page.Page().exc(system=system, code=code.hospital_code)
+        src.modelling.sc.page.Page().exc(
+            system=system, code=code)
         src.modelling.sc.forecasts.Forecasts(master=master, system=system).exc(
             arguments=self.__arguments, code=code)
 
