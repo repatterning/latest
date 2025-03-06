@@ -84,7 +84,7 @@ class Interface:
             3. decompose institution data
             4. split institution data
             5. seasonal component modelling: naive model
-            6. trend component modelling: gaussian process
+            6. trend component modelling: gaussian processes
             """
 
             data = self.__get_data(code=code.hospital_code)
@@ -94,5 +94,5 @@ class Interface:
             message = sc(master=master, code=code)
             computations.append(message)
 
-        calculations = dask.compute(computations, scheduler='threads')[0]
-        logging.info(calculations)
+        messages = dask.compute(computations, scheduler='threads')[0]
+        logging.info(messages)
