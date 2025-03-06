@@ -60,21 +60,25 @@ class Interface:
 
         return blob
 
-    def __skip(self, b: pd.DataFrame):
-
-        frame = b.copy()
+    @staticmethod
+    def __skip(data: pd.DataFrame):
+        """
+        
+        :param data: 
+        :return: 
+        """
 
         # Counting n_attendances values <= 0 per institution
-        cases = frame[['hospital_code', 'n_attendances']].groupby('hospital_code').agg(
+        cases = data.copy()[['hospital_code', 'n_attendances']].groupby('hospital_code').agg(
             missing=('n_attendances', lambda x: sum(x <= 0)))
         cases.reset_index(drop=False, inplace=True)
         cases: pd.DataFrame = cases.copy().loc[cases['missing'] > 0, :]
 
         # Skip institutions that have zero or negative values
         if not cases.empty:
-            frame = frame.copy().loc[~frame['hospital_code'].isin(cases['hospital_code'].unique()), :]
+            data = data.copy().loc[~data['hospital_code'].isin(cases['hospital_code'].unique()), :]
 
-        return frame
+        return data
 
     def exc(self) -> pd.DataFrame:
         """
@@ -87,8 +91,11 @@ class Interface:
 
         # Format dates
         data = self.__date_formatting(blob=data.copy())
+        
+        # Skip institutions that have zero or negative n_attendances values
+        data = self.__skip(data=data.copy())
 
-
+        # Preview
         logging.info(data)
 
         return data
