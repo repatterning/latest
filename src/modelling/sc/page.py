@@ -1,9 +1,11 @@
 """Module page.py"""
+import logging
 import os
 
 import statsmodels.tsa.forecasting.stl as tfc
 
 import config
+import src.elements.codes as ce
 
 
 class Page:
@@ -21,7 +23,7 @@ class Page:
 
         self.__configurations = config.Config()
 
-    def exc(self, system: tfc.STLForecastResults, code: str):
+    def exc(self, system: tfc.STLForecastResults, code: ce.Codes):
         """
 
         :param system: The results of the seasonal component model
@@ -29,7 +31,11 @@ class Page:
         :return:
         """
 
-        pathstr = os.path.join(self.__configurations.artefacts_, 'models', code, 'scf.txt')
+        pathstr = os.path.join(self.__configurations.artefacts_, 'models', code.hospital_code, 'scf.txt')
 
-        with open(file=pathstr, mode='w', encoding='utf-8', newline='\r\n') as disk:
-            disk.write(system.summary().as_text())
+        try:
+            with open(file=pathstr, mode='w', encoding='utf-8', newline='\r\n') as disk:
+                disk.write(system.summary().as_text())
+            logging.info('scf.txt: succeeded (%s)', code.hospital_code)
+        except IOError as err:
+            raise err from err
