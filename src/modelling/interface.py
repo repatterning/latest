@@ -51,7 +51,7 @@ class Interface:
     def __set_directories(self, code: ce.Codes) -> bool:
         """
 
-        :param code:
+        :param code: The health board & institution/hospital codes of an institution/hospital.
         :return:
         """
 
@@ -90,7 +90,7 @@ class Interface:
             data = self.__get_data(code=code)
             success = self.__set_directories(code=code)
             decompositions = decompose(data=data)
-            master: mr.Master = splits(data=decompositions, code=code.hospital_code, success=success)
+            master: mr.Master = splits(data=decompositions, code=code, success=success)
             message = sc(master=master, code=code)
             computations.append(message)
 
