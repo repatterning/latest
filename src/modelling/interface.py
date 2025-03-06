@@ -38,14 +38,14 @@ class Interface:
         self.__directories = src.functions.directories.Directories()
 
     @dask.delayed
-    def __get_data(self, code: str) -> pd.DataFrame:
+    def __get_data(self, code: ce.Codes) -> pd.DataFrame:
         """
 
         :param code:
         :return:
         """
 
-        return self.__data.copy().loc[self.__data['hospital_code'] == code, :]
+        return self.__data.copy().loc[self.__data['hospital_code'] == code.hospital_code, :]
 
     @dask.delayed
     def __set_directories(self, code: str) -> bool:
