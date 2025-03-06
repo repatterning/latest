@@ -37,7 +37,6 @@ class Forecasts:
         values.rename(columns={'season': 'seasonal_est'}, inplace=True)
         values = self.__training.copy()[['seasonal']].join(values.copy())
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
-
         values.reset_index(drop=True, inplace=True)
 
         return values.to_dict(orient='tight')
@@ -51,7 +50,6 @@ class Forecasts:
 
         values = self.__testing.copy()[['seasonal']].join(projections.copy())
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
-
         values.reset_index(drop=True, inplace=True)
 
         return values.to_dict(orient='tight')
@@ -66,7 +64,6 @@ class Forecasts:
 
         values = projections.copy()
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
-
         values.reset_index(drop=True, inplace=True)
 
         return values.to_dict(orient='tight')
@@ -97,4 +94,4 @@ class Forecasts:
             nodes=nodes,
             path=os.path.join(self.__configurations.artefacts_, 'models', code.hospital_code, 'scf.json'))
 
-        logging.info(message)
+        logging.info('%s (%s)', message, code.hospital_code)
