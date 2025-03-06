@@ -29,7 +29,7 @@ class Page:
         :return:
         """
 
-        pathstr = os.path.join(self.__configurations.artefacts_, 'models', code, 'sc.txt')
+        pathstr = os.path.join(self.__configurations.artefacts_, 'models', code, 'scf.txt')
 
         with open(file=pathstr, mode='w', encoding='utf-8', newline='\r\n') as disk:
             disk.write(system.summary().as_text())
