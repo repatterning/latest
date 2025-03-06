@@ -95,6 +95,6 @@ class Forecasts:
 
         message = self.__objects.write(
             nodes=nodes,
-            path=os.path.join(self.__configurations.artefacts_, 'models', code.hospital_code, 'sfc.json'))
+            path=os.path.join(self.__configurations.artefacts_, 'models', code.hospital_code, 'scf.json'))
 
         logging.info(message)
