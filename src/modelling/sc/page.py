@@ -40,7 +40,7 @@ class Page:
         try:
             with open(file=pathstr, mode='w', encoding='utf-8', newline='\r\n') as disk:
                 disk.write(self.__system.summary().as_latex())
-            logging.info('sfc.tex: succeeded (%s)', self.__code.hospital_code)
+            logging.info('scf.tex: succeeded (%s)', self.__code.hospital_code)
         except IOError as err:
             raise err from err
 
