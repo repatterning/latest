@@ -69,7 +69,7 @@ class Fundamental:
             trend_deg=self.__sc.get('degree_trend'),
             robust=True)
 
-        logging.info('%s: ARIMA, method -> %s', self.__code.hospital_code, method)
+        logging.info('Modelling: %s, ARIMA (method -> %s)', self.__code.hospital_code, method)
 
         return self.__execute(architecture=architecture,  method=method)
 
