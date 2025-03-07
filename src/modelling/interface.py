@@ -93,9 +93,6 @@ class Interface:
             6. trend component modelling: gaussian processes
             """
 
-            if code.hospital_code != 'N121H':
-                continue
-
             data: pd.DataFrame = self.__get_data(code=code)
             success: bool = self.__set_directories(code=code)
             decompositions: pd.DataFrame = decompose(data=data)
