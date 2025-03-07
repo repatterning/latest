@@ -1,5 +1,4 @@
 """Module interface.py"""
-import logging
 
 import src.elements.codes as ce
 import src.elements.master as mr
@@ -31,13 +30,11 @@ class Interface:
         system = algorithm.exc(training=master.training, code=code)
 
         if system is None:
-            logging.info('Skipping: Seasonal forecasting for %s', code.hospital_code)
             return False
 
         # Extract, and persist, the model's details (page) and forecasts (forecasts).
         src.modelling.sc.page.Page(system=system, code=code).exc()
         src.modelling.sc.forecasts.Forecasts(master=master, system=system).exc(
             arguments=self.__arguments, code=code)
-        logging.info('Latest: Seasonal forecasting of %s', code.hospital_code)
 
         return True
