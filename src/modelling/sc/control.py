@@ -29,11 +29,12 @@ class Control:
 
             system = architecture.fit(fit_kwargs={'method': method, 'cov_type': covariance})
 
-            query = str(el[-1].message).__contains__('failed to converge')
+            query = (str(el[-1].message).__contains__('failed to converge') |
+                     str(el[-1].message).__contains__('did not converge'))
             warnings.resetwarnings()
 
         if query:
-            logging.info('Skip: %s, %s', code.hospital_code, architecture.__getattribute__('_model'))
+            logging.info('Skip: %s, %s (method -> %s)', code.hospital_code, architecture.__getattribute__('_model'), method)
             return None
 
         system.__setattr__('parameters_estimation_method', method)
