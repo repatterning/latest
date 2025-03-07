@@ -12,6 +12,11 @@ import statsmodels.tools.sm_exceptions as sme
 class Fundamental:
 
     def __init__(self, training: pd.DataFrame, arguments: dict):
+        """
+        
+        :param training: The data of an institution.
+        :param arguments: A set of model development, and supplementary, arguments.
+        """
 
         self.__training = training
         self.__arguments = arguments
@@ -28,24 +33,33 @@ class Fundamental:
     def __execute(self, arima: tfc.STLForecast, method: str)  -> tfc.STLForecastResults | None:
         """
         issue = issubclass(el[-1].category, sme.ConvergenceWarning)
+        
+        :param arima: 
+        :param method: A parameter estimation method
+        :return: 
         """
 
         with warnings.catch_warnings(record=True) as el:
 
             warnings.simplefilter('always')
             warnings.warn('Convergence', category=sme.ConvergenceWarning)
-            initial = arima.fit(fit_kwargs={'method': method, 'cov_type': self.__covariance})
+            
+            system = arima.fit(fit_kwargs={'method': method, 'cov_type': self.__covariance})
 
             query = str(el[-1].message).__contains__('failed to converge')
-
             warnings.resetwarnings()
 
         if query:
             return None
 
-        return initial
+        return system
 
     def __arima(self, method: str):
+        """
+        
+        :param method: 
+        :return: 
+        """
 
         arima = tfc.STLForecast(
             self.__training[['seasonal']], tar.ARIMA,
@@ -66,6 +80,10 @@ class Fundamental:
         return self.__execute(arima=arima,  method=method)
 
     def exc(self) -> tfc.STLForecastResults | None:
+        """
+        
+        :return: 
+        """
 
         state = None
         for i in np.arange(len(self.__methods)):
