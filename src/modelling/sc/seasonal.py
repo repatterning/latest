@@ -68,7 +68,7 @@ class Seasonal:
             robust=True
         )
 
-        logging.info('Try: Seasonal ARIMA (%s, %s)', method, self.__code.hospital_code)
+        logging.info('%s: Seasonal ARIMA, method -> %s', self.__code.hospital_code, method)
 
         return self.__execute(architecture=architecture, method=method)
 
