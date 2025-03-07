@@ -1,6 +1,7 @@
 """Module page.py"""
 import logging
 import os
+import pathlib
 
 import statsmodels.tsa.forecasting.stl as tfc
 
@@ -35,12 +36,12 @@ class Page:
         :return:
         """
 
-        pathstr = os.path.join(self.__root, 'scf.tex')
+        pathstr = os.path.join(self.__root, 'scf_measures.tex')
 
         try:
             with open(file=pathstr, mode='w', encoding='utf-8', newline='\r\n') as disk:
                 disk.write(self.__system.summary().as_latex())
-            logging.info('scf.tex: succeeded (%s)', self.__code.hospital_code)
+            logging.info('%s: succeeded (%s)', pathlib.PurePath(pathstr).name, self.__code.hospital_code)
         except IOError as err:
             raise err from err
 
@@ -50,12 +51,12 @@ class Page:
         :return:
         """
 
-        pathstr = os.path.join(self.__root, 'scf.txt')
+        pathstr = os.path.join(self.__root, 'scf_measures.txt')
 
         try:
             with open(file=pathstr, mode='w', encoding='utf-8', newline='\r\n') as disk:
                 disk.write(self.__system.summary().as_text())
-            logging.info('scf.txt: succeeded (%s)', self.__code.hospital_code)
+            logging.info('%s: succeeded (%s)', pathlib.PurePath(pathstr).name, self.__code.hospital_code)
         except IOError as err:
             raise err from err
 
