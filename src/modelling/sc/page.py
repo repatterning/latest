@@ -7,6 +7,7 @@ import statsmodels.tsa.forecasting.stl as tfc
 
 import config
 import src.elements.codes as ce
+import src.functions.objects
 
 
 class Page:
@@ -60,11 +61,30 @@ class Page:
         except IOError as err:
             raise err from err
 
+    def __extra(self):
+        """
+
+        :return:
+        """
+
+        nodes = {
+            "parameters_estimation_method": self.__system.__getattribute__('parameters_estimation_method'),
+            "cov_type": self.__system.model_result.cov_type
+        }
+
+        # Path
+        pathstr = os.path.join(self.__root, 'scf_extra.json')
+
+        # Persist
+        message = src.functions.objects.Objects().write(nodes=nodes, path=pathstr)
+        logging.info(message)
+
     def exc(self):
         """
 
         :return:
         """
 
-        self.__txt()
         self.__latex()
+        self.__txt()
+        self.__extra()
