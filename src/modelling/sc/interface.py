@@ -25,7 +25,7 @@ class Interface:
         :return:
         """
 
-        # The seasonal forecasting algorithm
+        # The seasonal forecasting algorithms
         algorithm = src.modelling.sc.algorithm.Algorithm(arguments=self.__arguments)
         system = algorithm.exc(training=master.training, code=code)
 
