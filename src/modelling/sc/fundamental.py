@@ -1,12 +1,12 @@
 """Module fundamental.py"""
 import logging
-import warnings
 
 import numpy as np
 import pandas as pd
-import statsmodels.tools.sm_exceptions as sme
 import statsmodels.tsa.arima.model as tar
 import statsmodels.tsa.forecasting.stl as tfc
+
+import src.modelling.sc.control
 
 
 class Fundamental:
@@ -24,34 +24,24 @@ class Fundamental:
         # Seasonal Components Arguments
         self.__sc: dict = self.__arguments.get('sc')
 
-        # Parameters estimation methods
+        # Parameters estimation methods, and a covariance matrix calculation method
         self.__methods = ['statespace', 'innovations_mle']
-
-        # Covariance matrix calculation
         self.__covariance = 'robust'
 
-    def __execute(self, arima: tfc.STLForecast, method: str)  -> tfc.STLForecastResults | None:
+        # Controls
+        self.__control = src.modelling.sc.control.Control()
+
+    def __execute(self, architecture: tfc.STLForecast, method: str)  -> tfc.STLForecastResults | None:
         """
         issue = issubclass(el[-1].category, sme.ConvergenceWarning)
         
-        :param arima: 
+        :param architecture:
         :param method: A parameter estimation method
         :return: 
         """
 
-        with warnings.catch_warnings(record=True) as el:
-
-            warnings.simplefilter('always')
-            warnings.warn('Convergence', category=sme.ConvergenceWarning)
-            
-            system = arima.fit(fit_kwargs={'method': method, 'cov_type': self.__covariance})
-
-            query = str(el[-1].message).__contains__('failed to converge')
-            warnings.resetwarnings()
-
-        if query:
-            logging.info('Infeasible: ARIMA (%s)', method)
-            return None
+        system = self.__control(
+            architecture=architecture, method=method, covariance=self.__covariance)
 
         return system
 
@@ -62,7 +52,7 @@ class Fundamental:
         :return: 
         """
 
-        arima = tfc.STLForecast(
+        architecture = tfc.STLForecast(
             self.__training[['seasonal']], tar.ARIMA,
             model_kwargs=dict(
                 seasonal_order=(
@@ -78,7 +68,7 @@ class Fundamental:
 
         logging.info(f'Try: ARIMA, %s', method)
 
-        return self.__execute(arima=arima,  method=method)
+        return self.__execute(architecture=architecture,  method=method)
 
     def exc(self) -> tfc.STLForecastResults | None:
         """
