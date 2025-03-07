@@ -1,4 +1,5 @@
 """Module interface.py"""
+import logging
 
 import src.elements.codes as ce
 import src.elements.master as mr
@@ -17,7 +18,7 @@ class Interface:
 
         self.__arguments = arguments
 
-    def exc(self, master: mr.Master, code: ce.Codes) -> str:
+    def exc(self, master: mr.Master, code: ce.Codes) -> bool:
         """
 
         :param master: A named tuple consisting of an institutions training & testing data
@@ -30,11 +31,13 @@ class Interface:
         system = algorithm.exc(training=master.training, code=code)
 
         if system is None:
-            return f'Skipping: Seasonal forecasting for {code.hospital_code}'
+            logging.info('Skipping: Seasonal forecasting for %s', code.hospital_code)
+            return False
 
         # Extract, and persist, the model's details (page) and forecasts (forecasts).
         src.modelling.sc.page.Page(system=system, code=code).exc()
         src.modelling.sc.forecasts.Forecasts(master=master, system=system).exc(
             arguments=self.__arguments, code=code)
+        logging.info('Latest: Seasonal forecasting of %s', code.hospital_code)
 
-        return f'Latest: Seasonal forecasting of {code.hospital_code}'
+        return True
