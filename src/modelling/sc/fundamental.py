@@ -36,7 +36,6 @@ class Fundamental:
     def __execute(self, architecture: statsmodels.tsa.forecasting.stl.STLForecast, method: str)  \
             -> statsmodels.tsa.forecasting.stl.STLForecastResults | None:
         """
-        issue = issubclass(el[-1].category, sme.ConvergenceWarning)
         
         :param architecture:
         :param method: A parameter estimation method
@@ -44,7 +43,7 @@ class Fundamental:
         """
 
         system = self.__control(
-            architecture=architecture, method=method, covariance=self.__covariance)
+            architecture=architecture, method=method, covariance=self.__covariance, code=self.__code)
 
         return system
 
