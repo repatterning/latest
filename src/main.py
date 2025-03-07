@@ -19,8 +19,7 @@ def main():
     src.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
 
     # Data
-    data = src.data.interface.Interface(
-        s3_parameters=s3_parameters, arguments=arguments).exc()
+    data = src.data.interface.Interface(s3_parameters=s3_parameters).exc()
 
     # Modelling
     src.modelling.interface.Interface(
