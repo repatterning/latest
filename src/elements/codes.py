@@ -1,4 +1,6 @@
+"""Module codes.py"""
 import typing
+
 
 class Codes(typing.NamedTuple):
     """
