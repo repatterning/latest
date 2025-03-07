@@ -1,12 +1,12 @@
+"""Module fundamental.py"""
 import logging
 import warnings
 
-import pandas as pd
 import numpy as np
-
-import statsmodels.tsa.forecasting.stl as tfc
-import statsmodels.tsa.arima.model as tar
+import pandas as pd
 import statsmodels.tools.sm_exceptions as sme
+import statsmodels.tsa.arima.model as tar
+import statsmodels.tsa.forecasting.stl as tfc
 
 
 class Fundamental:
@@ -50,6 +50,7 @@ class Fundamental:
             warnings.resetwarnings()
 
         if query:
+            logging.info('Infeasible: ARIMA (%s)', method)
             return None
 
         return system
@@ -75,7 +76,7 @@ class Fundamental:
             trend_deg=self.__sc.get('degree_trend'),
             robust=True)
 
-        logging.info(f'Try: ARIMA, {method}')
+        logging.info(f'Try: ARIMA, %s', method)
 
         return self.__execute(arima=arima,  method=method)
 
