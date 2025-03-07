@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import pandas as pd
 import statsmodels.tsa.arima.model as tar
-import statsmodels.tsa.forecasting.stl as tfc
+import statsmodels.tsa.forecasting.stl
 
 import src.modelling.sc.control
 
@@ -24,14 +24,15 @@ class Fundamental:
         # Seasonal Components Arguments
         self.__sc: dict = self.__arguments.get('sc')
 
-        # Parameters estimation methods, and a covariance matrix calculation method
+        # Methods for estimating model parameters, and a covariance matrix calculation method
         self.__methods = ['statespace', 'innovations_mle']
         self.__covariance = 'robust'
 
         # Controls
         self.__control = src.modelling.sc.control.Control()
 
-    def __execute(self, architecture: tfc.STLForecast, method: str)  -> tfc.STLForecastResults | None:
+    def __execute(self, architecture: statsmodels.tsa.forecasting.stl.STLForecast, method: str)  \
+            -> statsmodels.tsa.forecasting.stl.STLForecastResults | None:
         """
         issue = issubclass(el[-1].category, sme.ConvergenceWarning)
         
@@ -52,8 +53,9 @@ class Fundamental:
         :return: 
         """
 
-        architecture = tfc.STLForecast(
-            self.__training[['seasonal']], tar.ARIMA,
+        architecture = statsmodels.tsa.forecasting.stl.STLForecast(
+            self.__training[['seasonal']],
+            tar.ARIMA,
             model_kwargs=dict(
                 seasonal_order=(
                     self.__sc.get('P'),
@@ -66,11 +68,11 @@ class Fundamental:
             trend_deg=self.__sc.get('degree_trend'),
             robust=True)
 
-        logging.info(f'Try: ARIMA, %s', method)
+        logging.info('Try: ARIMA (%s)', method)
 
         return self.__execute(architecture=architecture,  method=method)
 
-    def exc(self) -> tfc.STLForecastResults | None:
+    def exc(self) -> statsmodels.tsa.forecasting.stl.STLForecastResults | None:
         """
         
         :return: 
