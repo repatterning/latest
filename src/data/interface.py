@@ -16,16 +16,14 @@ class Interface:
     Reads-in the data in focus.
     """
 
-    def __init__(self, s3_parameters: s3p.S3Parameters, arguments: dict):
+    def __init__(self, s3_parameters: s3p.S3Parameters):
         """
 
         :param s3_parameters: The overarching S3 parameters settings of this project, e.g., region code
                               name, buckets, etc.
-        :param arguments:
         """
 
         self.__s3_parameters = s3_parameters
-        self.__arguments = arguments
 
         # Configurations
         self.__configurations = config.Config()
@@ -90,7 +88,7 @@ class Interface:
 
         # Format dates
         data = self.__date_formatting(blob=data.copy())
-        
+
         # Skip institutions that have zero or negative n_attendances values
         data = self.__skip(data=data.copy())
 
