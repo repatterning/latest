@@ -7,11 +7,12 @@ import statsmodels.tsa.arima.model as tar
 import statsmodels.tsa.forecasting.stl
 
 import src.modelling.sc.control
+import src.elements.codes as ce
 
 
 class Fundamental:
 
-    def __init__(self, training: pd.DataFrame, arguments: dict):
+    def __init__(self, training: pd.DataFrame, arguments: dict, code: ce.Codes):
         """
         
         :param training: The data of an institution.
@@ -20,6 +21,7 @@ class Fundamental:
 
         self.__training = training
         self.__arguments = arguments
+        self.__code = code
 
         # Seasonal Components Arguments
         self.__sc: dict = self.__arguments.get('sc')
@@ -68,7 +70,7 @@ class Fundamental:
             trend_deg=self.__sc.get('degree_trend'),
             robust=True)
 
-        logging.info('Try: ARIMA (%s)', method)
+        logging.info('Try: ARIMA (%s, %s)', method, self.__code.hospital_code)
 
         return self.__execute(architecture=architecture,  method=method)
 
