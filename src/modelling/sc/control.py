@@ -22,7 +22,8 @@ class Control:
             warnings.resetwarnings()
 
         if query:
-
             return None
+
+        system.__setattr__('parameters_estimation_method', method)
 
         return system
