@@ -7,11 +7,12 @@ import statsmodels.tsa.api as tap
 import statsmodels.tsa.forecasting.stl as tfc
 
 import src.modelling.sc.control
+import src.elements.codes as ce
 
 
 class Seasonal:
 
-    def __init__(self, training: pd.DataFrame, arguments: dict):
+    def __init__(self, training: pd.DataFrame, arguments: dict, code: ce.Codes):
         """
 
         :param training: The data of an institution.
@@ -20,6 +21,7 @@ class Seasonal:
 
         self.__training = training
         self.__arguments = arguments
+        self.__code = code
 
         # Seasonal Components Arguments
         self.__sc: dict = self.__arguments.get('sc')
@@ -66,7 +68,7 @@ class Seasonal:
             robust=True
         )
 
-        logging.info('Try: Seasonal ARIMA (%s)', method)
+        logging.info('Try: Seasonal ARIMA (%s, %s)', method, self.__code.hospital_code)
 
         return self.__execute(architecture=architecture, method=method)
 
