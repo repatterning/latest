@@ -43,7 +43,7 @@ class Seasonal:
         """
 
         return self.__control(
-            architecture=architecture, method=method, covariance=self.__covariance)
+            architecture=architecture, method=method, covariance=self.__covariance, code=self.__code)
 
     def __s_arima(self, method: str):
         """
