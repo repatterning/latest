@@ -1,4 +1,3 @@
-import logging
 
 import src.elements.codes as ce
 
@@ -15,8 +14,6 @@ class Interface:
         :param state:
         :return:
         """
-
-        logging.info(state)
 
         if state:
             return f'Trend Component Modelling: Proceed -> {code.hospital_code}'
