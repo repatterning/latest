@@ -13,6 +13,7 @@ import src.modelling.codes
 import src.modelling.decompose
 import src.modelling.sc.interface
 import src.modelling.splits
+import src.modelling.tc.interface
 
 
 class Interface:
@@ -79,6 +80,7 @@ class Interface:
         decompose = dask.delayed(src.modelling.decompose.Decompose(arguments=self.__arguments).exc)
         splits = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
         sc = dask.delayed(src.modelling.sc.interface.Interface(arguments=self.__arguments).exc)
+        tc = dask.delayed(src.modelling.tc.interface.Interface().exc)
 
         computations = []
         for code in self.__codes:
@@ -91,14 +93,15 @@ class Interface:
             6. trend component modelling: gaussian processes
             """
 
-            if code.hospital_code != 'H212H':
+            if code.hospital_code != 'N121H':
                 continue
 
-            data = self.__get_data(code=code)
-            success = self.__set_directories(code=code)
-            decompositions = decompose(data=data)
+            data: pd.DataFrame = self.__get_data(code=code)
+            success: bool = self.__set_directories(code=code)
+            decompositions: pd.DataFrame = decompose(data=data)
             master: mr.Master = splits(data=decompositions, code=code, success=success)
-            message = sc(master=master, code=code)
+            state: bool = sc(master=master, code=code)
+            message: str = tc(code=code, state=state)
             computations.append(message)
 
         messages = dask.compute(computations, scheduler='threads')
