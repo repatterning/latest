@@ -1,5 +1,4 @@
 """Module algorithm.py"""
-import logging
 
 import pandas as pd
 import statsmodels.tsa.forecasting.stl as tfc
@@ -37,17 +36,15 @@ class Algorithm:
         :return:
         """
 
-        logging.info('Modelling %s', code.hospital_code)
-
         # Setting data frequency
         training.index.freq = self.__arguments.get('frequency')
 
         # Modelling
         system: tfc.STLForecastResults = src.modelling.sc.fundamental.Fundamental(
-            training=training, arguments=self.__arguments).exc()
+            training=training, arguments=self.__arguments, code=code).exc()
 
         if system is None:
             system: tfc.STLForecastResults = src.modelling.sc.seasonal.Seasonal(
-                training=training, arguments=self.__arguments).exc()
+                training=training, arguments=self.__arguments, code=code).exc()
 
         return system
