@@ -91,6 +91,9 @@ class Interface:
             6. trend component modelling: gaussian processes
             """
 
+            if code.hospital_code != 'H212H':
+                continue
+
             data = self.__get_data(code=code)
             success = self.__set_directories(code=code)
             decompositions = decompose(data=data)
