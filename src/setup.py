@@ -33,7 +33,7 @@ class Setup:
 
         # Configurations, etc.
         self.__configurations = config.Config()
-        self.__prefix = s3_parameters.path_internal_artefacts + '/' + self.__configurations.stamp
+        self.__prefix = s3_parameters.path_internal_artefacts + self.__configurations.stamp
 
         # Instances
         self.__directories = src.functions.directories.Directories()
