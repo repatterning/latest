@@ -8,15 +8,21 @@ import numpy as np
 # noinspection PyTypeChecker
 class Algorithm:
 
-    def __init__(self, frames: pd.DataFrame) -> None:
+    def __init__(self, frames: pd.DataFrame, arguments: dict) -> None:
         """
 
         :param frames:
+        :param arguments:
         """
 
+        # Data
         self.__frames = frames
         self.__sequence = self.__frames['trend'].to_numpy()
         self.__indices = np.expand_dims(np.arange(self.__frames.shape[0]), axis=1)
+
+        # Arguments
+        self.__arguments = arguments
+        self.__tc: dict = arguments.get('tc')
 
     def exc(self):
 
@@ -32,19 +38,30 @@ class Algorithm:
 
             # Specify a covariance function: https://docs.pymc.io/api/gp/cov.html
             # Initialise the spatial scaling (ℓ) and variance control (η) parameters
-            spatial_scaling = pymc.Gamma('spatial_scaling', alpha=2, beta=1)
-            variance_control = pymc.HalfCauchy('variance_control', beta=5)
+            spatial_scaling = pymc.Gamma(
+                'spatial_scaling',
+                alpha=self.__tc.get('covariance').get('spatial_scaling').get('alpha'),
+                beta=self.__tc.get('covariance').get('spatial_scaling').get('beta'))
+            variance_control = pymc.HalfCauchy(
+                'variance_control',
+                beta=self.__tc.get('covariance').get('variance_control').get('beta'))
             cov = variance_control**2 * pymc.gp.cov.Matern52(input_dim=1, ls=spatial_scaling)
 
             # Specify the Gaussian Process (GP); the default mean function is `Zero`.
             gp_ = pymc.gp.Marginal(cov_func=cov)
 
             # Marginal Likelihood
-            ml_sigma = pymc.HalfCauchy('ml_sigma', beta=5)
+            ml_sigma = pymc.HalfCauchy(
+                'ml_sigma', beta=self.__tc.get('ml_sigma').get('beta'))
             gp_.marginal_likelihood('ml', X=points, y=observations, sigma=ml_sigma)
 
-            # Inference:
-            # pymc.sampling.jax.sample_blackjax_nuts(draws=2000, tune=1000, chains=2, random_seed=5, target_accept=0.95)
-            details_ = pymc.sample(draws=2000, tune=1000, chains=2, random_seed=5, nuts_sampler='numpyro', target_accept=0.95)
+            # Inference
+            details_ = pymc.sample(
+                draws=self.__tc.get('draws'),
+                tune=self.__tc.get('tune'),
+                chains=self.__tc.get('chains'),
+                random_seed=self.__arguments.get('seed'),
+                nuts_sampler=self.__tc.get('nuts_sampler'),
+                target_accept=self.__tc.get('target_accept'))
 
         return model_, gp_, details_
