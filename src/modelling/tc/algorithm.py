@@ -31,7 +31,7 @@ class Algorithm:
             observations = pymc.Data('observations', self.__sequence)
 
             # Specify a covariance function: https://docs.pymc.io/api/gp/cov.html
-            # Initialise the parameters spatial_scaling, variance_control
+            # Initialise the spatial scaling (ℓ) and variance control (η) parameters
             spatial_scaling = pymc.Gamma('spatial_scaling', alpha=2, beta=1)
             variance_control = pymc.HalfCauchy('variance_control', beta=5)
             cov = variance_control**2 * pymc.gp.cov.Matern52(input_dim=1, ls=spatial_scaling)
