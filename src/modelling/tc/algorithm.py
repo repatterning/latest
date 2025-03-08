@@ -25,12 +25,12 @@ class Algorithm:
         self.__tc: dict = arguments.get('tc')
 
     def exc(self):
+        """
 
-        # Initialise the model
+        :return:
+        """
+
         with pymc.Model() as model_:
-            pass
-
-        with model_:
 
             # The data containers
             points = pymc.Data('points', self.__indices)
