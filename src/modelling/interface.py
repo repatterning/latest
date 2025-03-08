@@ -80,7 +80,7 @@ class Interface:
         decompose = dask.delayed(src.modelling.decompose.Decompose(arguments=self.__arguments).exc)
         splits = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
         sc = dask.delayed(src.modelling.sc.interface.Interface(arguments=self.__arguments).exc)
-        tc = dask.delayed(src.modelling.tc.interface.Interface().exc)
+        tc = dask.delayed(src.modelling.tc.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
         for code in self.__codes:
