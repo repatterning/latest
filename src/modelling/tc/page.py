@@ -1,8 +1,11 @@
+"""Module page.py"""
 import os
+
 import pymc
 
 import config
 import src.elements.codes as ce
+
 
 class Page:
 
@@ -21,7 +24,7 @@ class Page:
 
     def __graph(self):
         """
-        
+
         :return:
         """
 
