@@ -15,9 +15,9 @@ class Interface:
     def exc(self, master: mr.Master, code: ce.Codes, state: bool) -> str:
         """
 
-        :param master
-        :param code:
-        :param state:
+        :param master: The training & testing data.
+        :param code: The health board & institution/hospital codes of an institution/hospital.
+        :param state: If the seasonal component modelling step was a success, this will be True; otherwise False.
         :return:
         """
 
