@@ -32,7 +32,8 @@ class Interface:
         if system is None:
             return False
 
-        # Extract, and persist, the model's details (page) and forecasts (forecasts).
+        # Next, extract forecasts/predictions and supplementary details, subsequently persist; via the
+        # model's <page> & <forecasts>.
         src.modelling.sc.page.Page(system=system, code=code).exc()
         src.modelling.sc.forecasts.Forecasts(master=master, system=system).exc(
             arguments=self.__arguments, code=code)
