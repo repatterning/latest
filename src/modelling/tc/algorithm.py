@@ -1,8 +1,9 @@
+import typing
 
-import pymc
-
-import pandas as pd
+import arviz
 import numpy as np
+import pandas as pd
+import pymc
 
 
 # noinspection PyTypeChecker
@@ -24,7 +25,7 @@ class Algorithm:
         self.__arguments = arguments
         self.__tc: dict = arguments.get('tc')
 
-    def exc(self):
+    def exc(self) -> typing.Tuple[pymc.model.Model, pymc.gp.Marginal, arviz.InferenceData]:
         """
 
         :return:
