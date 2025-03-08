@@ -4,6 +4,7 @@ import logging
 import src.elements.codes as ce
 import src.elements.master as mr
 import src.modelling.tc.algorithm
+import src.modelling.tc.page
 
 
 class Interface:
@@ -24,7 +25,9 @@ class Interface:
         algorithm = src.modelling.tc.algorithm.Algorithm(training=master.training, arguments=self.__arguments)
         model, gp, details = algorithm.exc()
 
-        logging.info(type(model))
+        # Persist: Model Algorithm
+        src.modelling.tc.page.Page(model=model, code=code).exc()
+
         logging.info(type(gp))
         logging.info(type(details))
 
