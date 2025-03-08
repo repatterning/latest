@@ -8,12 +8,18 @@ import src.elements.codes as ce
 
 
 class Page:
+    """
+    <b>Notes</b><br>
+    ------<br>
+
+    This class saves the details of an institution's trend component model.
+    """
 
     def __init__(self, model: pymc.model.Model, code: ce.Codes):
         """
 
-        :param model:
-        :param code:
+        :param model: The trend component model of an institution.
+        :param code: The health board & institution/hospital codes of an institution/hospital.
         """
 
         self.__model = model
