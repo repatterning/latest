@@ -20,7 +20,14 @@ class Page:
         self.__root = os.path.join(configurations.artefacts_, 'models', code.hospital_code)
 
     def __graph(self):
-        pass
+
+        pathstr = os.path.join(self.__root, 'tcf_algorithm.pdf')
+
+        try:
+            pymc.model_graph.model_to_graphviz(
+                model=self.__model, figsize=(2, 2), save=pathstr, dpi=1200)
+        except IOError as err:
+            raise err from err
 
     def __text(self):
 
