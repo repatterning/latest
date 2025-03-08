@@ -8,17 +8,17 @@ import numpy as np
 # noinspection PyTypeChecker
 class Algorithm:
 
-    def __init__(self, frames: pd.DataFrame, arguments: dict) -> None:
+    def __init__(self, training: pd.DataFrame, arguments: dict) -> None:
         """
 
-        :param frames:
+        :param training:
         :param arguments:
         """
 
         # Data
-        self.__frames = frames
-        self.__sequence = self.__frames['trend'].to_numpy()
-        self.__indices = np.expand_dims(np.arange(self.__frames.shape[0]), axis=1)
+        self.__training = training
+        self.__sequence = self.__training['trend'].to_numpy()
+        self.__indices = np.expand_dims(np.arange(self.__training.shape[0]), axis=1)
 
         # Arguments
         self.__arguments = arguments
