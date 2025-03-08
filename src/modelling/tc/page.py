@@ -20,6 +20,10 @@ class Page:
         self.__root = os.path.join(configurations.artefacts_, 'models', code.hospital_code)
 
     def __graph(self):
+        """
+        
+        :return:
+        """
 
         pathstr = os.path.join(self.__root, 'tcf_algorithm.pdf')
 
@@ -30,6 +34,10 @@ class Page:
             raise err from err
 
     def __text(self):
+        """
+
+        :return:
+        """
 
         pathstr = os.path.join(self.__root, 'tcf_algorithm.txt')
 
@@ -38,3 +46,12 @@ class Page:
                 disk.write(self.__model.str_repr())
         except IOError as err:
             raise err from err
+
+    def exc(self):
+        """
+
+        :return:
+        """
+
+        self.__graph()
+        self.__text()
