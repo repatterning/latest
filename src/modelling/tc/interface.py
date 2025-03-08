@@ -1,7 +1,8 @@
+"""Module interface.py"""
+import logging
 
 import src.elements.codes as ce
 import src.elements.master as mr
-
 import src.modelling.tc.algorithm
 
 
@@ -21,6 +22,11 @@ class Interface:
         """
 
         algorithm = src.modelling.tc.algorithm.Algorithm(training=master.training, arguments=self.__arguments)
+        model, gp, details = algorithm.exc()
+
+        logging.info(type(model))
+        logging.info(type(gp))
+        logging.info(type(details))
 
         if state:
             return f'Trend Component Modelling: Proceed -> {code.hospital_code}'
