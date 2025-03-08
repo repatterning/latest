@@ -21,8 +21,8 @@ class Page:
     def __init__(self, system: tfc.STLForecastResults, code: ce.Codes):
         """
 
-        :param system: The results of the seasonal component model
-        :param code: The identification code of an institution
+        :param system: The results of the seasonal component model.
+        :param code: The health board & institution/hospital codes of an institution/hospital.
         """
 
         self.__system = system
