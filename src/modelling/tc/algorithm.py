@@ -10,7 +10,7 @@ class Algorithm:
 
     def __init__(self, frames: pd.DataFrame) -> None:
         """
-        
+
         :param frames:
         """
 
@@ -44,7 +44,7 @@ class Algorithm:
             gp_.marginal_likelihood('ml', X=points, y=observations, sigma=ml_sigma)
 
             # Inference:
-            # pymc.sampling.jax.sample_blackjax_nuts(2000, chains=2, random_seed=5, target_accept=0.95)
-            details_ = pymc.sample(draws=2000, tune=1000, chains=1, random_seed=5, nuts_sampler='numpyro', target_accept=0.95)
+            # pymc.sampling.jax.sample_blackjax_nuts(draws=2000, tune=1000, chains=2, random_seed=5, target_accept=0.95)
+            details_ = pymc.sample(draws=2000, tune=1000, chains=2, random_seed=5, nuts_sampler='numpyro', target_accept=0.95)
 
         return model_, gp_, details_
