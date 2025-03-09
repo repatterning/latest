@@ -12,19 +12,16 @@ class Conditionals:
         self.__details = details
         self.__abscissae = abscissae
 
-    def __free(self, model: pymc.model.Model):
+    def __execute(self, name: str, model_: pymc.model.Model, pred_noise: bool):
 
-        with model:
-            self.__gp.conditional('estimates', self.__abscissae, pred_noise=False)
-            predictions = pymc.sample_posterior_predictive(
-                self.__details, var_names=['estimates'])
+        with model_:
+            self.__gp.conditional(name=name, Xnew=self.__abscissae, pred_noise=pred_noise)
+            objects = pymc.sample_posterior_predictive(self.__details, var_names=[name])
 
-    def __noisy(self, model: pymc.model.Model):
-
-        with model:
-            self.__gp.conditional('n_estimates', self.__abscissae, pred_noise=True)
-            n_predictions = pymc.sample_posterior_predictive(
-                self.__details, var_names=['n_estimates'])
+        return model_, objects
 
     def exc(self, model: pymc.model.Model):
         pass
+
+
+
