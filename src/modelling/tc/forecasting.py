@@ -23,7 +23,9 @@ class Forecasting:
 
         :param gp: The model's gaussian process
         :param details: The inference data, vis-à-vis Bayesian modelling steps thus far.
-        :param abscissae: 
+        :param abscissae: A set of indices, in sequence, representing the (a) training data points, (b)
+                          testing data points, and (c) points for future forecasts, i.e., beyond the
+                          testing data points.
         :param code:
         """
 
