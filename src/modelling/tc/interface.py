@@ -50,8 +50,7 @@ class Interface:
         # Estimates & Futures
         abscissae = master.training.shape[0] + (2 * self.__arguments.get('ahead'))[:, None]
 
-
-        # Persist: Model Algorithm
+        # Persist: Algorithm
         src.modelling.tc.page.Page(model=model, code=code).exc(label='algorithm')
 
         return f'Trend Component Modelling: Success -> {code.hospital_code}'
