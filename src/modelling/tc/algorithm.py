@@ -1,3 +1,4 @@
+"""Module algorithm.py"""
 import typing
 
 import arviz
