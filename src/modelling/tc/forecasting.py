@@ -40,9 +40,9 @@ class Forecasting:
     def __execute(self, name: str, model_: pymc.model.Model, pred_noise: bool):
         """
 
-        :param name:
-        :param model_:
-        :param pred_noise:
+        :param name: A name for the prediction step
+        :param model_: The model
+        :param pred_noise: Should observation noise be included in predictions?
         :return:
         """
 
