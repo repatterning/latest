@@ -6,7 +6,7 @@ import pymc
 import arviz
 
 
-class Conditionals:
+class Forecasts:
 
     def __init__(self, gp: pymc.gp.Marginal, details: arviz.InferenceData, abscissae: np.ndarray):
 
