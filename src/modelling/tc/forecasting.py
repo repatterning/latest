@@ -1,10 +1,8 @@
-import logging
 import os
 
-import numpy as np
-
-import pymc
 import arviz
+import numpy as np
+import pymc
 
 import config
 import src.elements.codes as ce
@@ -14,7 +12,7 @@ class Forecasting:
 
     def __init__(self, gp: pymc.gp.Marginal, details: arviz.InferenceData, abscissae: np.ndarray, code: ce.Codes):
         """
-        
+
         :param gp:
         :param details:
         :param abscissae:
