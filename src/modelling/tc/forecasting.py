@@ -13,6 +13,13 @@ import src.elements.codes as ce
 class Forecasting:
 
     def __init__(self, gp: pymc.gp.Marginal, details: arviz.InferenceData, abscissae: np.ndarray, code: ce.Codes):
+        """
+        
+        :param gp:
+        :param details:
+        :param abscissae:
+        :param code:
+        """
 
         self.__gp = gp
         self.__details = details
@@ -23,6 +30,13 @@ class Forecasting:
         self.__root = os.path.join(configurations.artefacts_, 'models', code.hospital_code)
 
     def __execute(self, name: str, model_: pymc.model.Model, pred_noise: bool):
+        """
+
+        :param name:
+        :param model_:
+        :param pred_noise:
+        :return:
+        """
 
         with model_:
             self.__gp.conditional(name=name, Xnew=self.__abscissae, pred_noise=pred_noise)
@@ -31,6 +45,12 @@ class Forecasting:
         return model_, objects
 
     def __inferences(self, data: arviz.InferenceData, name: str):
+        """
+
+        :param data:
+        :param name:
+        :return:
+        """
 
         pathstr = os.path.join(self.__root, f'{name}.nc')
 
@@ -42,7 +62,7 @@ class Forecasting:
     def exc(self, model: pymc.model.Model):
         """
 
-        :param model:
+        :param model: The model
         :return:
         """
 
