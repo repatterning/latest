@@ -4,6 +4,7 @@ import typing
 
 import arviz
 import pymc
+import numpy as np
 
 import src.elements.codes as ce
 import src.elements.master as mr
@@ -52,7 +53,9 @@ class Interface:
         src.modelling.tc.page.Page(model=model, code=code).exc(label='algorithm')
 
         # Estimates & Futures
-        abscissae = master.training.shape[0] + (2 * self.__arguments.get('ahead'))[:, None]
+        abscissae = np.arange(
+            master.training.shape[0] + (2 * self.__arguments.get('ahead'))
+        )[:, None]
         src.modelling.tc.forecasting.Forecasting(
             gp=gp, details=details, abscissae=abscissae, code=code).exc(model=model)
 
