@@ -21,9 +21,9 @@ class Forecasting:
     def __init__(self, gp: pymc.gp.Marginal, details: arviz.InferenceData, abscissae: np.ndarray, code: ce.Codes):
         """
 
-        :param gp:
-        :param details:
-        :param abscissae:
+        :param gp: The model's gaussian process
+        :param details: The inference data, vis-à-vis Bayesian modelling steps thus far.
+        :param abscissae: 
         :param code:
         """
 
