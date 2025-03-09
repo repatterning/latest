@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 
 import pymc
@@ -20,8 +22,22 @@ class Conditionals:
 
         return model_, objects
 
-    def exc(self, model: pymc.model.Model):
-        pass
+    def exc(self, model: pymc.model.Model, execute_observation_noise_option: bool):
+        """
+
+        :param model:
+        :param execute_observation_noise_option:
+        :return:
+        """
 
 
+        model, predictions = self.__execute(name='estimates', model_=model, pred_noise=False)
+        logging.info('Persist\n%s', predictions)
 
+        if execute_observation_noise_option:
+            model, n_predictions = self.__execute(name='n_estimates', model_=model, pred_noise=True)
+            logging.info('Persist\n%s',n_predictions)
+
+        # Persist
+        logging.info(model)
+        logging.info(self.__details)
