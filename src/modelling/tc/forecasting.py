@@ -32,7 +32,7 @@ class Forecasting:
 
     def __inferences(self, data: arviz.InferenceData, name: str):
 
-        pathstr = os.path.join(self.__root, name)
+        pathstr = os.path.join(self.__root, f'{name}.nc')
 
         try:
             data.to_netcdf(filename=pathstr)
@@ -50,5 +50,5 @@ class Forecasting:
         model, n_predictions = self.__execute(name='n_estimates', model_=model, pred_noise=True)
 
         # Persist
-        logging.info(model)
-        logging.info(self.__details)
+        for data, name in zip([self.__details, predictions, n_predictions], ['details', 'free', 'noisy']):
+            self.__inferences(data=data, name=name)
