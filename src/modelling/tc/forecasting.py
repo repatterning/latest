@@ -26,7 +26,7 @@ class Forecasting:
         :param abscissae: A set of indices, in sequence, representing the (a) training data points, (b)
                           testing data points, and (c) points for future forecasts, i.e., beyond the
                           testing data points.
-        :param code:
+        :param code: The health board & institution/hospital codes of an institution/hospital.
         """
 
         self.__gp = gp
