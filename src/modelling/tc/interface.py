@@ -52,6 +52,6 @@ class Interface:
 
 
         # Persist: Model Algorithm
-        src.modelling.tc.page.Page(model=model, code=code).exc()
+        src.modelling.tc.page.Page(model=model, code=code).exc(label='algorithm')
 
         return f'Trend Component Modelling: Success -> {code.hospital_code}'
