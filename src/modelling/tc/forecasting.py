@@ -52,7 +52,7 @@ class Forecasting:
 
         return model_, objects
 
-    def __inferences(self, data: arviz.InferenceData, name: str):
+    def __persist_inference_data(self, data: arviz.InferenceData, name: str):
         """
 
         :param data:
@@ -79,4 +79,4 @@ class Forecasting:
 
         # Persist
         for data, name in zip([self.__details, predictions, n_predictions], ['details', 'free', 'noisy']):
-            self.__inferences(data=data, name=name)
+            self.__persist_inference_data(data=data, name=name)
