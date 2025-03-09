@@ -156,6 +156,19 @@ inspects complexity.
 <br>
 <br>
 
+## Notes
+
+* [OpenXLA (Open Accelerated Linear Algebra)](https://openxla.org)
+* [Setting XLA Flags](https://docs.jax.dev/en/latest/xla_flags.html)
+* [JAX](https://docs.jax.dev/en/latest/index.html)
+* [GPU Performance Tips](https://docs.jax.dev/en/latest/gpu_performance_tips.html)
+* [JAX: CPU, GPU, TPU](https://docs.jax.dev/en/latest/installation.html)
+
+
+
+<br>
+<br>
+
 <br>
 <br>
 
