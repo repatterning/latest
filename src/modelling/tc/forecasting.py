@@ -7,6 +7,7 @@ import pymc
 
 import config
 import src.elements.codes as ce
+import src.modelling.tc.page
 
 
 class Forecasting:
@@ -77,6 +78,10 @@ class Forecasting:
         model, predictions = self.__execute(name='estimates', model_=model, pred_noise=False)
         model, n_predictions = self.__execute(name='n_estimates', model_=model, pred_noise=True)
 
-        # Persist
+        # Persist: Inference Data
         for data, name in zip([self.__details, predictions, n_predictions], ['details', 'free', 'noisy']):
             self.__persist_inference_data(data=data, name=name)
+
+        # Persist: Model
+        src.modelling.tc.page.Page(
+            model=model, code=self.__code).exc(label='model')
