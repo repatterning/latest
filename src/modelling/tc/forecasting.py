@@ -1,5 +1,6 @@
 """Module forecasting.py"""
 import os
+import logging
 
 import arviz
 import numpy as np
@@ -65,6 +66,7 @@ class Forecasting:
 
         try:
             data.to_netcdf(filename=pathstr)
+            logging.info('%s: %s', self.__code.hospital_code, os.path.basename(pathstr))
         except IOError as err:
             raise err from err
 
