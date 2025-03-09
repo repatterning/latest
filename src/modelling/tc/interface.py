@@ -16,12 +16,16 @@ class Interface:
     def exc(self, master: mr.Master, code: ce.Codes, state: bool) -> str:
         """
 
-        :param master: The training & testing data.
+        :param master: The training & testing data of an institution.
         :param code: The health board & institution/hospital codes of an institution/hospital.
         :param state: If the seasonal component modelling step was a success, this will be True; otherwise False.
         :return:
         """
 
+        if not state:
+            return f'Trend Component Modelling: Skip -> {code.hospital_code}'
+
+        # Determine
         algorithm = src.modelling.tc.algorithm.Algorithm(training=master.training, arguments=self.__arguments)
         model, gp, details = algorithm.exc()
 
@@ -31,7 +35,5 @@ class Interface:
         logging.info(type(gp))
         logging.info(type(details))
 
-        if state:
-            return f'Trend Component Modelling: Proceed -> {code.hospital_code}'
 
-        return f'Trend Component Modelling: Skip -> {code.hospital_code}'
+        return f'Trend Component Modelling: Success -> {code.hospital_code}'
