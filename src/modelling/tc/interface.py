@@ -2,14 +2,14 @@
 import logging
 import typing
 
-import pymc
 import arviz
+import pymc
 
 import src.elements.codes as ce
 import src.elements.master as mr
 import src.modelling.tc.algorithm
-import src.modelling.tc.page
 import src.modelling.tc.forecasting
+import src.modelling.tc.page
 
 
 class Interface:
