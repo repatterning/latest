@@ -28,13 +28,14 @@ class Page:
         configurations = config.Config()
         self.__root = os.path.join(configurations.artefacts_, 'models', code.hospital_code)
 
-    def __graph(self):
+    def __graph(self, label: str):
+        """
+        
+        :param label: 
+        :return: 
         """
 
-        :return:
-        """
-
-        pathstr = os.path.join(self.__root, 'tcf_algorithm.pdf')
+        pathstr = os.path.join(self.__root, f'tcf_{label}.pdf')
 
         try:
             pymc.model_graph.model_to_graphviz(
@@ -42,13 +43,14 @@ class Page:
         except IOError as err:
             raise err from err
 
-    def __text(self):
+    def __text(self, label: str):
+        """
+        
+        :param label: 
+        :return: 
         """
 
-        :return:
-        """
-
-        pathstr = os.path.join(self.__root, 'tcf_algorithm.txt')
+        pathstr = os.path.join(self.__root, f'tcf_{label}.txt')
 
         try:
             with open(file=pathstr, mode='w', encoding='utf-8', newline='\r\n') as disk:
@@ -56,11 +58,11 @@ class Page:
         except IOError as err:
             raise err from err
 
-    def exc(self):
+    def exc(self, label: str):
         """
 
         :return:
         """
 
-        self.__graph()
-        self.__text()
+        self.__graph(label=label)
+        self.__text(label=label)
