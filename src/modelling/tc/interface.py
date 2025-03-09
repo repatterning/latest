@@ -9,6 +9,7 @@ import src.elements.codes as ce
 import src.elements.master as mr
 import src.modelling.tc.algorithm
 import src.modelling.tc.page
+import src.modelling.tc.forecasting
 
 
 class Interface:
@@ -47,10 +48,12 @@ class Interface:
         # Model
         model, gp, details = self.__determine(master=master)
 
-        # Estimates & Futures
-        abscissae = master.training.shape[0] + (2 * self.__arguments.get('ahead'))[:, None]
-
         # Persist: Algorithm
         src.modelling.tc.page.Page(model=model, code=code).exc(label='algorithm')
+
+        # Estimates & Futures
+        abscissae = master.training.shape[0] + (2 * self.__arguments.get('ahead'))[:, None]
+        src.modelling.tc.forecasting.Forecasting(
+            gp=gp, details=details, abscissae=abscissae, code=code).exc(model=model)
 
         return f'Trend Component Modelling: Success -> {code.hospital_code}'
