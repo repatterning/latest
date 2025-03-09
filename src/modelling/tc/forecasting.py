@@ -1,3 +1,4 @@
+"""Module forecasting.py"""
 import os
 
 import arviz
