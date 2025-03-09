@@ -41,7 +41,7 @@ class Page:
         try:
             pymc.model_graph.model_to_graphviz(
                 model=self.__model, figsize=(2, 2), save=pathstr, dpi=1200)
-            logging.info('%s: %s', os.path.basename(self.__root), os.path.basename(pathstr))
+            logging.info('%s: %s', self.__code.hospital_code, os.path.basename(pathstr))
         except IOError as err:
             raise err from err
 
@@ -57,7 +57,7 @@ class Page:
         try:
             with open(file=pathstr, mode='w', encoding='utf-8', newline='\r\n') as disk:
                 disk.write(self.__model.str_repr())
-            logging.info('%s: %s', os.path.basename(self.__root), os.path.basename(pathstr))
+            logging.info('%s: %s', self.__code.hospital_code, os.path.basename(pathstr))
         except IOError as err:
             raise err from err
 
