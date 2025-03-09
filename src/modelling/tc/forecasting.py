@@ -16,8 +16,7 @@ class Forecasting:
     <b>Notes</b><br>
     ------<br>
 
-    Forecasts values for assessing the training phase and tests forecasts, and forecasts future values.
-
+    Forecasts values for assessing the training phase and tests forecasts, and forecasts future values.<br>
     """
 
     def __init__(self, gp: pymc.gp.Marginal, details: arviz.InferenceData, abscissae: np.ndarray, code: ce.Codes):
