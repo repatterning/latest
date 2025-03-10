@@ -12,7 +12,7 @@ For this Python project/template, the remote development environment requires
 An image is built via the command
 
 ```shell
-docker build . --file .devcontainer/Dockerfile -t uncertainty
+docker build . --file .devcontainer/Dockerfile -t intensive
 ```
 
 On success, the output of
@@ -27,7 +27,7 @@ should include
 
 | repository   | tag    | image id | created  | size     |
 |:-------------|:-------|:---------|:---------|:---------|
-| uncertainty  | latest | $\ldots$ | $\ldots$ | $\ldots$ |
+| intensive  | latest | $\ldots$ | $\ldots$ | $\ldots$ |
 
 
 <br>
@@ -36,16 +36,16 @@ Subsequently, run an instance of the image `uncertainty` via:
 
 
 ```shell
-docker run --rm -i -t -p 8000:8000 -p 8888:8888 -w /app --mount
-    type=bind,src="$(pwd)",target=/app uncertainty
+docker run --rm --gpus all -i -t -p 8000:8000 -p 8888:8888 -w /app --mount
+    type=bind,src="$(pwd)",target=/app intensive
 ```
 
 or
 
 ```shell
-docker run --rm -i -t -p 8000:8000 -p 8888:8888 -w /app --mount
+docker run --rm --gpus all -i -t -p 8000:8000 -p 8888:8888 -w /app --mount
     type=bind,src="$(pwd)",target=/app 
-    -v ~/.aws:/root/.aws uncertainty
+    -v ~/.aws:/root/.aws intensive
 ```
 
 <br>
@@ -60,7 +60,7 @@ i.e., `-w`, must be inline with this project's top directory.  Additionally,
 
 <br>
 
-Get the name of a running instance of ``uncertanty`` via:
+Get the name of a running instance of ``intensive`` via:
 
 ```shell
 docker ps --all
