@@ -4,6 +4,7 @@ import os
 import sys
 
 import boto3
+import jax
 
 
 def main():
@@ -13,7 +14,8 @@ def main():
     """
 
     logger: logging.Logger = logging.getLogger(__name__)
-    logger.info(arguments)
+    logger.info(jax.devices(backend='gpu'))
+    logger.info('The number of GPU devices: %s', jax.device_count(backend='gpu'))
 
     # Setting up
     src.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
@@ -37,6 +39,9 @@ if __name__ == '__main__':
     root = os.getcwd()
     sys.path.append(root)
     sys.path.append(os.path.join(root, 'src'))
+
+    # Environment Variables
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     # Logging
     logging.basicConfig(level=logging.INFO,
