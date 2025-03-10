@@ -1,6 +1,6 @@
 """Module algorithm.py"""
-import typing
 import logging
+import typing
 
 import arviz
 import jax
@@ -28,16 +28,15 @@ class Algorithm:
         self.__arguments = arguments
         self.__tc: dict = arguments.get('tc')
 
-    def __chains(self, chain_method: str) -> int:
+    def __chains(self) -> int:
         """
         Ensures the chains value is in line with processing units
         numbers, and computation logic.
 
-        :param chain_method:
         :return:
         """
 
-        if (chain_method == 'parallel') & (str(jax.local_devices()[0]).startswith('cuda')):
+        if (self.__tc.get('chain_method') == 'parallel') & (str(jax.local_devices()[0]).startswith('cuda')):
             return jax.device_count(backend='gpu')
 
         return self.__tc.get('chains')
@@ -75,25 +74,30 @@ class Algorithm:
             gp_.marginal_likelihood('ml', X=points, y=observations, sigma=ml_sigma)
 
             # Inference
+            logging.info('CHAINS: %s', self.__chains())
 
-            logging.info('CHAINS: %s', self.__chains(chain_method='vectorized'))
-
-            '''
             details_ = pymc.sampling.jax.sample_numpyro_nuts(
-                draws=500, tune=150, chains=self.__chains(chain_method='vectorized'), 
-                target_accept=0.95, random_seed=self.__arguments.get('seed'),
-                chain_method='vectorized', postprocessing_backend='gpu'
+                draws=self.__tc.get('draws'),
+                tune=self.__tc.get('tune'),
+                chains=self.__chains(), 
+                target_accept=self.__tc.get('target_accept'),
+                random_seed=self.__arguments.get('seed'),
+                chain_method=self.__tc.get('chain_method'),
+                postprocessing_backend=self.__arguments.get('device')
             )
-            '''
 
+            '''
             details_ = pymc.sample(
-                draws=500, # self.__tc.get('draws'),
-                tune=150, # self.__tc.get('tune'),
-                chains=self.__chains(chain_method='vectorized'),
+                draws=self.__tc.get('draws'),
+                tune=self.__tc.get('tune'),
+                chains=self.__chains(),
                 target_accept=self.__tc.get('target_accept'),
                 random_seed=self.__arguments.get('seed'),
                 nuts_sampler=self.__tc.get('nuts_sampler'),
-                nuts_sampler_kwargs={'chain_method': 'vectorized', 'postprocessing_backend': 'gpu'}
+                nuts_sampler_kwargs={
+                    'chain_method': self.__tc.get('chain_method'),
+                    'postprocessing_backend': self.__arguments.get('device')}
             )
+            '''
 
         return model_, gp_, details_
