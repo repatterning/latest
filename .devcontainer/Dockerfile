@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.12.8-bookworm
+FROM nvcr.io/nvidia/jax:25.01-py3
 
 
 # If the steps of a `Dockerfile` use files that are different from the `context` file, COPY the
