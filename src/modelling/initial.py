@@ -13,14 +13,16 @@ import src.modelling.splits
 
 class Initial:
 
-    def __init__(self, data: pd.DataFrame, arguments: dict):
+    def __init__(self, data: pd.DataFrame, codes: list[ce.Codes], arguments: dict):
         """
 
         :param data:
+        :param codes:
         :param arguments:
         """
 
         self.__data = data
+        self.__codes = codes
         self.__arguments = arguments
 
     @dask.delayed
@@ -37,14 +39,13 @@ class Initial:
 
         return frame
 
-    def exc(self, codes: list[ce.Codes]) -> list[bool]:
+    def exc(self) -> list[bool]:
         """
         The testing data has <ahead> instances.  Altogether predict <2 * ahead> points
         into the future.  The first set of ahead points are for weekly evaluations of
         a week's model; the true value of the latter set of ahead points will be known
         in future.
 
-        :param codes:
         :return:
         """
 
@@ -54,7 +55,7 @@ class Initial:
         sc = dask.delayed(src.modelling.sc.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
-        for code in codes:
+        for code in self.__codes:
             """
             1. get institution data
             2. decompose institution data
