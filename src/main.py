@@ -5,6 +5,7 @@ import sys
 
 import boto3
 import jax
+import numpyro
 import pytensor
 
 
@@ -44,36 +45,40 @@ if __name__ == '__main__':
     sys.path.append(root)
     sys.path.append(os.path.join(root, 'src'))
 
-    # Environment Variables
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-    os.environ['XLA_FLAGS'] = (
-        '--xla_disable_hlo_passes=constant_folding '
-    )
-    pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
-    jax.config.update('jax_platform_name', 'gpu')
-
     # Logging
     logging.basicConfig(level=logging.INFO,
                         format='\n\n%(message)s\n%(asctime)s.%(msecs)03d',
                         datefmt='%Y-%m-%d %H:%M:%S')
 
     # Classes
-    import src.data.interface
-    import src.functions.cache
     import src.functions.service
-    import src.modelling.interface
-    import src.s3.configurations
     import src.s3.s3_parameters
-    import src.setup
-    import src.transfer.interface
+    import src.s3.configurations
 
-    # Amazon: Connector, S3 Parameters, Service
+    # Vis-à-vis Amazon & Development: Connector, S3 Parameters, Platform Services, Configurations
     connector = boto3.session.Session()
     s3_parameters = src.s3.s3_parameters.S3Parameters(connector=connector).exc()
     service = src.functions.service.Service(connector=connector, region_name=s3_parameters.region_name).exc()
-
-    # Modelling arguments
-    arguments = src.s3.configurations.Configurations(connector=connector).objects(
+    arguments: dict = src.s3.configurations.Configurations(connector=connector).objects(
         key_name=('artefacts' + '/' + 'architecture' + '/' + 'single' + '/' + 'arguments.json'))
+
+    # Environment Variables
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['XLA_FLAGS'] = (
+        '--xla_disable_hlo_passes=constant_folding '
+    )
+    os.environ['OMP_NUM_THREADS'] = "1"
+    pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
+    jax.config.update('jax_platform_name', arguments.get('device'))
+    jax.config.update('jax_enable_x64', True)
+    numpyro.set_host_device_count(12 if arguments.get('device') == 'cpu' else jax.device_count(backend='gpu'))
+    numpyro.set_platform(arguments.get('device'))
+
+    # Classes
+    import src.data.interface
+    import src.functions.cache
+    import src.modelling.interface
+    import src.setup
+    import src.transfer.interface
 
     main()
