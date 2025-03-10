@@ -35,6 +35,19 @@ class Interface:
         self.__configurations = config.Config()
         self.__directories = src.functions.directories.Directories()
 
+    def __set_directories(self, codes: list[ce.Codes]):
+        """
+
+        :param codes:
+        :return:
+        """
+
+        directories = [self.__directories.create(os.path.join(self.__configurations.artefacts_, section, c.hospital_code))
+                       for section in ['data', 'models'] for c in codes]
+
+        if not all(directories):
+            sys.exit('Missing Directories')
+
     def exc(self):
         """
         Each instance of codes consists of the health board & institution/hospital codes of an institution/hospital.
@@ -44,18 +57,15 @@ class Interface:
 
         # Codes
         codes: list[ce.Codes] = src.modelling.codes.Codes().exc(data=self.__data)
-        codes = codes[:8]
-        
+        codes = codes[:4]
+
         # Directories
-        directories = [self.__directories.create(os.path.join(self.__configurations.artefacts_, section, c.hospital_code))
-         for section in ['data', 'models'] for c in codes]
-        
-        if not all(directories):
-            sys.exit('Missing Directories')
+        self.__set_directories(codes=codes)
 
-
-        states = src.modelling.initial.Initial(data=self.__data, arguments=self.__arguments).exc(codes=codes)
+        # Modelling
+        states = src.modelling.initial.Initial(
+            data=self.__data, codes=codes, arguments=self.__arguments).exc()
 
         if all(states):
-            message = src.modelling.core.Core(arguments=self.__arguments).exc(codes=codes)
+            message = src.modelling.core.Core(codes=codes, arguments=self.__arguments).exc()
             logging.info(message)
