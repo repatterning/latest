@@ -23,7 +23,7 @@ class Interface:
 
         self.__arguments = arguments
 
-    def __determine(self, master: mr.Master) -> typing.Tuple[pymc.model.Model, pymc.gp.Marginal, arviz.InferenceData]:
+    def __trend_component_modelling(self, master: mr.Master) -> typing.Tuple[pymc.model.Model, pymc.gp.Marginal, arviz.InferenceData]:
         """
 
         :param master:
@@ -47,7 +47,7 @@ class Interface:
             return f'Trend Component Modelling: Skip -> {code.hospital_code}'
 
         # Model
-        model, gp, details = self.__determine(master=master)
+        model, gp, details = self.__trend_component_modelling(master=master)
 
         # Persist: Algorithm
         src.modelling.tc.page.Page(model=model, code=code).exc(label='algorithm')
