@@ -13,7 +13,7 @@ import src.modelling.codes
 import src.modelling.decompose
 import src.modelling.sc.interface
 import src.modelling.splits
-import src.modelling.tc.interface
+import src.modelling.core
 
 
 class Interface:
@@ -62,8 +62,10 @@ class Interface:
 
         success = []
         for pathway in ['data', 'models']:
-            success.append(
-                self.__directories.create(path=os.path.join(self.__configurations.artefacts_, pathway, code.hospital_code)))
+            success.append(self.__directories.create(
+                path=os.path.join(self.__configurations.artefacts_, pathway, code.hospital_code)
+            ))
+
         return all(success)
 
     def exc(self):
@@ -80,17 +82,15 @@ class Interface:
         decompose = dask.delayed(src.modelling.decompose.Decompose(arguments=self.__arguments).exc)
         splits = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
         sc = dask.delayed(src.modelling.sc.interface.Interface(arguments=self.__arguments).exc)
-        tc = dask.delayed(src.modelling.tc.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
-        for code in self.__codes[6:9]:
+        for code in self.__codes:
             """
             1. get institution data
             2. set up directories per institution
             3. decompose institution data
             4. split institution data
             5. seasonal component modelling: naive model
-            6. trend component modelling: gaussian processes
             """
 
             data: pd.DataFrame = self.__get_data(code=code)
@@ -98,8 +98,7 @@ class Interface:
             decompositions: pd.DataFrame = decompose(data=data)
             master: mr.Master = splits(data=decompositions, code=code, success=success)
             state: bool = sc(master=master, code=code)
-            message: str = tc(master=master, code=code, state=state)
-            computations.append(message)
+            computations.append(state)
 
-        messages = dask.compute(computations, num_workers=3)
-        logging.info(messages)
+        states = dask.compute(computations, scheduler='threads')
+        logging.info(states)
