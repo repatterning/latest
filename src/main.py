@@ -16,6 +16,8 @@ def main():
 
     logger: logging.Logger = logging.getLogger(__name__)
     logger.info('The number of GPU devices: %s', jax.device_count(backend='gpu'))
+    logger.info('The default device (depends on the jax.config.update setting): %s', jax.local_devices()[0])
+    logger.info('GPU: %s', str(jax.local_devices()[0]).startswith('cuda'))
     logging.info('BLAS: %s', pytensor.config.blas__ldflags)
 
     # Setting up
@@ -47,6 +49,7 @@ if __name__ == '__main__':
         '--xla_disable_hlo_passes=constant_folding '
     )
     pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
+    jax.config.update('jax_platform_name', 'gpu')
 
     # Logging
     logging.basicConfig(level=logging.INFO,
