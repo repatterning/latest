@@ -5,6 +5,7 @@ import sys
 
 import boto3
 import jax
+import pytensor
 
 
 def main():
@@ -17,18 +18,20 @@ def main():
     logger.info(jax.devices(backend='gpu'))
     logger.info('The number of GPU devices: %s', jax.device_count(backend='gpu'))
 
+    logging.info('BLAS: %s', pytensor.config.blas__ldflags)
+
     # Setting up
-    src.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
+    # src.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
 
     # Data
-    data = src.data.interface.Interface(s3_parameters=s3_parameters).exc()
+    # data = src.data.interface.Interface(s3_parameters=s3_parameters).exc()
 
     # Modelling
-    src.modelling.interface.Interface(
-        data=data, arguments=arguments).exc()
+    # src.modelling.interface.Interface(
+    #     data=data, arguments=arguments).exc()
 
     # Transfer
-    src.transfer.interface.Interface(connector=connector, service=service, s3_parameters=s3_parameters).exc()
+    # src.transfer.interface.Interface(connector=connector, service=service, s3_parameters=s3_parameters).exc()
 
     # Cache
     src.functions.cache.Cache().exc()
@@ -42,6 +45,7 @@ if __name__ == '__main__':
 
     # Environment Variables
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
 
     # Logging
     logging.basicConfig(level=logging.INFO,
