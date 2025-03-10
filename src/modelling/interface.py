@@ -83,7 +83,7 @@ class Interface:
         tc = dask.delayed(src.modelling.tc.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
-        for code in self.__codes[6:8]:
+        for code in self.__codes[6:9]:
             """
             1. get institution data
             2. set up directories per institution
@@ -101,5 +101,5 @@ class Interface:
             message: str = tc(master=master, code=code, state=state)
             computations.append(message)
 
-        messages = dask.compute(computations, num_workers=4)
+        messages = dask.compute(computations, num_workers=3)
         logging.info(messages)
