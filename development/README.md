@@ -25,8 +25,8 @@ should include
 
 <br>
 
-| repository   | tag    | image id | created  | size     |
-|:-------------|:-------|:---------|:---------|:---------|
+| repository | tag    | image id | created  | size     |
+|:-----------|:-------|:---------|:---------|:---------|
 | intensive  | latest | $\ldots$ | $\ldots$ | $\ldots$ |
 
 
@@ -165,6 +165,13 @@ inspects complexity.
 * [JAX: CPU, GPU, TPU](https://docs.jax.dev/en/latest/installation.html)
 * [JAX NGC Container](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/jax)
 * [JAX Toolbox](https://github.com/NVIDIA/JAX-Toolbox)
+
+BLAS, etc.
+
+* [How do I configure/test my BLAS library](https://pytensor.readthedocs.io/en/latest/troubleshooting.html#how-do-i-configure-test-my-blas-library)
+* [NUMBA](https://numba.readthedocs.io/en/stable/index.html), [Guide](https://numba.readthedocs.io/en/stable/user/5minguide.html)
+* [MCMC for big datasets: faster sampling with JAX and the GPU](https://www.pymc-labs.com/blog-posts/pymc-stan-benchmark/)
+* [numpyro.util](https://num.pyro.ai/en/stable/_modules/numpyro/util.html)
 
 
 <br>
