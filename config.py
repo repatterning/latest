@@ -31,7 +31,7 @@ class Config:
         now = datetime.datetime.now()
         offset = (now.weekday() - 1) % 7
         tuesday = now - datetime.timedelta(days=offset)
-        
+
         logging.info(tuesday.strftime('%Y-%m-%d'))
         self.stamp: str = '2025-03-04'
         logging.info(self.stamp)
