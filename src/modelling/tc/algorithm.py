@@ -1,14 +1,18 @@
 """Module algorithm.py"""
 import typing
+import os
 
 import arviz
 import numpy as np
 import pandas as pd
+import jax
 import pymc
+import pytensor
 
 
-# noinspection PyTypeChecker
 class Algorithm:
+
+    pytensor.config.mode = 'NUMBA'
 
     def __init__(self, training: pd.DataFrame, arguments: dict) -> None:
         """
@@ -25,6 +29,21 @@ class Algorithm:
         # Arguments
         self.__arguments = arguments
         self.__tc: dict = arguments.get('tc')
+
+    def __chains(self, chain_method: str) -> int:
+        """
+        Ensures the chains value is in line with processing units
+        numbers, and computation logic.
+
+        :param chain_method:
+        :return:
+        """
+
+        if chain_method == 'parallel':
+            return jax.device_count(backend='gpu')
+
+        # Or, self.__tc.get('chains'),
+        return 4
 
     def exc(self) -> typing.Tuple[pymc.model.Model, pymc.gp.Marginal, arviz.InferenceData]:
         """
@@ -59,11 +78,14 @@ class Algorithm:
 
             # Inference
             details_ = pymc.sample(
-                draws=self.__tc.get('draws'),
-                tune=self.__tc.get('tune'),
-                chains=self.__tc.get('chains'),
+                draws=500, # self.__tc.get('draws'),
+                tune=250, # self.__tc.get('tune'),
+                chains=self.__chains(chain_method='parallel'), # self.__tc.get('chains'),
+                cores=4,
+                target_accept=self.__tc.get('target_accept'),
                 random_seed=self.__arguments.get('seed'),
-                nuts_sampler=self.__tc.get('nuts_sampler'),
-                target_accept=self.__tc.get('target_accept'))
+                nuts_sampler='numpyro', # self.__tc.get('nuts_sampler'),
+                nuts_sampler_kwargs={'chain_method': 'parallel', 'postprocessing_backend': 'gpu'}
+            )
 
         return model_, gp_, details_
