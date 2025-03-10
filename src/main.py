@@ -69,14 +69,15 @@ if __name__ == '__main__':
     )
     os.environ['OMP_NUM_THREADS'] = "1"
     pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
-    jax.config.update('jax_platform_name', arguments.get('device'))
-    jax.config.update('jax_enable_x64', True)
-    numpyro.set_host_device_count(12 if arguments.get('device') == 'cpu' else jax.device_count(backend='gpu'))
-    numpyro.set_platform(arguments.get('device'))
+    jax.config.update('jax_platform_name', 'gpu')
+    # jax.config.update('jax_enable_x64', True)
+    # numpyro.set_host_device_count(12 if arguments.get('device') == 'cpu' else jax.device_count(backend='gpu'))
+    numpyro.set_platform('gpu')
 
     # Classes
     import src.data.interface
     import src.functions.cache
+    import src.modelling.core
     import src.modelling.interface
     import src.setup
     import src.transfer.interface
