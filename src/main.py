@@ -16,6 +16,7 @@ def main():
 
     logger: logging.Logger = logging.getLogger(__name__)
     logger.info('The number of GPU devices: %s', jax.device_count(backend='gpu'))
+    logger.info('The number of CPU devices: %s', jax.device_count(backend='cpu'))
     logger.info('The default device (depends on the jax.config.update setting): %s', jax.local_devices()[0])
     logger.info('GPU: %s', str(jax.local_devices()[0]).startswith('cuda'))
     logging.info('BLAS: %s', pytensor.config.blas__ldflags)
