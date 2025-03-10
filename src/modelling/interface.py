@@ -83,7 +83,7 @@ class Interface:
         tc = dask.delayed(src.modelling.tc.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
-        for code in self.__codes:
+        for code in self.__codes[6:7]:
             """
             1. get institution data
             2. set up directories per institution
@@ -98,7 +98,7 @@ class Interface:
             decompositions: pd.DataFrame = decompose(data=data)
             master: mr.Master = splits(data=decompositions, code=code, success=success)
             state: bool = sc(master=master, code=code)
-            message: str = tc(code=code, state=state)
+            message: str = tc(master=master, code=code, state=state)
             computations.append(message)
 
         messages = dask.compute(computations, scheduler='threads')
