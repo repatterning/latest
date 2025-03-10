@@ -163,7 +163,8 @@ inspects complexity.
 * [JAX](https://docs.jax.dev/en/latest/index.html)
 * [GPU Performance Tips](https://docs.jax.dev/en/latest/gpu_performance_tips.html)
 * [JAX: CPU, GPU, TPU](https://docs.jax.dev/en/latest/installation.html)
-
+* [JAX NGC Container](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/jax)
+* [JAX Toolbox](https://github.com/NVIDIA/JAX-Toolbox)
 
 
 <br>
