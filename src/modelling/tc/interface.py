@@ -35,17 +35,13 @@ class Interface:
 
         return algorithm.exc()
 
-    def exc(self, training: pd.DataFrame, code: ce.Codes, state: bool) -> str:
+    def exc(self, training: pd.DataFrame, code: ce.Codes) -> str:
         """
 
         :param training: The training data of an institution.
         :param code: The health board & institution/hospital codes of an institution/hospital.
-        :param state: If the seasonal component modelling step was a success, this will be True; otherwise False.
         :return:
         """
-
-        if not state:
-            return f'Trend Component Modelling: Skip -> {code.hospital_code}'
 
         # Model
         model, gp, details = self.__trend_component_modelling(training=training)
