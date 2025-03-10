@@ -77,13 +77,13 @@ class Algorithm:
             logging.info('CHAINS: %s', self.__chains())
 
             details_ = pymc.sampling.jax.sample_numpyro_nuts(
-                draws=self.__tc.get('draws'),
+                draws=300, # self.__tc.get('draws'),
                 tune=self.__tc.get('tune'),
-                chains=self.__chains(), 
+                chains=4, # self.__chains(),
                 target_accept=self.__tc.get('target_accept'),
                 random_seed=self.__arguments.get('seed'),
-                chain_method=self.__tc.get('chain_method'),
-                postprocessing_backend=self.__arguments.get('device')
+                chain_method='vectorized', # self.__tc.get('chain_method'),
+                postprocessing_backend='gpu' # self.__arguments.get('device')
             )
 
             '''
