@@ -167,6 +167,7 @@ JAX, XLA, etc.
 * [JAX NGC Container](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/jax)
 * [JAX Toolbox](https://github.com/NVIDIA/JAX-Toolbox)
 * [Controlling data and computation placement on devices](https://docs.jax.dev/en/latest/faq.html#controlling-data-and-computation-placement-on-devices)
+* [JAX & NUMPYRO Configuration](https://ringdown.readthedocs.io/en/latest/configuration.html)
 
 BLAS, etc.
 * [How do I configure/test my BLAS library](https://pytensor.readthedocs.io/en/latest/troubleshooting.html#how-do-i-configure-test-my-blas-library)
