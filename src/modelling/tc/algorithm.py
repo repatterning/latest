@@ -7,12 +7,10 @@ import numpy as np
 import pandas as pd
 import jax
 import pymc
-import pytensor
+import pymc.sampling.jax
 
 
 class Algorithm:
-
-    pytensor.config.mode = 'NUMBA'
 
     def __init__(self, training: pd.DataFrame, arguments: dict) -> None:
         """
@@ -30,20 +28,20 @@ class Algorithm:
         self.__arguments = arguments
         self.__tc: dict = arguments.get('tc')
 
-    def __chains(self, chain_method: str) -> int:
+    def __chains(self, chain_method: str, device: str = 'cpu') -> int:
         """
         Ensures the chains value is in line with processing units
         numbers, and computation logic.
 
         :param chain_method:
+        :param device:
         :return:
         """
 
-        if chain_method == 'parallel':
+        if (chain_method == 'parallel') & (device == 'gpu'):
             return jax.device_count(backend='gpu')
 
-        # Or, self.__tc.get('chains'),
-        return 4
+        return self.__tc.get('chains')
 
     def exc(self) -> typing.Tuple[pymc.model.Model, pymc.gp.Marginal, arviz.InferenceData]:
         """
@@ -77,15 +75,22 @@ class Algorithm:
             gp_.marginal_likelihood('ml', X=points, y=observations, sigma=ml_sigma)
 
             # Inference
+            details_ = pymc.sampling.jax.sample_numpyro_nuts(
+                draws=500, tune=250, chains=4, target_accept=0.95, random_seed=5,
+                chain_method='vectorized', postprocessing_backend='gpu'
+            )
+
+            '''
             details_ = pymc.sample(
                 draws=500, # self.__tc.get('draws'),
                 tune=250, # self.__tc.get('tune'),
-                chains=self.__chains(chain_method='parallel'), # self.__tc.get('chains'),
-                cores=4,
+                cores=4, # chains=self.__chains(chain_method='parallel'), # self.__tc.get('chains'),
                 target_accept=self.__tc.get('target_accept'),
                 random_seed=self.__arguments.get('seed'),
                 nuts_sampler='numpyro', # self.__tc.get('nuts_sampler'),
-                nuts_sampler_kwargs={'chain_method': 'parallel', 'postprocessing_backend': 'gpu'}
+                nuts_sampler_kwargs={'chain_method': 'vectorized', 'postprocessing_backend': 'cpu'}
             )
+            '''
+
 
         return model_, gp_, details_
