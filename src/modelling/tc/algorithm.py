@@ -89,7 +89,7 @@ class Algorithm:
                 target_accept=self.__tc.get('target_accept'),
                 random_seed=self.__arguments.get('seed'),
                 nuts_sampler=self.__tc.get('nuts_sampler'),
-                nuts_sampler_kwargs={'chain_method': 'vectorized', 'postprocessing_backend': 'gpu'}
+                nuts_sampler_kwargs={'chain_method': 'vectorized'}
             )
 
         return model_, gp_, details_
