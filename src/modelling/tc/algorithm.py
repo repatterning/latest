@@ -1,5 +1,6 @@
 """Module algorithm.py"""
 import typing
+import logging
 
 import arviz
 import jax
@@ -75,21 +76,24 @@ class Algorithm:
 
             # Inference
 
+            logging.info('CHAINS: %s', self.__chains(chain_method='vectorized'))
+
             '''
             details_ = pymc.sampling.jax.sample_numpyro_nuts(
-                draws=500, tune=250, chains=4, target_accept=0.95, random_seed=5,
+                draws=500, tune=150, chains=self.__chains(chain_method='vectorized'), 
+                target_accept=0.95, random_seed=self.__arguments.get('seed'),
                 chain_method='vectorized', postprocessing_backend='gpu'
             )
             '''
 
             details_ = pymc.sample(
                 draws=500, # self.__tc.get('draws'),
-                tune=250, # self.__tc.get('tune'),
+                tune=150, # self.__tc.get('tune'),
                 chains=self.__chains(chain_method='vectorized'),
                 target_accept=self.__tc.get('target_accept'),
                 random_seed=self.__arguments.get('seed'),
                 nuts_sampler=self.__tc.get('nuts_sampler'),
-                nuts_sampler_kwargs={'chain_method': 'vectorized'}
+                nuts_sampler_kwargs={'chain_method': 'vectorized', 'postprocessing_backend': 'gpu'}
             )
 
         return model_, gp_, details_
