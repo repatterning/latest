@@ -82,8 +82,8 @@ class Algorithm:
                 chains=4, # self.__chains(),
                 target_accept=self.__tc.get('target_accept'),
                 random_seed=self.__arguments.get('seed'),
-                chain_method='vectorized', # self.__tc.get('chain_method'),
-                postprocessing_backend='gpu' # self.__arguments.get('device')
+                chain_method='vectorized' # self.__tc.get('chain_method'),
+                # postprocessing_backend='cpu' # self.__arguments.get('device')
             )
 
             '''
