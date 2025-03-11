@@ -9,7 +9,6 @@ import config
 import src.elements.codes as ce
 import src.functions.directories
 import src.modelling.codes
-import src.modelling.core
 import src.modelling.decompose
 import src.modelling.sc.interface
 import src.modelling.splits
@@ -57,16 +56,12 @@ class Interface:
 
         # Codes
         codes: list[ce.Codes] = src.modelling.codes.Codes().exc(data=self.__data)
-        codes = codes[:4]
+        codes = codes[:2]
 
         # Directories
         self.__set_directories(codes=codes)
 
         # Modelling
-        states = src.modelling.initial.Initial(
+        messages = src.modelling.initial.Initial(
             data=self.__data, codes=codes, arguments=self.__arguments).exc()
-
-        if all(states):
-            logging.info(states)
-            # message = src.modelling.core.Core(codes=codes, arguments=self.__arguments).exc()
-            # logging.info(message)
+        logging.info(messages)
