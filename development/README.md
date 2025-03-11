@@ -156,31 +156,6 @@ inspects complexity.
 <br>
 <br>
 
-## Notes
-
-JAX, XLA, etc.
-* [OpenXLA (Open Accelerated Linear Algebra)](https://openxla.org)
-* [Setting XLA Flags](https://docs.jax.dev/en/latest/xla_flags.html)
-* [JAX](https://docs.jax.dev/en/latest/index.html)
-* [GPU Performance Tips](https://docs.jax.dev/en/latest/gpu_performance_tips.html)
-* [JAX: CPU, GPU, TPU](https://docs.jax.dev/en/latest/installation.html)
-* [JAX NGC Container](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/jax)
-* [JAX Toolbox](https://github.com/NVIDIA/JAX-Toolbox)
-* [Controlling data and computation placement on devices](https://docs.jax.dev/en/latest/faq.html#controlling-data-and-computation-placement-on-devices)
-* [JAX & NUMPYRO Configuration](https://ringdown.readthedocs.io/en/latest/configuration.html)
-
-BLAS, etc.
-* [How do I configure/test my BLAS library](https://pytensor.readthedocs.io/en/latest/troubleshooting.html#how-do-i-configure-test-my-blas-library)
-* [NUMBA](https://numba.readthedocs.io/en/stable/index.html), [Guide](https://numba.readthedocs.io/en/stable/user/5minguide.html)
-* [MCMC for big datasets: faster sampling with JAX and the GPU](https://www.pymc-labs.com/blog-posts/pymc-stan-benchmark/)
-* [numpyro.util](https://num.pyro.ai/en/stable/_modules/numpyro/util.html)
-
-DASK
-* [Scheduler](https://docs.dask.org/en/stable/scheduler-overview.html)
-
-<br>
-<br>
-
 <br>
 <br>
 
