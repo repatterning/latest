@@ -8,6 +8,7 @@ import src.elements.master as mr
 import src.functions.directories
 import src.modelling.decompose
 import src.modelling.sc.interface
+import src.modelling.tc.interface
 import src.modelling.splits
 
 
@@ -39,7 +40,7 @@ class Initial:
 
         return frame
 
-    def exc(self) -> list[bool]:
+    def exc(self) -> list[str]:
         """
         The testing data has <ahead> instances.  Altogether predict <2 * ahead> points
         into the future.  The first set of ahead points are for weekly evaluations of
@@ -53,6 +54,7 @@ class Initial:
         decompose = dask.delayed(src.modelling.decompose.Decompose(arguments=self.__arguments).exc)
         splits = dask.delayed(src.modelling.splits.Splits(arguments=self.__arguments).exc)
         sc = dask.delayed(src.modelling.sc.interface.Interface(arguments=self.__arguments).exc)
+        tc = dask.delayed(src.modelling.tc.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
         for code in self.__codes:
@@ -61,14 +63,16 @@ class Initial:
             2. decompose institution data
             3. split institution data
             4. seasonal component modelling: naive model
+            5. trend component modelling
             """
 
             data: pd.DataFrame = self.__get_data(code=code)
             decompositions: pd.DataFrame = decompose(data=data)
             master: mr.Master = splits(data=decompositions, code=code)
             state: bool = sc(master=master, code=code)
-            computations.append(state)
+            message = tc(training=master.training, code=code, state=state)
+            computations.append(message)
 
-        states = dask.compute(computations, scheduler='threads')[0]
+        messages = dask.compute(computations, num_workers=4)[0]
 
-        return states
+        return messages
