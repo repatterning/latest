@@ -67,6 +67,6 @@ class Core:
             message = tc(training=training, code=code)
             computations.append(message)
 
-        messages = dask.compute(computations, num_workers=2)[0]
+        messages = dask.compute(computations, num_workers=4)[0]
 
         return messages
