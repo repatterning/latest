@@ -4,7 +4,7 @@ dask-expr
 numpyro>=0.15.3
 blackjax>=1.2.3
 preliz>=0.8.1
-arviz>=0.17.1
+arviz>0.19
 graphviz>=0.20.3
 pydot
 jupyterlab>=4.3.3
