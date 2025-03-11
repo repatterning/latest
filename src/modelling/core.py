@@ -1,13 +1,12 @@
-import logging
-import os
 import glob
-import dask
+import os
+
 import pandas as pd
 
 import config
 import src.elements.codes as ce
-import src.functions.streams
 import src.elements.text_attributes as txa
+import src.functions.streams
 import src.modelling.tc.interface
 
 
@@ -38,7 +37,6 @@ class Core:
         
         return [code for code in self.__codes if code.hospital_code in values]
 
-    @dask.delayed
     def __get_training_data(self, code: ce.Codes) -> pd.DataFrame:
         """
 
@@ -57,16 +55,14 @@ class Core:
         :return:
         """
 
-        tc = dask.delayed(src.modelling.tc.interface.Interface(arguments=self.__arguments).exc)
+        tc = src.modelling.tc.interface.Interface(arguments=self.__arguments)
 
         codes = self.__get_codes()
 
         computations = []
         for code in codes:            
             training = self.__get_training_data(code=code)
-            message = tc(training=training, code=code)
+            message = tc.exc(training=training, code=code, state=True)
             computations.append(message)
 
-        messages = dask.compute(computations, num_workers=4)[0]
-
-        return messages
+        return computations
