@@ -67,5 +67,6 @@ class Interface:
             data=self.__data, codes=codes, arguments=self.__arguments).exc()
 
         if all(states):
-            message = src.modelling.core.Core(codes=codes, arguments=self.__arguments).exc()
-            logging.info(message)
+            logging.info(states)
+            # message = src.modelling.core.Core(codes=codes, arguments=self.__arguments).exc()
+            # logging.info(message)
