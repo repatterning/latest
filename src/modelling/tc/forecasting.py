@@ -5,6 +5,7 @@ import logging
 import arviz
 import numpy as np
 import pymc
+import pytensor
 
 import config
 import src.elements.codes as ce
@@ -18,6 +19,8 @@ class Forecasting:
 
     Forecasts values for assessing the training phase and tests forecasts, and forecasts future values.<br>
     """
+
+    # pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
 
     def __init__(self, gp: pymc.gp.Marginal, details: arviz.InferenceData, abscissae: np.ndarray, code: ce.Codes):
         """
@@ -76,13 +79,17 @@ class Forecasting:
         :return:
         """
 
-        model, predictions = self.__execute(name='estimates', model_=model, pred_noise=False)
-        model, n_predictions = self.__execute(name='n_estimates', model_=model, pred_noise=True)
-
-        # Persist: Inference Data
-        for data, name in zip([self.__details, predictions, n_predictions], ['details', 'free', 'noisy']):
-            self.__persist_inference_data(data=data, name=name)
-
         # Persist: Model
         src.modelling.tc.page.Page(
-            model=model, code=self.__code).exc(label='model')
+            model=model, code=self.__code).exc(label='algorithm')
+
+        # Forecasting
+        self.__persist_inference_data(data=self.__details, name='details')
+
+        # model, predictions = self.__execute(name='estimates', model_=model, pred_noise=False)
+        # for data, name in zip([self.__details, predictions], ['details', 'predictions']):
+        #     self.__persist_inference_data(data=data, name=name)
+
+        # Persist: Model
+        # src.modelling.tc.page.Page(
+        #     model=model, code=self.__code).exc(label='model')
