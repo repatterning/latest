@@ -12,7 +12,7 @@ COPY /.devcontainer/requirements.txt /app
 # https://superfastpython.com/numpy-number-blas-threads/
 # export PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
 # export OMP_NUM_THREADS=
-ENV PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
+# ENV PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
 
 
 # Environment
@@ -25,8 +25,7 @@ RUN apt update && apt -q -y upgrade && apt -y install sudo && sudo apt -y instal
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" && \
     unzip /tmp/awscliv2.zip -d /tmp/ && cd /tmp && sudo ./aws/install && cd ~ && \
     pip install --upgrade pip && \
-    pip install --requirement /app/requirements.txt --no-cache-dir && \
-    echo $PYTENSOR_FLAGS
+    pip install --requirement /app/requirements.txt --no-cache-dir
 
 
 # Port
