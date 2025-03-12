@@ -22,7 +22,7 @@ class Environment:
     def __init__(self, arguments: dict):
         """
 
-        :param arguments:
+        :param arguments: A set of model development, and supplementary, arguments.
         """
 
         # Logging
