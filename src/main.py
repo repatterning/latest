@@ -80,10 +80,6 @@ if __name__ == '__main__':
     numpyro.set_host_device_count(
         jax.device_count(backend='cpu') if arguments.get('device') == 'cpu' else jax.device_count(backend='gpu'))
 
-    os.environ['OMP_NUM_THREADS'] = '8'
-    os.environ['DP_INTRA_OP_PARALLELISM_THREADS'] = '8'
-    os.environ['DP_INTER_OP_PARALLELISM_THREADS'] = '4'
-
     # Environment Variables
     environment.Environment(arguments=arguments)
 
