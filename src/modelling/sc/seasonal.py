@@ -1,13 +1,13 @@
-
+"""Module seasonal.py"""
 import logging
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import statsmodels.tsa.api as tap
 import statsmodels.tsa.forecasting.stl as tfc
 
-import src.modelling.sc.control
 import src.elements.codes as ce
+import src.modelling.sc.control
 
 
 class Seasonal:
