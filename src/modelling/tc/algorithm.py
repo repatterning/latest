@@ -48,37 +48,41 @@ class Algorithm:
     def exc(self, arguments: dict) -> typing.Tuple[pymc.model.Model, arviz.InferenceData, pd.DataFrame]:
         """
 
+        :param arguments:
         :return:
         """
 
-        # Arguments
         trend: dict = arguments.get('tc')
 
+        # Indices for forecasting beyond training data
         abscissae = np.arange(self.__training.shape[0] + (2 * arguments.get('ahead')))[:, None]
 
         with pymc.Model() as model_:
+            """
+            More about covariance function: https://docs.pymc.io/api/gp/cov.html
+            """
 
             # The data containers
             points = pymc.Data('points', self.__indices)
             observations = pymc.Data('observations', self.__sequence)
 
-            # Specify a covariance function: https://docs.pymc.io/api/gp/cov.html
-            # Initialise the spatial scaling (ℓ) and variance control (η) parameters
+            # Covariance function: Initialise the spatial scaling (ℓ) and variance control (η) parameters
             spatial_scaling = pymc.Gamma(
                 'spatial_scaling',
                 alpha=trend.get('covariance').get('spatial_scaling').get('alpha'),
                 beta=trend.get('covariance').get('spatial_scaling').get('beta'))
+
             variance_control = pymc.HalfCauchy(
                 'variance_control',
                 beta=trend.get('covariance').get('variance_control').get('beta'))
+
             cov = variance_control**2 * pymc.gp.cov.Matern52(input_dim=1, ls=spatial_scaling)
 
             # Specify the Gaussian Process (GP); the default mean function is `Zero`.
             gp_ = pymc.gp.Marginal(cov_func=cov)
 
             # Marginal Likelihood
-            ml_sigma = pymc.HalfCauchy(
-                'ml_sigma', beta=trend.get('ml_sigma').get('beta'))
+            ml_sigma = pymc.HalfCauchy('ml_sigma', beta=trend.get('ml_sigma').get('beta'))
             gp_.marginal_likelihood('ml', X=points, y=observations, sigma=ml_sigma)
 
             # Inference
