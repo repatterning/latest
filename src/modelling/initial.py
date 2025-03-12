@@ -1,6 +1,4 @@
 """Module initial.py"""
-import logging
-
 import dask
 import pandas as pd
 
@@ -45,6 +43,10 @@ class Initial:
 
     def exc(self) -> list[mr.Master]:
         """
+        1. get institution data
+        2. decompose institution data
+        3. split institution data
+        4. seasonal component modelling: naive model
 
         :return:
         """
@@ -56,12 +58,6 @@ class Initial:
 
         computations = []
         for code in self.__codes:
-            """
-            1. get institution data
-            2. decompose institution data
-            3. split institution data
-            4. seasonal component modelling: naive model
-            """
 
             data: pd.DataFrame = self.__get_data(code=code)
             decompositions: pd.DataFrame = decompose(data=data)
