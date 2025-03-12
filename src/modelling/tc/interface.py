@@ -2,18 +2,19 @@
 import logging
 import os
 
-import numpy as np
-import pandas as pd
 import arviz
+import pandas as pd
 
 import config
-
+import src.functions.streams
 import src.modelling.tc.algorithm
 import src.modelling.tc.page
-import src.functions.streams
 
 
 class Interface:
+    """
+    The trend component modelling interface
+    """
 
     def __init__(self, arguments: dict):
         """
