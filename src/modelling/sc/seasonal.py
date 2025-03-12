@@ -11,6 +11,9 @@ import src.elements.codes as ce
 
 
 class Seasonal:
+    """
+    Focus: Seasonal AutoRegressive Integrated Moving Average with eXogenous regressors
+    """
 
     def __init__(self, training: pd.DataFrame, arguments: dict, code: ce.Codes):
         """
@@ -37,8 +40,8 @@ class Seasonal:
             -> tfc.STLForecastResults | None:
         """
 
-        :param architecture:
-        :param method:
+        :param architecture: The architecture underpinning the modelling step, i.e., the .fit() step.<br>
+        :param method: A parameter estimation method
         :return:
         """
 
@@ -48,7 +51,7 @@ class Seasonal:
     def __s_arima(self, method: str):
         """
 
-        :param method:
+        :param method: A parameter estimation method
         :return:
         """
 
