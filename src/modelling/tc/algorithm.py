@@ -30,19 +30,19 @@ class Algorithm:
         self.__indices = np.expand_dims(np.arange(self.__training.shape[0]), axis=1)
 
     @staticmethod
-    def __chains(tc: dict) -> int:
+    def __chains(trend: dict) -> int:
         """
         Ensures the chains value is in line with processing units
         numbers, and computation logic.
 
-        :param tc:
+        :param trend:
         :return:
         """
 
-        if (tc.get('chain_method') == 'parallel') & (str(jax.local_devices()[0]).startswith('cuda')):
+        if (trend.get('chain_method') == 'parallel') & (str(jax.local_devices()[0]).startswith('cuda')):
             return jax.device_count(backend='gpu')
 
-        return tc.get('chains')
+        return trend.get('chains')
 
     # noinspection PyTypeChecker
     def exc(self, arguments: dict) -> typing.Tuple[pymc.model.Model, arviz.InferenceData, pd.DataFrame]:
@@ -52,7 +52,7 @@ class Algorithm:
         """
 
         # Arguments
-        tc: dict = arguments.get('tc')
+        trend: dict = arguments.get('tc')
 
         abscissae = np.arange(self.__training.shape[0] + (2 * arguments.get('ahead')))[:, None]
 
@@ -66,11 +66,11 @@ class Algorithm:
             # Initialise the spatial scaling (ℓ) and variance control (η) parameters
             spatial_scaling = pymc.Gamma(
                 'spatial_scaling',
-                alpha=tc.get('covariance').get('spatial_scaling').get('alpha'),
-                beta=tc.get('covariance').get('spatial_scaling').get('beta'))
+                alpha=trend.get('covariance').get('spatial_scaling').get('alpha'),
+                beta=trend.get('covariance').get('spatial_scaling').get('beta'))
             variance_control = pymc.HalfCauchy(
                 'variance_control',
-                beta=tc.get('covariance').get('variance_control').get('beta'))
+                beta=trend.get('covariance').get('variance_control').get('beta'))
             cov = variance_control**2 * pymc.gp.cov.Matern52(input_dim=1, ls=spatial_scaling)
 
             # Specify the Gaussian Process (GP); the default mean function is `Zero`.
@@ -78,21 +78,21 @@ class Algorithm:
 
             # Marginal Likelihood
             ml_sigma = pymc.HalfCauchy(
-                'ml_sigma', beta=tc.get('ml_sigma').get('beta'))
+                'ml_sigma', beta=trend.get('ml_sigma').get('beta'))
             gp_.marginal_likelihood('ml', X=points, y=observations, sigma=ml_sigma)
 
             # Inference
-            logging.info('CHAINS: %s', self.__chains(tc=tc))
+            logging.info('CHAINS: %s', self.__chains(trend=trend))
 
             details_ = pymc.sample(
-                draws=tc.get('draws'),
-                tune=50, # self.__tc.get('tune'),
-                chains=4, # self.__chains(),
-                target_accept=tc.get('target_accept'),
+                draws=trend.get('draws'),
+                tune=trend.get('tune'),
+                chains=self.__chains(trend=trend),
+                target_accept=trend.get('target_accept'),
                 random_seed=arguments.get('seed'),
-                nuts_sampler=tc.get('nuts_sampler'),
+                nuts_sampler=trend.get('nuts_sampler'),
                 nuts_sampler_kwargs={
-                    'chain_method': tc.get('chain_method'),
+                    'chain_method': trend.get('chain_method'),
                     'postprocessing_backend': arguments.get('device')}
             )
 
