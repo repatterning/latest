@@ -1,12 +1,16 @@
 """Module interface.py"""
 import logging
+import os
 
 import numpy as np
 import pandas as pd
+import arviz
 
-import src.elements.codes as ce
+import config
+
 import src.modelling.tc.algorithm
-import src.modelling.tc.forecasting
+import src.modelling.tc.page
+import src.functions.streams
 
 
 class Interface:
@@ -19,29 +23,49 @@ class Interface:
 
         self.__arguments = arguments
 
-    def exc(self, training: pd.DataFrame, code: ce.Codes, state: bool) -> str:
+        # Configurations
+        self.__configurations = config.Config()
+
+    @staticmethod
+    def __persist_inference_data(data: arviz.InferenceData, name: str) -> str:
         """
 
-        :param training: The training data of an institution.
-        :param code: The health board & institution/hospital codes of an institution/hospital.
-        :param state:
+        :param data: The inference data, after the modelling step
+        :param name: A <i>directory + file name + file extension</i> for inference data storage
         :return:
         """
 
-        if state:
+        try:
+            data.to_netcdf(filename=name)
+            return os.path.basename(name)
+        except IOError as err:
+            raise err from err
 
-            # Model, etc.
-            model, gp, details  = src.modelling.tc.algorithm.Algorithm(
-                training=training, arguments=self.__arguments).exc()
+    def exc(self, training: pd.DataFrame) -> str:
+        """
 
-            # Estimates & Futures
-            abscissae = np.arange(
-                training.shape[0] + (2 * self.__arguments.get('ahead'))
-            )[:, None]
-            logging.info('%s\n%s', abscissae.shape, abscissae)
-            src.modelling.tc.forecasting.Forecasting(
-                gp=gp, details=details, abscissae=abscissae, code=code).exc(model=model)
+        :param training: The training data of an institution.
+        :return:
+        """
 
-            return f'Trend Component Modelling: Success -> {code.hospital_code}'
+        institution: str = training['hospital_code'].values[0]
 
-        return f'Skip: {code.hospital_code}'
+        # Model, etc.
+        model, details, forecasts  = src.modelling.tc.algorithm.Algorithm(
+            training=training).exc(arguments=self.__arguments)
+
+        # Persist
+        path = os.path.join(self.__configurations.artefacts_, 'models', institution)
+
+        src.modelling.tc.page.Page(
+            model=model, path=path).exc(label='algorithm')
+
+        message = self.__persist_inference_data(
+            data=details, name=os.path.join(path, 'tcf_details.nc'))
+        logging.info('%s: succeeded (%s)', message, institution)
+
+        message = src.functions.streams.Streams().write(
+            blob=forecasts, path=os.path.join(path, 'tcf_forecasts.csv'))
+        logging.info('%s (%s)', message, institution)
+
+        return f'Trend Component Modelling: Success -> {institution}'
