@@ -17,7 +17,7 @@ class Page:
         """
 
         :param model: The trend component model of an institution.
-        :param path:
+        :param path: The storage path
         """
 
         self.__model = model
@@ -26,7 +26,7 @@ class Page:
     def __graph(self, label: str):
         """
         
-        :param label: 
+        :param label: A name for the model files; excluding file extension.
         :return: 
         """
 
@@ -42,7 +42,7 @@ class Page:
     def __text(self, label: str):
         """
         
-        :param label: 
+        :param label: A name for the model files; excluding file extension.
         :return: 
         """
 
@@ -58,6 +58,7 @@ class Page:
     def exc(self, label: str):
         """
 
+        :param label: A name for the model files; excluding file extension.
         :return:
         """
 
