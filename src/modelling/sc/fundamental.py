@@ -61,13 +61,9 @@ class Fundamental:
         architecture = statsmodels.tsa.forecasting.stl.STLForecast(
             self.__training[['seasonal']],
             tar.ARIMA,
-            model_kwargs=dict(
-                seasonal_order=(
-                    self.__sc.get('P'),
-                    self.__sc.get('D'),
-                    self.__sc.get('Q'),
-                    self.__sc.get('m')),
-                trend='c'),
+            model_kwargs={
+                "seasonal_order": (self.__sc.get('P'), self.__sc.get('D'), self.__sc.get('Q'), self.__sc.get('m')),
+                "trend": "c"},
             seasonal=self.__sc.get('smoother_seasonal'),
             seasonal_deg=self.__sc.get('degree_seasonal'),
             trend_deg=self.__sc.get('degree_trend'),
