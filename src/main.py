@@ -4,7 +4,9 @@ import os
 import sys
 
 import boto3
+# noinspection PyUnresolvedReferences
 import jax
+import numpyro
 import pytensor
 
 
@@ -15,7 +17,6 @@ def main():
     """
 
     logger: logging.Logger = logging.getLogger(__name__)
-    logger.info(arguments)
     logger.info('BLAS: %s', pytensor.config.blas__ldflags)
 
     # Setting up
@@ -68,6 +69,13 @@ if __name__ == '__main__':
         key_name=('artefacts' + '/' + 'architecture' + '/' + 'single' + '/' + 'parts' + '/' + 'arguments.json'))
 
     pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
+
+    jax.config.update('jax_platform_name', arguments.get('device'))
+    jax.config.update('jax_enable_x64', False if arguments.get('device') == 'gpu' else True)
+
+    numpyro.set_platform(arguments.get('device'))
+    numpyro.set_host_device_count(
+        jax.device_count(backend='cpu') if arguments.get('device') == 'cpu' else jax.device_count(backend='gpu'))
 
     # Environment Variables
     environment.Environment(arguments=arguments)
