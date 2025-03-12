@@ -1,14 +1,14 @@
 """Module forecasting.py"""
-import os
 import logging
+import os
 
 import arviz
 import numpy as np
+import pandas as pd
 import pymc
-import pytensor
 
 import config
-import src.elements.codes as ce
+import src.functions.streams
 import src.modelling.tc.page
 
 
@@ -20,9 +20,7 @@ class Forecasting:
     Forecasts values for assessing the training phase and tests forecasts, and forecasts future values.<br>
     """
 
-    # pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
-
-    def __init__(self, gp: pymc.gp.Marginal, details: arviz.InferenceData, abscissae: np.ndarray, code: ce.Codes):
+    def __init__(self, gp: pymc.gp.Marginal, details: arviz.InferenceData, abscissae: np.ndarray, institution: str):
         """
 
         :param gp: The model's gaussian process
@@ -30,31 +28,33 @@ class Forecasting:
         :param abscissae: A set of indices, in sequence, representing the (a) training data points, (b)
                           testing data points, and (c) points for future forecasts, i.e., beyond the
                           testing data points.
-        :param code: The health board & institution/hospital codes of an institution/hospital.
+        :param institution: An institution/hospital code.
         """
 
         self.__gp = gp
         self.__details = details
         self.__abscissae = abscissae
-        self.__code = code
+        self.__institution = institution
 
         configurations = config.Config()
-        self.__root = os.path.join(configurations.artefacts_, 'models', code.hospital_code)
+        self.__path = os.path.join(configurations.artefacts_, 'models', self.__institution)
 
-    def __execute(self, name: str, model_: pymc.model.Model, pred_noise: bool):
+    def __execute(self, model_: pymc.model.Model, pred_noise: bool) -> pd.DataFrame:
         """
 
-        :param name: A name for the prediction step
         :param model_: The model
         :param pred_noise: Should observation noise be included in predictions?
         :return:
         """
 
         with model_:
-            self.__gp.conditional(name=name, Xnew=self.__abscissae, pred_noise=pred_noise)
-            objects = pymc.sample_posterior_predictive(self.__details, var_names=[name])
+            mu, variance = self.__gp.predict(
+                self.__abscissae,
+                point=arviz.extract(self.__details.get('posterior'), num_samples=1).squeeze(),
+                diag=True, pred_noise=pred_noise)
 
-        return model_, objects
+        return pd.DataFrame(
+            data={'abscissa': self.__abscissae.squeeze(), 'mu': mu, 'std': np.sqrt(variance)})
 
     def __persist_inference_data(self, data: arviz.InferenceData, name: str):
         """
@@ -64,11 +64,11 @@ class Forecasting:
         :return:
         """
 
-        pathstr = os.path.join(self.__root, f'{name}.nc')
+        pathstr = os.path.join(self.__path, f'{name}.nc')
 
         try:
             data.to_netcdf(filename=pathstr)
-            logging.info('%s: %s', self.__code.hospital_code, os.path.basename(pathstr))
+            logging.info('%s: %s', self.__institution, os.path.basename(pathstr))
         except IOError as err:
             raise err from err
 
@@ -81,15 +81,12 @@ class Forecasting:
 
         # Persist: Model
         src.modelling.tc.page.Page(
-            model=model, code=self.__code).exc(label='algorithm')
+            model=model, path=self.__path).exc(label='algorithm')
 
-        # Forecasting
-        self.__persist_inference_data(data=self.__details, name='details')
+        # Persist: Inference Data
+        self.__persist_inference_data(data=self.__details, name='tcf_details')
 
-        # model, predictions = self.__execute(name='estimates', model_=model, pred_noise=False)
-        # for data, name in zip([self.__details, predictions], ['details', 'predictions']):
-        #     self.__persist_inference_data(data=data, name=name)
-
-        # Persist: Model
-        # src.modelling.tc.page.Page(
-        #     model=model, code=self.__code).exc(label='model')
+        # Forecasts
+        forecasts = self.__execute(model_=model, pred_noise=False)
+        src.functions.streams.Streams().write(
+            blob=forecasts, path=os.path.join(self.__path, 'tcf_forecasts.csv'))
