@@ -2,6 +2,8 @@
 import logging
 import os
 import sys
+import jax
+import numpyro
 
 import boto3
 import pytensor
@@ -14,21 +16,22 @@ def main():
     """
 
     logger: logging.Logger = logging.getLogger(__name__)
+    logger.info(arguments)
     logger.info('BLAS: %s', pytensor.config.blas__ldflags)
 
     # Setting up
-    src.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
+    # src.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
 
     # Data
     data = src.data.interface.Interface(s3_parameters=s3_parameters).exc()
 
     # Modelling
     src.modelling.interface.Interface(
-       data=data, arguments=arguments).exc()
+      data=data, arguments=arguments).exc()
 
     # Transfer
-    src.transfer.interface.Interface(
-       connector=connector, service=service, s3_parameters=s3_parameters).exc()
+    # src.transfer.interface.Interface(
+    #    connector=connector, service=service, s3_parameters=s3_parameters).exc()
 
     # Cache
     src.functions.cache.Cache().exc()
@@ -50,6 +53,7 @@ if __name__ == '__main__':
     import environment
     import src.data.interface
     import src.functions.cache
+    import src.functions.directories
     import src.functions.service
     import src.modelling.interface
     import src.s3.s3_parameters
@@ -64,9 +68,29 @@ if __name__ == '__main__':
     arguments: dict = src.s3.configurations.Configurations(connector=connector).objects(
         key_name=('artefacts' + '/' + 'architecture' + '/' + 'single' + '/' + 'arguments.json'))
 
-    # Environment Variables
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    arguments['device'] = 'gpu'
+    arguments['tc']['chain_method'] = 'vectorized'
+
     pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
-    environment.Environment().__call__(arguments=arguments)
+
+    jax.config.update('jax_platform_name', arguments.get('device'))
+    jax.config.update('jax_enable_x64', False if arguments.get('device') == 'gpu' else True)
+
+    numpyro.set_platform(arguments.get('device'))
+    numpyro.set_host_device_count(
+        jax.device_count(backend='cpu') if arguments.get('device') == 'cpu' else jax.device_count(backend='gpu'))
+
+    os.environ['OMP_NUM_THREADS'] = '8'
+    os.environ['DP_INTRA_OP_PARALLELISM_THREADS'] = '8'
+    os.environ['DP_INTER_OP_PARALLELISM_THREADS'] = '4'
+
+    # Environment Variables
+    environment.Environment(arguments=arguments)
+
+    # Temporary
+    import config
+    drc = src.functions.directories.Directories()
+    drc.cleanup(config.Config().warehouse)
+    drc.create(config.Config().warehouse)
 
     main()
