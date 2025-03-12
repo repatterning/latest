@@ -27,7 +27,7 @@ class Seasonal:
         self.__code = code
 
         # Seasonal Components Arguments
-        self.__sc: dict = self.__arguments.get('sc')
+        self.__sc_arguments: dict = self.__arguments.get('sc')
 
         # Methods for estimating model parameters, and a covariance matrix calculation method
         self.__methods = ['cg', 'bfgs']
@@ -58,16 +58,16 @@ class Seasonal:
         architecture = tfc.STLForecast(
             self.__training[['seasonal']],
             tap.SARIMAX,
-            model_kwargs=dict(
-                seasonal_order=(
-                    self.__sc.get('P'),
-                    self.__sc.get('D'),
-                    self.__sc.get('Q'),
-                    self.__sc.get('m')),
-                trend='c'),
-            seasonal=self.__sc.get('smoother_seasonal'),
-            seasonal_deg=self.__sc.get('degree_seasonal'),
-            trend_deg=self.__sc.get('degree_trend'),
+            model_kwargs={
+                "seasonal_order": (
+                    self.__sc_arguments.get('P'),
+                    self.__sc_arguments.get('D'),
+                    self.__sc_arguments.get('Q'),
+                    self.__sc_arguments.get('m')),
+                "trend": "c"},
+            seasonal=self.__sc_arguments.get('smoother_seasonal'),
+            seasonal_deg=self.__sc_arguments.get('degree_seasonal'),
+            trend_deg=self.__sc_arguments.get('degree_trend'),
             robust=True
         )
 
