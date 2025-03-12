@@ -1,3 +1,4 @@
+"""Module control.py"""
 import logging
 import warnings
 
@@ -7,6 +8,9 @@ import src.elements.codes as ce
 
 
 class Control:
+    """
+    A warnings control system.
+    """
 
     def __init__(self):
         pass
@@ -15,10 +19,14 @@ class Control:
         """
         issue = issubclass(el[-1].category, sme.ConvergenceWarning)
 
-        :param architecture:
-        :param method:
-        :param covariance:
-        :param code:
+        :param architecture: The architecture underpinning the modelling step, i.e., the .fit() step.<br>
+        :param method: The parameter estimation method, vis-à-vis
+            <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.fit.html">ARIMA</a>,
+            <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.fit.html">Seasonal ARIMA</a>.
+        :param covariance: The covariance calculation method, vis-à-vis
+            <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.fit.html">ARIMA</a>,
+            <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.fit.html">Seasonal ARIMA</a>.
+        :param code: The health board & institution/hospital codes of an institution/hospital.<br>
         :return:
         """
 
