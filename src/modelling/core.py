@@ -1,6 +1,4 @@
 """Module core.py"""
-import glob
-
 import dask
 
 import src.elements.master as mr
