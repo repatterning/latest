@@ -34,6 +34,6 @@ class Core:
         for master in masters:
             message = tc(training=master.training)
             computations.append(message)
-        messages = dask.compute(computations, scheduler='threads', num_workers=8)[0]
+        messages = dask.compute(computations, scheduler='threads')[0]
 
         return messages
