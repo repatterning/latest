@@ -12,6 +12,9 @@ import src.modelling.tc.interface
 
 
 class Core:
+    """
+    
+    """
 
     def __init__(self, codes: list[ce.Codes], arguments: dict):
         """
@@ -25,18 +28,6 @@ class Core:
 
         self.__configurations = config.Config()
         self.__streams = src.functions.streams.Streams()
-
-    def __get_codes(self) -> list[ce.Codes]:
-        """
-
-        :return:
-        """
-
-        strings = glob.glob(
-            pathname=os.path.join(self.__configurations.artefacts_, 'data', '**', '*training.csv'))
-        values = [os.path.basename(os.path.dirname(string)) for string in strings]
-
-        return [code for code in self.__codes if code.hospital_code in values]
 
     def exc(self, masters: list[mr.Master]) -> list[str]:
         """
