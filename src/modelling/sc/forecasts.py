@@ -12,6 +12,9 @@ import src.functions.objects
 
 
 class Forecasts:
+    """
+    Determines forecasts vis-à-vis a developed model.
+    """
 
     def __init__(self, master: mr.Master, system: tfc.STLForecastResults):
         """
@@ -77,7 +80,7 @@ class Forecasts:
         :return:
         """
 
-        steps = (2 * arguments.get('ahead'))
+        steps = 2 * arguments.get('ahead')
         forecasts = self.__system.forecast(steps=steps).to_frame()
         forecasts.rename(columns={0: 'seasonal_est'}, inplace=True)
 
