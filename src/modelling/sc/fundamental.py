@@ -6,8 +6,8 @@ import pandas as pd
 import statsmodels.tsa.arima.model as tar
 import statsmodels.tsa.forecasting.stl
 
-import src.modelling.sc.control
 import src.elements.codes as ce
+import src.modelling.sc.control
 
 
 class Fundamental:
