@@ -53,7 +53,6 @@ if __name__ == '__main__':
     import environment
     import src.data.interface
     import src.functions.cache
-    import src.functions.directories
     import src.functions.service
     import src.modelling.interface
     import src.s3.s3_parameters
