@@ -1,10 +1,13 @@
-
+"""Module codes.py"""
 import pandas as pd
 
 import src.elements.codes as ce
 
 
 class Codes:
+    """
+    Determines the unique set of health board & institution pairings
+    """
 
     def __init__(self):
         pass
