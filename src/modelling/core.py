@@ -1,11 +1,8 @@
-
+"""Module core.py"""
 import glob
-import os
 
 import dask
 
-import config
-import src.elements.codes as ce
 import src.elements.master as mr
 import src.functions.streams
 import src.modelling.tc.interface
@@ -13,21 +10,16 @@ import src.modelling.tc.interface
 
 class Core:
     """
-    
+    Trend component modelling via parallel computation; re-visit.
     """
 
-    def __init__(self, codes: list[ce.Codes], arguments: dict):
+    def __init__(self, arguments: dict):
         """
 
-        :param codes:
-        :param arguments:
+        :param arguments: A set of model development, and supplementary, arguments.
         """
 
-        self.__codes = codes
         self.__arguments = arguments
-
-        self.__configurations = config.Config()
-        self.__streams = src.functions.streams.Streams()
 
     def exc(self, masters: list[mr.Master]) -> list[str]:
         """
