@@ -11,12 +11,16 @@ import src.elements.codes as ce
 
 
 class Fundamental:
+    """
+    Focus: Autoregressive Integrated Moving Average (ARIMA)
+    """
 
     def __init__(self, training: pd.DataFrame, arguments: dict, code: ce.Codes):
         """
         
-        :param training: The data of an institution.
-        :param arguments: A set of model development, and supplementary, arguments.
+        :param training: The data of an institution.<br>
+        :param arguments: A set of model development, and supplementary, arguments.<br>
+        :param code: The health board & institution/hospital codes of an institution/hospital.
         """
 
         self.__training = training
@@ -37,7 +41,7 @@ class Fundamental:
             -> statsmodels.tsa.forecasting.stl.STLForecastResults | None:
         """
         
-        :param architecture:
+        :param architecture: The architecture underpinning the modelling step, i.e., the .fit() step.<br>
         :param method: A parameter estimation method
         :return: 
         """
@@ -50,7 +54,7 @@ class Fundamental:
     def __arima(self, method: str):
         """
         
-        :param method: 
+        :param method: A parameter estimation method
         :return: 
         """
 
