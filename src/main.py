@@ -2,10 +2,9 @@
 import logging
 import os
 import sys
-import jax
-import numpyro
 
 import boto3
+import jax
 import pytensor
 
 
@@ -43,6 +42,7 @@ if __name__ == '__main__':
     sys.path.append(root)
     sys.path.append(os.path.join(root, 'src'))
 
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     # Logging
     logging.basicConfig(level=logging.INFO,
@@ -65,19 +65,9 @@ if __name__ == '__main__':
     s3_parameters = src.s3.s3_parameters.S3Parameters(connector=connector).exc()
     service = src.functions.service.Service(connector=connector, region_name=s3_parameters.region_name).exc()
     arguments: dict = src.s3.configurations.Configurations(connector=connector).objects(
-        key_name=('artefacts' + '/' + 'architecture' + '/' + 'single' + '/' + 'arguments.json'))
-
-    arguments['device'] = 'gpu'
-    arguments['tc']['chain_method'] = 'vectorized'
+        key_name=('artefacts' + '/' + 'architecture' + '/' + 'single' + '/' + 'parts' + '/' + 'arguments.json'))
 
     pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
-
-    jax.config.update('jax_platform_name', arguments.get('device'))
-    jax.config.update('jax_enable_x64', False if arguments.get('device') == 'gpu' else True)
-
-    numpyro.set_platform(arguments.get('device'))
-    numpyro.set_host_device_count(
-        jax.device_count(backend='cpu') if arguments.get('device') == 'cpu' else jax.device_count(backend='gpu'))
 
     # Environment Variables
     environment.Environment(arguments=arguments)
