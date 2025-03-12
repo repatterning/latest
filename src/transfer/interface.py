@@ -5,7 +5,6 @@ import os
 import boto3
 import pandas as pd
 
-import config
 import src.elements.s3_parameters as s3p
 import src.elements.service as sr
 import src.s3.ingress
@@ -37,7 +36,6 @@ class Interface:
 
         # Instances
         self.__dictionary = src.transfer.dictionary.Dictionary()
-        self.__configurations = config.Config()
 
     def __get_metadata(self, frame: pd.DataFrame) -> pd.DataFrame:
         """

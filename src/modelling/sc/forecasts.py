@@ -12,6 +12,9 @@ import src.functions.objects
 
 
 class Forecasts:
+    """
+    Determines forecasts vis-à-vis a developed model.
+    """
 
     def __init__(self, master: mr.Master, system: tfc.STLForecastResults):
         """
@@ -37,7 +40,6 @@ class Forecasts:
         values.rename(columns={'season': 'seasonal_est'}, inplace=True)
         values = self.__training.copy()[['seasonal']].join(values.copy())
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
-
         values.reset_index(drop=True, inplace=True)
 
         return values.to_dict(orient='tight')
@@ -51,7 +53,6 @@ class Forecasts:
 
         values = self.__testing.copy()[['seasonal']].join(projections.copy())
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
-
         values.reset_index(drop=True, inplace=True)
 
         return values.to_dict(orient='tight')
@@ -66,7 +67,6 @@ class Forecasts:
 
         values = projections.copy()
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
-
         values.reset_index(drop=True, inplace=True)
 
         return values.to_dict(orient='tight')
@@ -80,7 +80,7 @@ class Forecasts:
         :return:
         """
 
-        steps = (2 * arguments.get('ahead'))
+        steps = 2 * arguments.get('ahead')
         forecasts = self.__system.forecast(steps=steps).to_frame()
         forecasts.rename(columns={0: 'seasonal_est'}, inplace=True)
 
@@ -95,6 +95,6 @@ class Forecasts:
 
         message = self.__objects.write(
             nodes=nodes,
-            path=os.path.join(self.__configurations.artefacts_, 'models', code.hospital_code, 'sfc.json'))
+            path=os.path.join(self.__configurations.artefacts_, 'models', code.hospital_code, 'scf_estimates.json'))
 
-        logging.info(message)
+        logging.info('%s (%s)', message, code.hospital_code)

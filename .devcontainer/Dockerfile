@@ -1,11 +1,18 @@
 # Base Image
-FROM python:3.12.8-bookworm
+FROM nvcr.io/nvidia/jax:25.01-py3
 
 
 # If the steps of a `Dockerfile` use files that are different from the `context` file, COPY the
 # file of each step separately; and RUN the file immediately after COPY
 WORKDIR /app
 COPY /.devcontainer/requirements.txt /app
+
+
+# https://pytensor.readthedocs.io/en/latest/troubleshooting.html#how-do-i-configure-test-my-blas-library
+# https://superfastpython.com/numpy-number-blas-threads/
+# export PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
+# export OMP_NUM_THREADS=
+# ENV PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
 
 
 # Environment
@@ -22,7 +29,7 @@ RUN apt update && apt -q -y upgrade && apt -y install sudo && sudo apt -y instal
 
 
 # Port
-EXPOSE 8000
+EXPOSE 8000 8888
 
 
 # ENTRYPOINT

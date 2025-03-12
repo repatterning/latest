@@ -1,11 +1,10 @@
 """Module splits.py"""
-import logging
 import os
-import sys
 
 import pandas as pd
 
 import config
+import src.elements.codes as ce
 import src.elements.master as mr
 import src.functions.streams
 
@@ -53,15 +52,13 @@ class Splits:
         :return:
         """
 
-        message = self.__streams.write(blob=blob, path=os.path.join(self.__root, pathstr))
-        logging.info(message)
+        self.__streams.write(blob=blob, path=os.path.join(self.__root, pathstr))
 
-    def exc(self, data: pd.DataFrame, code: str, success: bool) -> mr.Master:
+    def exc(self, data: pd.DataFrame, code: ce.Codes) -> mr.Master:
         """
 
         :param data: The data set consisting of the attendance numbers of <b>an</b> institution/hospital.
-        :param code: An institution's identification code
-        :param success: Directories creation success?
+        :param code: The health board & institution/hospital codes of an institution/hospital.
         :return:
         """
 
@@ -72,10 +69,7 @@ class Splits:
         testing = self.__exclude(blob=frame)
 
         # Persist
-        if success:
-            for instances, name in zip([frame, training, testing], ['data.csv', 'training.csv', 'testing.csv']):
-                self.__persist(blob=instances, pathstr=os.path.join(code, name))
-        else:
-            sys.exit(f'Data and/or models directories unavailable: {code}')
+        for instances, name in zip([frame, training, testing], ['data.csv', 'training.csv', 'testing.csv']):
+            self.__persist(blob=instances, pathstr=os.path.join(code.hospital_code, name))
 
         return mr.Master(training=training, testing=testing)

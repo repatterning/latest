@@ -1,5 +1,5 @@
 # Pytorch
-FROM python:3.12.8-bookworm
+FROM nvcr.io/nvidia/jax:25.01-py3
 
 
 # Temporary
