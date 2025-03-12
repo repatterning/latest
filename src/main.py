@@ -83,10 +83,4 @@ if __name__ == '__main__':
     # Environment Variables
     environment.Environment(arguments=arguments)
 
-    # Temporary
-    import config
-    drc = src.functions.directories.Directories()
-    drc.cleanup(config.Config().warehouse)
-    drc.create(config.Config().warehouse)
-
     main()
