@@ -8,6 +8,9 @@ import src.modelling.sc.page
 
 
 class Interface:
+    """
+    The seasonal component modelling interface
+    """
 
     def __init__(self, arguments: dict):
         """
@@ -17,11 +20,11 @@ class Interface:
 
         self.__arguments = arguments
 
-    def exc(self, master: mr.Master, code: ce.Codes) -> bool:
+    def exc(self, master: mr.Master, code: ce.Codes) -> mr.Master | None:
         """
 
         :param master: A named tuple consisting of an institutions training & testing data
-        :param code:
+        :param code: The health board & institution/hospital codes of an institution/hospital.<br>
         :return:
         """
 
@@ -30,7 +33,7 @@ class Interface:
         system = algorithm.exc(training=master.training, code=code)
 
         if system is None:
-            return False
+            return None
 
         # Next, extract forecasts/predictions and supplementary details, subsequently persist; via the
         # model's <page> & <forecasts>.
@@ -38,4 +41,4 @@ class Interface:
         src.modelling.sc.forecasts.Forecasts(master=master, system=system).exc(
             arguments=self.__arguments, code=code)
 
-        return True
+        return master
