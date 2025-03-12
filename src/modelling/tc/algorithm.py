@@ -4,6 +4,7 @@ import os
 import typing
 
 import arviz
+# noinspection PyUnresolvedReferences
 import jax
 import numpy as np
 import pandas as pd
@@ -14,9 +15,6 @@ import pymc.sampling.jax
 class Algorithm:
 
     os.environ['XLA_FLAGS'] = '--xla_disable_hlo_passes=constant_folding'
-    os.environ['OMP_NUM_THREADS'] = '8'
-    os.environ['DP_INTRA_OP_PARALLELISM_THREADS'] = '8'
-    os.environ['DP_INTER_OP_PARALLELISM_THREADS'] = '4'
 
     def __init__(self, training: pd.DataFrame) -> None:
         """
