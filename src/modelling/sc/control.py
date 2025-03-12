@@ -16,17 +16,20 @@ class Control:
     def __init__(self):
         pass
 
-    def __call__(self, architecture: tfc.STLForecast, method: str, covariance: str, code: ce.Codes) -> tfc.STLForecastResults | None:
+    def __call__(self, architecture: tfc.STLForecast, method: str, covariance: str, code: ce.Codes) \
+            -> tfc.STLForecastResults | None:
         """
         issue = issubclass(el[-1].category, sme.ConvergenceWarning)
 
         :param architecture: The architecture underpinning the modelling step, i.e., the .fit() step.<br>
         :param method: The parameter estimation method, vis-à-vis
             <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.fit.html">ARIMA</a>,
-            <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.fit.html">Seasonal ARIMA</a>.
+            <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.fit.html">
+            Seasonal ARIMA</a>.
         :param covariance: The covariance calculation method, vis-à-vis
             <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.fit.html">ARIMA</a>,
-            <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.fit.html">Seasonal ARIMA</a>.
+            <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.fit.html">
+            Seasonal ARIMA</a>.
         :param code: The health board & institution/hospital codes of an institution/hospital.<br>
         :return:
         """
