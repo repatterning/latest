@@ -1,7 +1,8 @@
 pymc>=5.19.1
 dask[complete]>=2024.12.1
 dask-expr
-numpyro>=0.15.3
+jax>=0.4.38
+numpyro>=0.16.1
 blackjax>=1.2.3
 preliz>=0.8.1
 arviz>0.19
