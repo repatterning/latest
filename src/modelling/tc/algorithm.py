@@ -13,6 +13,9 @@ import pymc.sampling.jax
 
 
 class Algorithm:
+    """
+    Vis-à-vis trend component modelling.
+    """
 
     os.environ['XLA_FLAGS'] = '--xla_disable_hlo_passes=constant_folding'
 
@@ -38,13 +41,26 @@ class Algorithm:
         """
 
         if (trend.get('chain_method') == 'parallel') & (str(jax.local_devices()[0]).startswith('cuda')):
-            return jax.device_count(backend='gpu')
+            chains = jax.device_count(backend='gpu')
+        else:
+            chains = trend.get('chains')
 
-        return trend.get('chains')
+        logging.info('CHAINS: %s', chains)
+
+        return chains
 
     # noinspection PyTypeChecker
+    # pylint: disable-next=R0914
     def exc(self, arguments: dict) -> typing.Tuple[pymc.model.Model, arviz.InferenceData, pd.DataFrame]:
         """
+        Notes<br>
+        ------<br>
+
+        Due to the number of variables that the Bayesian algorithm/model requires, rule R0914 does
+        not apply to this method; R0194 -> Too many local variables (16/15) (too-many-locals).  The
+        pylint decoration disables the rule.<br>
+
+        For more about this method's covariance function options visit https://docs.pymc.io/api/gp/cov.html
 
         :param arguments: A set of modelling & supplementary arguments
         :return:
@@ -56,9 +72,6 @@ class Algorithm:
         abscissae = np.arange(self.__training.shape[0] + (2 * arguments.get('ahead')))[:, None]
 
         with pymc.Model() as model_:
-            """
-            More about covariance function: https://docs.pymc.io/api/gp/cov.html
-            """
 
             # The data containers
             points = pymc.Data('points', self.__indices)
@@ -84,8 +97,6 @@ class Algorithm:
             gp_.marginal_likelihood('ml', X=points, y=observations, sigma=ml_sigma)
 
             # Inference
-            logging.info('CHAINS: %s', self.__chains(trend=trend))
-
             details_ = pymc.sample(
                 draws=trend.get('draws'),
                 tune=trend.get('tune'),
