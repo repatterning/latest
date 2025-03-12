@@ -3,6 +3,7 @@ import logging
 import os
 
 import jax
+import numpyro
 
 
 class Environment:
@@ -14,9 +15,6 @@ class Environment:
         os.environ['OMP_NUM_THREADS'] = "..."<br>
         os.environ['DP_INTRA_OP_PARALLELISM_THREADS'] = "..."<br>
         os.environ['DP_INTER_OP_PARALLELISM_THREADS'] = "..."<br>
-
-    Wherein<br>
-        omp == intra<br>
     """
 
     def __init__(self, arguments: dict):
@@ -24,6 +22,13 @@ class Environment:
 
         :param arguments: A set of model development, and supplementary, arguments.
         """
+
+        jax.config.update('jax_platform_name', arguments.get('device'))
+        jax.config.update('jax_enable_x64', False if arguments.get('device') == 'gpu' else True)
+
+        numpyro.set_platform(arguments.get('device'))
+        numpyro.set_host_device_count(
+        jax.device_count(backend='cpu') if arguments.get('device') == 'cpu' else jax.device_count(backend='gpu'))
 
         # Logging
         logging.basicConfig(level=logging.INFO,
