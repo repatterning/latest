@@ -41,6 +41,7 @@ class Core:
     def exc(self, masters: list[mr.Master]) -> list[str]:
         """
 
+        :param masters: A named tuple consisting of an institutions training & testing data
         :return:
         """
 
