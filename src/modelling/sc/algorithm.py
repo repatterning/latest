@@ -31,7 +31,8 @@ class Algorithm:
         <a href="https://www.statsmodels.org/dev/generated/statsmodels.tsa.forecasting.stl.STLForecast.html">
         STLForecast</a><br><br>
 
-        :param training: The data of an institution, including the decompositions of its <i>ln(attendance numbers)</i> series.<br>
+        :param training: The data of an institution, including the decompositions of
+                         its <i>ln(attendance numbers)</i> series.<br>
         :param code: The health board & institution/hospital codes of an institution/hospital.<br>
         :return:
         """
