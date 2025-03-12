@@ -7,24 +7,23 @@ import pandas as pd
 
 import config
 import src.elements.codes as ce
+import src.elements.master as mr
 import src.functions.directories
 import src.modelling.codes
-import src.modelling.decompose
-import src.modelling.sc.interface
-import src.modelling.splits
+import src.modelling.core
 import src.modelling.initial
 
 
 class Interface:
     """
-    Interface
+    The interface to the seasonal & trend component modelling steps.
     """
 
     def __init__(self, data: pd.DataFrame, arguments: dict):
         """
 
-        :param data:
-        :param arguments:
+        :param data: The weekly accidents & emergency data of institutions/hospitals
+        :param arguments: A set of model development, and supplementary, arguments.
         """
 
         self.__data = data
@@ -37,7 +36,7 @@ class Interface:
     def __set_directories(self, codes: list[ce.Codes]):
         """
 
-        :param codes:
+        :param codes: The unique set of health board & institution pairings.
         :return:
         """
 
@@ -54,14 +53,15 @@ class Interface:
         :return: 
         """
 
-        # Codes
+        # Codes: The unique set of health board & institution pairings.
         codes: list[ce.Codes] = src.modelling.codes.Codes().exc(data=self.__data)
-        codes = codes[:2]
 
-        # Directories
+        # Directories: Each institution will have a directory within (a) a data directory, and (b) a models directory
         self.__set_directories(codes=codes)
 
-        # Modelling
-        messages = src.modelling.initial.Initial(
+        # Seasonal Component Modelling
+        masters: list[mr.Master] = src.modelling.initial.Initial(
             data=self.__data, codes=codes, arguments=self.__arguments).exc()
-        logging.info(messages)
+
+        # Trend Component Modelling
+        src.modelling.core.Core(arguments=self.__arguments).exc(masters=masters)
