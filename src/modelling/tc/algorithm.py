@@ -1,5 +1,6 @@
 """Module algorithm.py"""
 import logging
+import os
 import typing
 
 import arviz
@@ -12,11 +13,15 @@ import pymc.sampling.jax
 
 class Algorithm:
 
-    def __init__(self, training: pd.DataFrame, arguments: dict) -> None:
+    os.environ['XLA_FLAGS'] = '--xla_disable_hlo_passes=constant_folding'
+    os.environ['OMP_NUM_THREADS'] = '8'
+    os.environ['DP_INTRA_OP_PARALLELISM_THREADS'] = '8'
+    os.environ['DP_INTER_OP_PARALLELISM_THREADS'] = '4'
+
+    def __init__(self, training: pd.DataFrame) -> None:
         """
 
         :param training:
-        :param arguments:
         """
 
         # Data
@@ -24,29 +29,32 @@ class Algorithm:
         self.__sequence = self.__training['trend'].to_numpy()
         self.__indices = np.expand_dims(np.arange(self.__training.shape[0]), axis=1)
 
-        # Arguments
-        self.__arguments = arguments
-        self.__tc: dict = arguments.get('tc')
-
-    def __chains(self) -> int:
+    @staticmethod
+    def __chains(tc: dict) -> int:
         """
         Ensures the chains value is in line with processing units
         numbers, and computation logic.
 
+        :param tc:
         :return:
         """
 
-        if (self.__tc.get('chain_method') == 'parallel') & (str(jax.local_devices()[0]).startswith('cuda')):
+        if (tc.get('chain_method') == 'parallel') & (str(jax.local_devices()[0]).startswith('cuda')):
             return jax.device_count(backend='gpu')
 
-        return self.__tc.get('chains')
+        return tc.get('chains')
 
     # noinspection PyTypeChecker
-    def exc(self) -> typing.Tuple[pymc.model.Model, pymc.gp.Marginal, arviz.InferenceData]:
+    def exc(self, arguments: dict) -> typing.Tuple[pymc.model.Model, arviz.InferenceData, pd.DataFrame]:
         """
 
         :return:
         """
+
+        # Arguments
+        tc: dict = arguments.get('tc')
+
+        abscissae = np.arange(self.__training.shape[0] + (2 * arguments.get('ahead')))[:, None]
 
         with pymc.Model() as model_:
 
@@ -58,11 +66,11 @@ class Algorithm:
             # Initialise the spatial scaling (ℓ) and variance control (η) parameters
             spatial_scaling = pymc.Gamma(
                 'spatial_scaling',
-                alpha=self.__tc.get('covariance').get('spatial_scaling').get('alpha'),
-                beta=self.__tc.get('covariance').get('spatial_scaling').get('beta'))
+                alpha=tc.get('covariance').get('spatial_scaling').get('alpha'),
+                beta=tc.get('covariance').get('spatial_scaling').get('beta'))
             variance_control = pymc.HalfCauchy(
                 'variance_control',
-                beta=self.__tc.get('covariance').get('variance_control').get('beta'))
+                beta=tc.get('covariance').get('variance_control').get('beta'))
             cov = variance_control**2 * pymc.gp.cov.Matern52(input_dim=1, ls=spatial_scaling)
 
             # Specify the Gaussian Process (GP); the default mean function is `Zero`.
@@ -70,22 +78,28 @@ class Algorithm:
 
             # Marginal Likelihood
             ml_sigma = pymc.HalfCauchy(
-                'ml_sigma', beta=self.__tc.get('ml_sigma').get('beta'))
+                'ml_sigma', beta=tc.get('ml_sigma').get('beta'))
             gp_.marginal_likelihood('ml', X=points, y=observations, sigma=ml_sigma)
 
             # Inference
-            logging.info('CHAINS: %s', self.__chains())
+            logging.info('CHAINS: %s', self.__chains(tc=tc))
 
             details_ = pymc.sample(
-                draws=self.__tc.get('draws'),
-                tune=self.__tc.get('tune'),
-                chains=self.__chains(),
-                target_accept=self.__tc.get('target_accept'),
-                random_seed=self.__arguments.get('seed'),
-                nuts_sampler=self.__tc.get('nuts_sampler'),
+                draws=tc.get('draws'),
+                tune=50, # self.__tc.get('tune'),
+                chains=4, # self.__chains(),
+                target_accept=tc.get('target_accept'),
+                random_seed=arguments.get('seed'),
+                nuts_sampler=tc.get('nuts_sampler'),
                 nuts_sampler_kwargs={
-                    'chain_method': self.__tc.get('chain_method'),
-                    'postprocessing_backend': self.__arguments.get('device')}
+                    'chain_method': tc.get('chain_method'),
+                    'postprocessing_backend': arguments.get('device')}
             )
 
-        return model_, gp_, details_
+            mu, variance = gp_.predict(
+                abscissae, point=arviz.extract(details_.get('posterior'), num_samples=1).squeeze(),
+                diag=True, pred_noise=False)
+            forecasts_ = pd.DataFrame(
+                data={'abscissa': abscissae.squeeze(), 'mu': mu, 'std': np.sqrt(variance)})
+
+        return model_, details_, forecasts_
