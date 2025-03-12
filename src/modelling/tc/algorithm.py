@@ -21,7 +21,7 @@ class Algorithm:
     def __init__(self, training: pd.DataFrame) -> None:
         """
 
-        :param training:
+        :param training: An institution's training data
         """
 
         # Data
@@ -35,7 +35,7 @@ class Algorithm:
         Ensures the chains value is in line with processing units
         numbers, and computation logic.
 
-        :param trend:
+        :param trend: The trend component node of the modelling & supplementary arguments
         :return:
         """
 
@@ -48,7 +48,7 @@ class Algorithm:
     def exc(self, arguments: dict) -> typing.Tuple[pymc.model.Model, arviz.InferenceData, pd.DataFrame]:
         """
 
-        :param arguments:
+        :param arguments: A set of modelling & supplementary arguments
         :return:
         """
 
