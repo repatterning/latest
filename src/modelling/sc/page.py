@@ -68,7 +68,7 @@ class Page:
         """
 
         nodes = {
-            "parameters_estimation_method": self.__system.__getattribute__('parameters_estimation_method'),
+            "parameters_estimation_method": self.__system['parameters_estimation_method'],
             "cov_type": self.__system.model_result.cov_type
         }
 
