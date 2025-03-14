@@ -2,9 +2,6 @@
 import os
 import sys
 
-# noinspection PyUnresolvedReferences
-import jax
-
 
 def main():
     """
