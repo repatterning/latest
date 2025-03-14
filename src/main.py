@@ -12,9 +12,6 @@ def main():
     :return:
     """
 
-    # Setting up
-    # src.preface.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
-
     # Data
     data = src.data.interface.Interface(s3_parameters=s3_parameters).exc()
 
