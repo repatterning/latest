@@ -34,7 +34,6 @@ if __name__ == '__main__':
     sys.path.append(os.path.join(root, 'src'))
 
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-    os.environ['OMP_NUM_THREADS'] = str(os.cpu_count() - 1)
 
     # Classes
     import src.data.interface
