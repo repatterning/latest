@@ -1,4 +1,4 @@
-"""Module splits.py"""
+"""Module split.py"""
 import os
 
 import pandas as pd
@@ -9,7 +9,7 @@ import src.elements.master as mr
 import src.functions.streams
 
 
-class Splits:
+class Split:
     """
     The training & testing splits.
     """
