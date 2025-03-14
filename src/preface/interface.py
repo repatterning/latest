@@ -64,8 +64,6 @@ class Interface:
         jax.config.update('jax_enable_x64', False if arguments.get('device') == 'gpu' else True)
 
         numpyro.set_platform(arguments.get('device'))
-        numpyro.set_host_device_count(
-            os.cpu_count() if arguments.get('device') == 'cpu' else jax.device_count(backend='gpu'))
 
     def __states(self):
         """
