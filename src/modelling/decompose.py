@@ -1,8 +1,13 @@
 """Module decompose.py"""
-import pandas as pd
-import numpy as np
+import os
 
+import pandas as pd
 import statsmodels.tsa.seasonal as stsl
+
+import config
+import src.elements.codes as ce
+import src.elements.master as mr
+import src.functions.streams
 
 
 class Decompose:
@@ -21,6 +26,9 @@ class Decompose:
 
         self.__arguments: dict = arguments
         self.__decompose: dict = self.__arguments.get('decompose')
+
+        # The parent path of modelling data
+        self.__root = os.path.join(config.Config().artefacts_, 'data')
 
     def __add_components(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
@@ -42,19 +50,25 @@ class Decompose:
 
         return frame
 
-    def exc(self, data: pd.DataFrame) -> pd.DataFrame:
+    def exc(self, master: mr.Master, code: ce.Codes) -> mr.Master:
         """
 
-        :param data: The data set consisting of the attendance numbers of <b>an</b> institution/hospital.
+        :param master:
+        :param code:
         :return:
         """
 
-        frame = data.copy()
+        frame = master.training.copy()
 
         # Natural Logarithm
-        frame['ln'] = np.log(frame['n_attendances'])
+        # frame['ln'] = np.log(frame['n_attendances'])
 
         # Decomposition Components
         frame = self.__add_components(frame=frame.copy())
+        src.functions.streams.Streams().write(
+            blob=frame, path=os.path.join(self.__root, code.hospital_code, 'features.csv' ))
 
-        return frame
+        # Update/Replace
+        master = master._replace(training=frame)
+
+        return master

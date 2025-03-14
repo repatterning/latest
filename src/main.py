@@ -1,13 +1,6 @@
 """Module main.py"""
-import logging
 import os
 import sys
-
-import boto3
-# noinspection PyUnresolvedReferences
-import jax
-import numpyro
-import pytensor
 
 
 def main():
@@ -15,12 +8,6 @@ def main():
 
     :return:
     """
-
-    logger: logging.Logger = logging.getLogger(__name__)
-    logger.info('BLAS: %s', pytensor.config.blas__ldflags)
-
-    # Setting up
-    src.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
 
     # Data
     data = src.data.interface.Interface(s3_parameters=s3_parameters).exc()
@@ -45,39 +32,13 @@ if __name__ == '__main__':
 
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
-    # Logging
-    logging.basicConfig(level=logging.INFO,
-                        format='\n\n%(message)s\n%(asctime)s.%(msecs)03d',
-                        datefmt='%Y-%m-%d %H:%M:%S')
-
     # Classes
-    import environment
     import src.data.interface
     import src.functions.cache
-    import src.functions.service
     import src.modelling.interface
-    import src.s3.s3_parameters
-    import src.s3.configurations
-    import src.setup
     import src.transfer.interface
+    import src.preface.interface
 
-    # Vis-à-vis Amazon & Development: Connector, S3 Parameters, Platform Services, Configurations
-    connector = boto3.session.Session()
-    s3_parameters = src.s3.s3_parameters.S3Parameters(connector=connector).exc()
-    service = src.functions.service.Service(connector=connector, region_name=s3_parameters.region_name).exc()
-    arguments: dict = src.s3.configurations.Configurations(connector=connector).objects(
-        key_name=('artefacts' + '/' + 'architecture' + '/' + 'single' + '/' + 'parts' + '/' + 'arguments.json'))
-
-    pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
-
-    jax.config.update('jax_platform_name', arguments.get('device'))
-    jax.config.update('jax_enable_x64', False if arguments.get('device') == 'gpu' else True)
-
-    numpyro.set_platform(arguments.get('device'))
-    numpyro.set_host_device_count(
-        jax.device_count(backend='cpu') if arguments.get('device') == 'cpu' else jax.device_count(backend='gpu'))
-
-    # Environment Variables
-    environment.Environment(arguments=arguments)
+    connector, s3_parameters, service, arguments = src.preface.interface.Interface().exc()
 
     main()

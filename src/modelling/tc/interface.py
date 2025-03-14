@@ -50,6 +50,7 @@ class Interface:
         """
 
         institution: str = training['hospital_code'].values[0]
+        logging.info(institution)
 
         # Model, etc.
         model, details, forecasts  = src.modelling.tc.algorithm.Algorithm(

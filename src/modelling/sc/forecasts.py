@@ -38,7 +38,7 @@ class Forecasts:
 
         values: pd.DataFrame = self.__system.result.seasonal.to_frame()
         values.rename(columns={'season': 'seasonal_est'}, inplace=True)
-        values = self.__training.copy()[['seasonal']].join(values.copy())
+        values = self.__training.copy()[['n_attendances', 'ln', 'seasonal']].join(values.copy())
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
         values.reset_index(drop=True, inplace=True)
 
@@ -51,7 +51,7 @@ class Forecasts:
         :return:
         """
 
-        values = self.__testing.copy()[['seasonal']].join(projections.copy())
+        values = self.__testing.copy()[['n_attendances', 'ln']].join(projections.copy())
         values['date'] = values.index.strftime(date_format='%Y-%m-%d')
         values.reset_index(drop=True, inplace=True)
 
