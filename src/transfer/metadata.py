@@ -32,6 +32,6 @@ class Metadata:
         """
 
         dictionary = src.s3.configurations.Configurations(connector=self.__connector).objects(
-            key_name=self.__configurations.artefacts_metadata_ + '/' + name)
+            key_name='')
 
         return dictionary
