@@ -7,6 +7,7 @@ import config
 import src.elements.s3_parameters as s3p
 import src.functions.secret
 import src.s3.unload
+import src.s3.configurations
 
 
 class S3Parameters:
@@ -29,6 +30,8 @@ class S3Parameters:
                           Web Services (AWS) profile details, which allows for programmatic interaction with AWS.
         """
 
+        self.__connector = connector
+
         # An instance for S3 interactions
         self.__s3_client: boto3.session.Session.client = connector.client(
             service_name='s3')
@@ -45,13 +48,19 @@ class S3Parameters:
         """
 
         buffer = src.s3.unload.Unload(s3_client=self.__s3_client).exc(
-            bucket_name=self.__secret.exc(secret_id='AccidentEmergency', node='configurations'),
+            bucket_name=self.__secret.exc(secret_id='HydrographyProject', node='configurations'),
             key_name=self.__configurations.s3_parameters_key)
 
         try:
             data: dict = yaml.load(stream=buffer, Loader=yaml.CLoader)
         except yaml.YAMLError as err:
             raise err from err
+
+        return data['parameters']
+
+    def __get_values(self):
+
+        data = src.s3.configurations.Configurations(connector=self.__connector).serial(key_name=self.__configurations.s3_parameters_key)
 
         return data['parameters']
 
@@ -67,8 +76,8 @@ class S3Parameters:
 
         # Parsing variables
         region_name = self.__secret.exc(secret_id='RegionCodeDefault')
-        internal = self.__secret.exc(secret_id='AccidentEmergency', node='internal')
-        configurations = self.__secret.exc(secret_id='AccidentEmergency', node='configurations')
+        internal = self.__secret.exc(secret_id='HydrographyProject', node='internal')
+        configurations = self.__secret.exc(secret_id='HydrographyProject', node='configurations')
 
         s3_parameters: s3p.S3Parameters = s3_parameters._replace(
             location_constraint=region_name, region_name=region_name, internal=internal, configurations=configurations)
@@ -82,6 +91,6 @@ class S3Parameters:
             The re-structured form of the parameters.
         """
 
-        dictionary = self.__get_dictionary()
+        dictionary = self.__get_values()
 
         return self.__build_collection(dictionary=dictionary)
