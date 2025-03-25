@@ -25,23 +25,11 @@ class Config:
         """
 
         '''
-        Date Stamp: The most recent Tuesday.  The code of Tuesday is 1, hence 
-        now.weekday() - 1
+        Date Stamp
         '''
         now = datetime.datetime.now()
-        offset = (now.weekday() - 1) % 7
-        tuesday = now - datetime.timedelta(days=offset)
-        self.stamp: str = tuesday.strftime('%Y-%m-%d')
+        self.stamp: str = now.strftime('%Y-%m-%d')
         logging.info(self.stamp)
-
-
-        '''
-        The prefix.ending.string & key.name of the modelling data; ref.
-            s3:// {bucket} / {prefix.starting.string} / {prefix.ending.string} / {key.name}
-        Additionally, the path to the artefacts metadata.
-        '''
-        self.source = f'modelling/{self.stamp}.csv'
-        self.artefacts_metadata_ = 'artefacts/metadata'
 
 
         '''
@@ -54,12 +42,6 @@ class Config:
         Local Paths
         '''
         self.warehouse: str = os.path.join(os.getcwd(), 'warehouse')
-        self.artefacts_: str = os.path.join(self.warehouse, 'artefacts', self.stamp)
+        self.artefacts_: str = os.path.join(self.warehouse, 'artefacts', 'marginal', self.stamp)
 
 
-        '''
-        Extra
-        The <boundary> is a possible data start-point cut-off, boundary.
-        '''
-        self.fields = ['week_ending_date', 'health_board_code', 'hospital_code', 'n_attendances']
-        self.boundary = '2020-06-01'
