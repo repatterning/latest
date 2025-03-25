@@ -1,11 +1,13 @@
 """Module interface.py"""
+import logging
 
 import pandas as pd
 
 import config
+import src.data.gauges
+import src.data.partitions
 import src.elements.s3_parameters as s3p
-import src.elements.text_attributes as txa
-import src.functions.streams
+import src.elements.service as sr
 
 
 class Interface:
@@ -16,33 +18,21 @@ class Interface:
     Reads-in the data in focus.
     """
 
-    def __init__(self, s3_parameters: s3p.S3Parameters):
+    def __init__(self, service: sr.Service, s3_parameters: s3p.S3Parameters, arguments: dict):
         """
 
+        :param service:
         :param s3_parameters: The overarching S3 parameters settings of this project, e.g., region code
                               name, buckets, etc.
+        :param arguments:
         """
 
+        self.__service = service
         self.__s3_parameters = s3_parameters
+        self.__arguments = arguments
 
         # Configurations
         self.__configurations = config.Config()
-
-        # An instance for writing/reading CSV (comma-separated values) files
-        self.__streams = src.functions.streams.Streams()
-
-    def __get_data(self) -> pd.DataFrame:
-        """
-
-        :return:
-        """
-
-        uri = ('s3://' + self.__s3_parameters.internal + '/' + self.__s3_parameters.path_internal_data +
-               self.__configurations.source)
-        text = txa.TextAttributes(uri=uri, header=0)
-        data = self.__streams.read(text=text)
-
-        return data[self.__configurations.fields]
 
     @staticmethod
     def __date_formatting(blob: pd.DataFrame) -> pd.DataFrame:
@@ -57,39 +47,35 @@ class Interface:
 
         return blob
 
-    @staticmethod
-    def __skip(data: pd.DataFrame):
-        """
-        
-        :param data: 
-        :return: 
+    def __get_uri(self, catchment_id, ts_id, datestr):
         """
 
-        # Counting n_attendances values <= 0 per institution
-        cases = data.copy()[['hospital_code', 'n_attendances']].groupby('hospital_code').agg(
-            missing=('n_attendances', lambda x: sum(x <= 0)))
-        cases.reset_index(drop=False, inplace=True)
-        cases: pd.DataFrame = cases.copy().loc[cases['missing'] > 0, :]
-
-        # Skip institutions that have zero or negative values
-        if not cases.empty:
-            data = data.copy().loc[~data['hospital_code'].isin(cases['hospital_code'].unique()), :]
-
-        return data
-
-    def exc(self) -> pd.DataFrame:
+        :param catchment_id:
+        :param ts_id:
+        :param datestr:
+        :return:
         """
+
+        return (f's3://{self.__s3_parameters.internal}/data/series/' + catchment_id.astype(str) +
+         '/' + ts_id.astype(str) + '/' + datestr.astype(str) + '.csv')
+
+
+    def exc(self):
+        """
+        url = f's3://{self.__s3_parameters.internal}/'
 
         :return:
         """
 
-        # The data
-        data = self.__get_data()
+        gauges = src.data.gauges.Gauges(service=self.__service, s3_parameters=self.__s3_parameters).exc()
 
-        # Format dates
-        data = self.__date_formatting(blob=data.copy())
+        values: pd.DataFrame = gauges[['catchment_id']].groupby(by='catchment_id').value_counts().to_frame()
+        values = values.copy().loc[values['count'].isin(self.__arguments.get('catchments').get('chunks')), :]
+        values.reset_index(drop=False, inplace=True)
 
-        # Skip institutions that have zero or negative n_attendances values
-        data = self.__skip(data=data.copy())
+        gauges = gauges.copy().loc[gauges['catchment_id'].isin(values['catchment_id'].values), :]
+        logging.info(gauges)
 
-        return data
+        partitions = src.data.partitions.Partitions(data=gauges).exc(arguments=self.__arguments)
+        partitions['uri'] = self.__get_uri(partitions['catchment_id'], partitions['ts_id'], partitions['datestr'])
+        logging.info(partitions)
