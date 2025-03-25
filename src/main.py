@@ -10,15 +10,15 @@ def main():
     """
 
     # Data
-    data = src.data.interface.Interface(s3_parameters=s3_parameters).exc()
+    src.data.interface.Interface(service=service, s3_parameters=s3_parameters, arguments=arguments).exc()
 
     # Modelling
-    src.modelling.interface.Interface(
-      data=data, arguments=arguments).exc()
+    # src.modelling.interface.Interface(
+    #   data=data, arguments=arguments).exc()
 
     # Transfer
-    src.transfer.interface.Interface(
-       connector=connector, service=service, s3_parameters=s3_parameters).exc()
+    # src.transfer.interface.Interface(
+    #    connector=connector, service=service, s3_parameters=s3_parameters).exc()
 
     # Cache
     src.functions.cache.Cache().exc()
