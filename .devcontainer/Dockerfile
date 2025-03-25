@@ -8,15 +8,16 @@ WORKDIR /app
 COPY /.devcontainer/requirements.txt /app
 
 
-# https://pytensor.readthedocs.io/en/latest/troubleshooting.html#how-do-i-configure-test-my-blas-library
-# https://superfastpython.com/numpy-number-blas-threads/
-# export PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
-# export OMP_NUM_THREADS=
-# ENV PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
-
-
 # Environment
 SHELL [ "/bin/bash", "-c" ]
+
+
+# https://pytensor.readthedocs.io/en/latest/troubleshooting.html#how-do-i-configure-test-my-blas-library
+# https://superfastpython.com/numpy-number-blas-threads/
+# ENV PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
+# ENV OMP_NUM_THREADS=16
+ENV PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
+ENV OMP_NUM_THREADS=16
 
 
 # Installation
