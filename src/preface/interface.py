@@ -7,7 +7,6 @@ import boto3
 # noinspection PyUnresolvedReferences
 import jax
 import numpyro
-import pytensor
 
 import src.data.interface
 import src.elements.s3_parameters as s3p
@@ -15,9 +14,9 @@ import src.elements.service as sr
 import src.functions.cache
 import src.functions.service
 import src.modelling.interface
+import src.preface.setup
 import src.s3.configurations
 import src.s3.s3_parameters
-import src.preface.setup
 import src.transfer.interface
 
 
@@ -49,7 +48,7 @@ class Interface:
         :return:
         """
 
-        key_name = 'artefacts' + '/' + 'architecture' + '/' + 'single' + '/' + 'parts' + '/' + 'arguments.json'
+        key_name = 'artefacts' + '/' + 'architecture' + '/' + 'arguments.json'
 
         return src.s3.configurations.Configurations(connector=connector).objects(key_name=key_name)
 
@@ -101,8 +100,6 @@ class Interface:
         service: sr.Service = src.functions.service.Service(
             connector=connector, region_name=s3_parameters.region_name).exc()
         arguments: dict = self.__get_arguments(connector=connector)
-
-        pytensor.config.blas__ldflags = '-llapack -lblas -lcblas'
 
         self.__compute(arguments=arguments)
         self.__states()
