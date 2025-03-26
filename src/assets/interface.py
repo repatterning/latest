@@ -46,22 +46,29 @@ class Interface:
         return (f's3://{self.__s3_parameters.internal}/data/series/' + catchment_id.astype(str) +
          '/' + ts_id.astype(str) + '/' + datestr.astype(str) + '.csv')
 
-
-    def exc(self):
-        """
-
-        :return:
-        """
-
-        gauges = src.assets.gauges.Gauges(service=self.__service, s3_parameters=self.__s3_parameters).exc()
+    def __filter(self, gauges: pd.DataFrame) -> pd.DataFrame:
 
         values: pd.DataFrame = gauges[['catchment_id']].groupby(by='catchment_id').value_counts().to_frame()
         values = values.copy().loc[values['count'].isin(self.__arguments.get('catchments').get('chunks')), :]
         values.reset_index(drop=False, inplace=True)
 
-        gauges = gauges.copy().loc[gauges['catchment_id'].isin(values['catchment_id'].values), :]
-        logging.info(gauges)
+        selection = gauges.copy().loc[gauges['catchment_id'].isin(values['catchment_id'].values), :]
 
-        partitions = src.assets.partitions.Partitions(data=gauges).exc(arguments=self.__arguments)
+        return selection
+
+    def exc(self) -> pd.DataFrame:
+        """
+
+        :return:
+        """
+
+        # Applicable time series, i.e., gauge, identification codes
+        gauges = src.assets.gauges.Gauges(service=self.__service, s3_parameters=self.__s3_parameters).exc()
+        if self.__arguments.get('catchments').get('chunks') is not None:
+            gauges = self.__filter(gauges=gauges.copy())
+
+        # Strings for data reading
+        partitions: pd.DataFrame = src.assets.partitions.Partitions(data=gauges).exc(arguments=self.__arguments)
         partitions['uri'] = self.__get_uri(partitions['catchment_id'], partitions['ts_id'], partitions['datestr'])
-        logging.info(partitions)
+
+        return partitions
