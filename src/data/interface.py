@@ -4,8 +4,8 @@ import logging
 import pandas as pd
 
 import config
-import src.data.gauges
-import src.data.partitions
+import src.assets.gauges
+import src.assets.partitions
 import src.elements.s3_parameters as s3p
 import src.elements.service as sr
 
@@ -67,7 +67,7 @@ class Interface:
         :return:
         """
 
-        gauges = src.data.gauges.Gauges(service=self.__service, s3_parameters=self.__s3_parameters).exc()
+        gauges = src.assets.gauges.Gauges(service=self.__service, s3_parameters=self.__s3_parameters).exc()
 
         values: pd.DataFrame = gauges[['catchment_id']].groupby(by='catchment_id').value_counts().to_frame()
         values = values.copy().loc[values['count'].isin(self.__arguments.get('catchments').get('chunks')), :]
@@ -76,6 +76,6 @@ class Interface:
         gauges = gauges.copy().loc[gauges['catchment_id'].isin(values['catchment_id'].values), :]
         logging.info(gauges)
 
-        partitions = src.data.partitions.Partitions(data=gauges).exc(arguments=self.__arguments)
+        partitions = src.assets.partitions.Partitions(data=gauges).exc(arguments=self.__arguments)
         partitions['uri'] = self.__get_uri(partitions['catchment_id'], partitions['ts_id'], partitions['datestr'])
         logging.info(partitions)
