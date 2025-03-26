@@ -47,6 +47,11 @@ class Interface:
          '/' + ts_id.astype(str) + '/' + datestr.astype(str) + '.csv')
 
     def __filter(self, gauges: pd.DataFrame) -> pd.DataFrame:
+        """
+        
+        :param gauges:
+        :return:
+        """
 
         values: pd.DataFrame = gauges[['catchment_id']].groupby(by='catchment_id').value_counts().to_frame()
         values = values.copy().loc[values['count'].isin(self.__arguments.get('catchments').get('chunks')), :]
