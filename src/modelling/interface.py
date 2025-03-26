@@ -16,7 +16,7 @@ class Interface:
     def __init__(self, data: pd.DataFrame, arguments: dict):
         """
 
-        :param data: The weekly accidents & emergency data of institutions/hospitals
+        :param data: For reading ...
         :param arguments: A set of model development, and supplementary, arguments.
         """
 
@@ -28,4 +28,9 @@ class Interface:
         self.__directories = src.functions.directories.Directories()
 
     def exc(self):
-        pass
+        """
+        Via dask dataframe, read-in a machine's set of measures files.  Subsequently, split, then add the
+        relevant features to the training data split.
+
+        :return:
+        """
