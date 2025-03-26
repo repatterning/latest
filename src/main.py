@@ -10,7 +10,7 @@ def main():
     """
 
     # Data
-    src.data.interface.Interface(service=service, s3_parameters=s3_parameters, arguments=arguments).exc()
+    src.assets.interface.Interface(service=service, s3_parameters=s3_parameters, arguments=arguments).exc()
 
     # Modelling
     # src.modelling.interface.Interface(
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     # Classes
-    import src.data.interface
+    import src.assets.interface
     import src.functions.cache
     import src.modelling.interface
     import src.transfer.interface
