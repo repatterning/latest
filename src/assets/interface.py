@@ -34,19 +34,6 @@ class Interface:
         # Configurations
         self.__configurations = config.Config()
 
-    @staticmethod
-    def __date_formatting(blob: pd.DataFrame) -> pd.DataFrame:
-        """
-
-        :param blob:
-        :return:
-        """
-
-        blob['week_ending_date'] = pd.to_datetime(
-            blob['week_ending_date'].astype(dtype=str), errors='coerce', format='%Y-%m-%d')
-
-        return blob
-
     def __get_uri(self, catchment_id, ts_id, datestr):
         """
 
@@ -62,7 +49,6 @@ class Interface:
 
     def exc(self):
         """
-        url = f's3://{self.__s3_parameters.internal}/'
 
         :return:
         """
