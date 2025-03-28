@@ -1,8 +1,8 @@
 """
 Module config.py
 """
-import logging
 import datetime
+import logging
 import os
 
 
@@ -43,5 +43,3 @@ class Config:
         '''
         self.warehouse: str = os.path.join(os.getcwd(), 'warehouse')
         self.artefacts_: str = os.path.join(self.warehouse, 'artefacts', self.stamp)
-
-
