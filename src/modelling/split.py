@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 import config
-import src.elements.codes as ce
+import src.elements.gauge as ge
 import src.elements.master as mr
 import src.functions.streams
 
@@ -54,11 +54,11 @@ class Split:
 
         self.__streams.write(blob=blob, path=os.path.join(self.__root, pathstr))
 
-    def exc(self, data: pd.DataFrame, code: ce.Codes) -> mr.Master:
+    def exc(self, data: pd.DataFrame, gauge: ge.Gauge) -> mr.Master:
         """
 
         :param data: The data set consisting of the attendance numbers of <b>an</b> institution/hospital.
-        :param code: The health board & institution/hospital codes of an institution/hospital.
+        :param gauge: The time series & catchment identification codes of a gauge.
         :return:
         """
 
@@ -70,6 +70,6 @@ class Split:
 
         # Persist
         for instances, name in zip([frame, training, testing], ['data.csv', 'training.csv', 'testing.csv']):
-            self.__persist(blob=instances, pathstr=os.path.join(code.hospital_code, name))
+            self.__persist(blob=instances, pathstr=os.path.join(str(gauge.catchment_id), str(gauge.ts_id), name))
 
         return mr.Master(training=training, testing=testing)
