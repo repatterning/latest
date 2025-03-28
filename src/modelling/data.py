@@ -9,11 +9,19 @@ class Data:
         pass
 
     @staticmethod
-    def exc(sections: list) -> pd.DataFrame:
+    def __set_date(frame: pd.DataFrame):
+
+        frame['date'] = pd.to_datetime(frame['timestamp'], unit='ms')
+
+        return frame
+
+    def exc(self, sections: list) -> pd.DataFrame:
 
         try:
             data = ddf.read_csv(urlpath=sections)
         except ImportError as err:
             raise err from err
 
-        return data.compute()
+        frame: pd.DataFrame = data.compute()
+
+        return self.__set_date(frame=frame.copy())
