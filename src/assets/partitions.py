@@ -44,8 +44,9 @@ class Partitions:
         """
 
         # The boundaries of the dates; datetime format
-        _start = datetime.datetime.strptime(arguments.get('catchments').get('starting'), '%Y-%m-%d').year
-        starting = datetime.datetime.strptime(f'{_start}-01-01', '%Y-%m-%d')
+        spanning = arguments.get('spanning')
+        as_from = datetime.date.today() - datetime.timedelta(days=round(spanning*365))
+        starting = datetime.datetime.strptime(f'{as_from.year}-01-01', '%Y-%m-%d')
 
         _end = datetime.datetime.now().year
         ending = datetime.datetime.strptime(f'{_end}-01-01', '%Y-%m-%d')
