@@ -42,10 +42,9 @@ class Interface:
         :return:
         """
         
-        __get_data = dask.delayed(src.modelling.data.Data().exc)
+        __get_data = dask.delayed(src.modelling.data.Data(arguments=self.__arguments).exc)
         __get_splits = dask.delayed(src.modelling.split.Split(arguments=self.__arguments).exc)
-        
-        
+
         computations = []
         for gauge in self.__gauges:
             
