@@ -7,6 +7,7 @@ import config
 import src.elements.gauge as ge
 import src.elements.master as mr
 import src.functions.streams
+import src.functions.directories
 
 
 class Split:
@@ -21,9 +22,10 @@ class Split:
         """
 
         self.__arguments = arguments
+
         self.__configurations = config.Config()
+        self.__directories = src.functions.directories.Directories()
         self.__streams = src.functions.streams.Streams()
-        self.__root = os.path.join(self.__configurations.artefacts_, 'data')
 
     def __include(self, blob: pd.DataFrame) -> pd.DataFrame:
         """
@@ -52,7 +54,7 @@ class Split:
         :return:
         """
 
-        self.__streams.write(blob=blob, path=os.path.join(self.__root, pathstr))
+        self.__streams.write(blob=blob, path=pathstr)
 
     def exc(self, data: pd.DataFrame, gauge: ge.Gauge) -> mr.Master:
         """
@@ -68,8 +70,12 @@ class Split:
         training = self.__include(blob=frame)
         testing = self.__exclude(blob=frame)
 
+        # Path
+        path = os.path.join(self.__configurations.artefacts_, 'data', str(gauge.catchment_id), str(gauge.ts_id))
+        self.__directories.create(path=path)
+
         # Persist
         for instances, name in zip([frame, training, testing], ['data.csv', 'training.csv', 'testing.csv']):
-            self.__persist(blob=instances, pathstr=os.path.join(str(gauge.catchment_id), str(gauge.ts_id), name))
+            self.__persist(blob=instances, pathstr=os.path.join(path, name))
 
         return mr.Master(training=training, testing=testing)
