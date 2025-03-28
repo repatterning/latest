@@ -48,7 +48,7 @@ class Interface:
 
     def __filter(self, gauges: pd.DataFrame) -> pd.DataFrame:
         """
-        
+
         :param gauges:
         :return:
         """
