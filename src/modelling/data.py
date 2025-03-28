@@ -3,7 +3,7 @@ import dask.dataframe as ddf
 import pandas as pd
 
 
-class Read:
+class Data:
 
     def __init__(self):
         pass
