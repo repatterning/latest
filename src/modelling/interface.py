@@ -1,8 +1,8 @@
 """Module interface.py"""
 import logging
-import pandas as pd
-import dask
 
+import dask
+import pandas as pd
 
 import src.elements.master as mr
 import src.modelling.data
