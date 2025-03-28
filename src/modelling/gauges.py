@@ -22,15 +22,15 @@ class Gauges:
 
         return [ge.Gauge(**value) for value in values]
 
-    def exc(self, data: pd.DataFrame) -> list[ge.Gauge]:
+    def exc(self, assets: pd.DataFrame) -> list[ge.Gauge]:
         """
 
-        :param data:
+        :param assets:
         :return:
         """
 
         # Codes
-        frame = data[['catchment_id', 'ts_id']].drop_duplicates()
+        frame = assets[['catchment_id', 'ts_id']].drop_duplicates()
         values: list[dict] = frame.reset_index(drop=True).to_dict(orient='records')
 
         return self.__structure(values=values)
