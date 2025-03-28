@@ -3,10 +3,8 @@ import logging
 import pandas as pd
 import dask
 
-import config
+
 import src.elements.master as mr
-import src.functions.directories
-import src.modelling.core
 import src.modelling.data
 import src.modelling.gauges
 import src.modelling.split
@@ -29,10 +27,6 @@ class Interface:
 
         # The gauges
         self.__gauges = src.modelling.gauges.Gauges().exc(assets=assets)
-
-        # Instances
-        self.__configurations = config.Config()
-        self.__directories = src.functions.directories.Directories()
 
     @dask.delayed
     def __get_sections(self, ts_id: int) -> list:
