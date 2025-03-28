@@ -42,6 +42,6 @@ class Config:
         Local Paths
         '''
         self.warehouse: str = os.path.join(os.getcwd(), 'warehouse')
-        self.artefacts_: str = os.path.join(self.warehouse, 'artefacts', 'marginal', self.stamp)
+        self.artefacts_: str = os.path.join(self.warehouse, 'artefacts', self.stamp)
 
 
