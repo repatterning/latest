@@ -1,3 +1,6 @@
+import datetime
+import time
+
 
 import dask.dataframe as ddf
 import pandas as pd
@@ -5,15 +8,17 @@ import pandas as pd
 
 class Data:
 
-    def __init__(self):
-        pass
+    def __init__(self, arguments: dict):
 
-    @staticmethod
-    def __set_date(frame: pd.DataFrame):
+        spanning = arguments.get('spanning')
+        as_from = datetime.date.today() - datetime.timedelta(days=round(spanning*365))
+        self.__starting = 1000 * time.mktime(as_from.timetuple())
+
+    def __setting_up(self, frame: pd.DataFrame) -> pd.DataFrame:
 
         frame['date'] = pd.to_datetime(frame['timestamp'], unit='ms')
 
-        return frame
+        return frame.loc[frame['timestamp'] >= self.__starting, :]
 
     def exc(self, sections: list) -> pd.DataFrame:
 
@@ -23,5 +28,6 @@ class Data:
             raise err from err
 
         frame: pd.DataFrame = data.compute()
+        frame = self.__setting_up(frame=frame.copy())
 
-        return self.__set_date(frame=frame.copy())
+        return frame
