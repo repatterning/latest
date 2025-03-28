@@ -5,9 +5,10 @@ import dask
 
 import config
 import src.functions.directories
-import src.modelling.codes
 import src.modelling.core
 import src.modelling.data
+import src.modelling.gauges
+
 
 class Interface:
     """
@@ -21,8 +22,11 @@ class Interface:
         :param arguments: A set of model development, and supplementary, arguments.
         """
 
-        self.__assets = assets[:8]
+        self.__assets = assets
         self.__arguments = arguments
+
+        # The gauges
+        self.__gauges = src.modelling.gauges.Gauges().exc(assets=assets)
 
         # Instances
         self.__configurations = config.Config()
@@ -46,9 +50,9 @@ class Interface:
         
         
         computations = []
-        for ts_id in self.__assets['ts_id'].unique():
+        for gauge in self.__gauges:
             
-            sections = self.__get_sections(ts_id=ts_id)
+            sections = self.__get_sections(ts_id=gauge.ts_id)
             data = __get_data(sections=sections)
             computations.append(...)
             
