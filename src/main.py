@@ -15,12 +15,11 @@ def main():
     logger.info(__name__)
 
     # Data
-    data = src.assets.interface.Interface(service=service, s3_parameters=s3_parameters, arguments=arguments).exc()
-    logger.info(data)
+    assets = src.assets.interface.Interface(service=service, s3_parameters=s3_parameters, arguments=arguments).exc()
+    logger.info(assets)
 
     # Modelling
-    # src.modelling.interface.Interface(
-    #   data=data, arguments=arguments).exc()
+    src.modelling.interface.Interface(assets=assets, arguments=arguments).exc()
 
     # Transfer
     # src.transfer.interface.Interface(
