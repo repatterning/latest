@@ -4,10 +4,12 @@ import pandas as pd
 import dask
 
 import config
+import src.elements.master as mr
 import src.functions.directories
 import src.modelling.core
 import src.modelling.data
 import src.modelling.gauges
+import src.modelling.split
 
 
 class Interface:
@@ -47,6 +49,7 @@ class Interface:
         """
         
         __get_data = dask.delayed(src.modelling.data.Data().exc)
+        __get_splits = dask.delayed(src.modelling.split.Split(arguments=self.__arguments).exc)
         
         
         computations = []
@@ -54,6 +57,7 @@ class Interface:
             
             sections = self.__get_sections(ts_id=gauge.ts_id)
             data = __get_data(sections=sections)
+            master: mr.Master = __get_splits(data=data, gauge=gauge)
             computations.append(...)
             
         calculations = dask.compute(computations, scheduler='threads')[0]
