@@ -1,7 +1,6 @@
 """Module forecasts.py"""
-import logging
-import os
 import datetime
+import os
 
 import pandas as pd
 import statsmodels.tsa.forecasting.stl as tfs
