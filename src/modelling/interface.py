@@ -8,6 +8,7 @@ import src.elements.master as mr
 import src.modelling.data
 import src.modelling.gauges
 import src.modelling.split
+import src.modelling.architecture.interface
 
 
 class Interface:
@@ -44,6 +45,7 @@ class Interface:
         
         __get_data = dask.delayed(src.modelling.data.Data(arguments=self.__arguments).exc)
         __get_splits = dask.delayed(src.modelling.split.Split(arguments=self.__arguments).exc)
+        __modelling = dask.delayed(src.modelling.architecture.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
         for gauge in self.__gauges:
@@ -51,7 +53,8 @@ class Interface:
             sections = self.__get_sections(ts_id=gauge.ts_id)
             data = __get_data(sections=sections)
             master: mr.Master = __get_splits(data=data, gauge=gauge)
-            computations.append(...)
+            message = __modelling(master=master, gauge=gauge)
+            computations.append(message)
             
-        calculations = dask.compute(computations, scheduler='threads')[0]
-        logging.info(calculations)
+        messages = dask.compute(computations, scheduler='threads')[0]
+        logging.info(messages)
