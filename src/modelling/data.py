@@ -5,6 +5,8 @@ import time
 import dask.dataframe as ddf
 import pandas as pd
 
+import src.elements.gauge as ge
+
 
 class Data:
     """
@@ -32,10 +34,11 @@ class Data:
 
         return frame.loc[frame['timestamp'] >= self.__starting, :]
 
-    def exc(self, sections: list) -> pd.DataFrame:
+    def exc(self, sections: list, gauge: ge.Gauge) -> pd.DataFrame:
         """
 
         :param sections:
+        :param gauge:
         :return:
         """
 
@@ -46,5 +49,6 @@ class Data:
 
         frame: pd.DataFrame = data.compute()
         frame = self.__setting_up(frame=frame.copy())
+        frame['measure'] = frame['value'] + gauge.gauge_datum
 
         return frame
