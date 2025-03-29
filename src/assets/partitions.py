@@ -19,7 +19,7 @@ class Partitions:
         self.__data = data
 
         # Fields
-        self.__fields = ['ts_id', 'catchment_id', 'datestr']
+        self.__fields = ['ts_id', 'catchment_id', 'gauge_datum', 'datestr']
 
     @dask.delayed
     def __matrix(self, start: str):
