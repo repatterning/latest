@@ -25,12 +25,12 @@ class Gauges:
     def exc(self, assets: pd.DataFrame) -> list[ge.Gauge]:
         """
 
-        :param assets:
+        :param assets: Each instance summarises aspects of a gauge.
         :return:
         """
 
         # Codes
-        frame = assets[['catchment_id', 'ts_id']].drop_duplicates()
+        frame = assets[['catchment_id', 'ts_id', 'gauge_datum']].drop_duplicates()
         values: list[dict] = frame.reset_index(drop=True).to_dict(orient='records')
 
         return self.__structure(values=values)
