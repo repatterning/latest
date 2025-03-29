@@ -1,13 +1,16 @@
 """Module interface.py"""
 import logging
+import os
 
 import pandas as pd
 
+import config
 import src.elements.gauge as ge
 import src.elements.master as mr
 import src.modelling.architecture.algorithm
 import src.modelling.architecture.forecasts
 import src.modelling.architecture.page
+import src.functions.directories
 
 
 class Interface:
@@ -22,6 +25,14 @@ class Interface:
         """
 
         self.__arguments = arguments
+
+        self.__configurations = config.Config()
+        self.__directories = src.functions.directories.Directories()
+
+    def __set_directory(self, gauge: ge.Gauge):
+
+        root = os.path.join(self.__configurations.artefacts_, 'models',
+                            str(gauge.catchment_id), str(gauge.ts_id))
 
     def exc(self, master: mr.Master, gauge: ge.Gauge) -> str:
         """
