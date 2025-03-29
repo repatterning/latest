@@ -1,5 +1,6 @@
 """Module gauges.py"""
 import itertools
+import logging
 import os
 
 import dask
@@ -79,5 +80,6 @@ class Gauges:
 
         datum = self.__get_datum()
         codes = codes.copy().merge(datum, how='left', on='ts_id')
+        logging.info(codes)
 
         return codes
