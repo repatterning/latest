@@ -9,6 +9,8 @@ import pandas as pd
 import src.elements.s3_parameters as s3p
 import src.elements.service as sr
 import src.s3.keys
+import src.functions.streams
+import src.elements.text_attributes as txa
 
 
 class Gauges:
@@ -27,6 +29,14 @@ class Gauges:
         self.__s3_parameters = s3_parameters
 
         self.__objects = src.s3.keys.Keys(service=self.__service, bucket_name=self.__s3_parameters.internal)
+
+    def __get_datum(self) -> pd.DataFrame:
+
+        uri = f's3://{self.__s3_parameters.internal}/{self.__s3_parameters.path_internal_references}assets.csv'
+        usecols = ['ts_id', 'gauge_datum']
+        text = txa.TextAttributes(uri=uri, header=0, usecols=usecols)
+
+        return src.functions.streams.Streams().read(text=text)
 
     @dask.delayed
     def __get_section(self, listing: str) -> pd.DataFrame:
@@ -66,5 +76,8 @@ class Gauges:
 
         codes['catchment_id'] = codes['catchment_id'].astype(dtype=np.int64)
         codes['ts_id'] = codes['ts_id'].astype(dtype=np.int64)
+
+        datum = self.__get_datum()
+        codes = codes.copy().merge(datum, how='left', on='ts_id')
 
         return codes
