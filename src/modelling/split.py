@@ -6,8 +6,8 @@ import pandas as pd
 import config
 import src.elements.gauge as ge
 import src.elements.master as mr
-import src.functions.streams
 import src.functions.directories
+import src.functions.streams
 
 
 class Split:
