@@ -48,10 +48,12 @@ class Interface:
         __modelling = dask.delayed(src.modelling.architecture.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
-        for gauge in self.__gauges:
+        for gauge in self.__gauges[:8]:
+
+            logging.info(gauge)
             
             sections = self.__get_sections(ts_id=gauge.ts_id)
-            data = __get_data(sections=sections)
+            data = __get_data(sections=sections, gauge=gauge)
             master: mr.Master = __get_splits(data=data, gauge=gauge)
             message = __modelling(master=master, gauge=gauge)
             computations.append(message)
