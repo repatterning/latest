@@ -37,14 +37,6 @@ class Algorithm:
         # Controls
         self.__control = src.modelling.architecture.control.Control()
 
-    def __get_sequence(self) -> pd.Series:
-
-        frame = self.__training.copy()[['date', 'measure']]
-        frame.set_index(keys='date', inplace=True)
-        frame.index.freq = self.__arguments.get('frequency')
-
-        return frame['measure']
-
     def __execute(self, architecture: tfs.STLForecast, method: str)  \
             -> tfs.STLForecastResults | None:
         """
@@ -66,8 +58,10 @@ class Algorithm:
         :return: 
         """
 
+        sequence: pd.Series = self.__training['measure']
+
         architecture = tfs.STLForecast(
-            self.__get_sequence(),
+            sequence,
             tar.ARIMA,
             model_kwargs={
                 "order": (self.__parameters.get('p'), self.__parameters.get('d'), self.__parameters.get('q')),
