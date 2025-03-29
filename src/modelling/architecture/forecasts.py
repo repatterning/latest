@@ -34,6 +34,10 @@ class Forecasts:
         self.__objects = src.functions.objects.Objects()
 
     def __get_estimations(self) -> pd.DataFrame:
+        """
+
+        :return:
+        """
 
         limit = self.__training['date'].max().to_pydatetime() + datetime.timedelta(hours=2*self.__arguments.get('ahead'))
         details = self.__system.get_prediction(end=limit)
@@ -46,20 +50,34 @@ class Forecasts:
         return estimations
 
     def __get_training(self, estimations: pd.DataFrame):
+        """
+
+        :param estimations:
+        :return:
+        """
 
         _training = self.__training[['ts_id', 'timestamp', 'date', 'measure']].merge(estimations, how='left', on='date')
         return _training.to_dict(orient='tight')
 
     def __get_testing(self, estimations: pd.DataFrame):
+        """
+
+        :param estimations:
+        :return:
+        """
 
         _testing = self.__testing[['ts_id', 'timestamp', 'date', 'measure']].merge(estimations, how='left', on='date')
         _testing.to_dict(orient='tight')
 
     def __get_futures(self, estimations: pd.DataFrame):
+        """
+
+        :param estimations:
+        :return:
+        """
 
         _futures: pd.DataFrame = estimations[-self.__arguments.get('ahead'):]
         _futures.to_dict(orient='tight')
-
 
     def exc(self,  gauge: ge.Gauge) -> str:
         """
