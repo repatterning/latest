@@ -65,6 +65,7 @@ class Split:
         """
 
         frame = data.copy()
+        frame.sort_values(by='timestamp', ascending=True, inplace=True)
 
         # Split
         training = self.__include(blob=frame)
