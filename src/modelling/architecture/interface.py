@@ -1,4 +1,7 @@
 """Module interface.py"""
+import logging
+
+import pandas as pd
 
 import src.elements.gauge as ge
 import src.elements.master as mr
@@ -28,8 +31,13 @@ class Interface:
         :return:
         """
 
+        _training: pd.DataFrame = master.training.copy()
+        _training.set_index(keys='date', inplace=True)
+        _training.sort_index(axis=0, ascending=True, inplace=True)
+        _training.index.freq = self.__arguments.get('frequency')
+
         # The forecasting algorithm
-        algorithm = src.modelling.architecture.algorithm.Algorithm(training=master.training, arguments=self.__arguments, gauge=gauge)
+        algorithm = src.modelling.architecture.algorithm.Algorithm(training=_training, arguments=self.__arguments, gauge=gauge)
         system = algorithm.exc()
 
         if system is None:
