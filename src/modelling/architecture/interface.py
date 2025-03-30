@@ -41,7 +41,11 @@ class Interface:
 
         training.set_index(keys='date', inplace=True)
         training.sort_index(axis=0, ascending=True, inplace=True)
-        training.index.freq = self.__arguments.get('frequency')
+
+        try:
+            training.index.freq = self.__arguments.get('frequency')
+        except ValueError:
+            return pd.DataFrame()
 
         return training
 
@@ -55,9 +59,15 @@ class Interface:
 
         path = self.__set_path(gauge=gauge)
 
-        # The forecasting algorithm
+        # Structuring
         _training =  self.__restructure(training=master.training.copy())
-        algorithm = src.modelling.architecture.algorithm.Algorithm(training=_training, arguments=self.__arguments, gauge=gauge)
+        if _training.empty:
+            logging.info('Skipping %s of %s -> frequency issues.', gauge.ts_id, gauge.catchment_id)
+            return f'Frequency problems: {gauge.ts_id} of {gauge.catchment_id}'
+
+        # The forecasting algorithm
+        algorithm = src.modelling.architecture.algorithm.Algorithm(
+            training=_training, arguments=self.__arguments, gauge=gauge)
         system = algorithm.exc()
 
         if system is None:
