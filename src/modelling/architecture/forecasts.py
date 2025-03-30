@@ -5,7 +5,6 @@ import os
 import pandas as pd
 import statsmodels.tsa.forecasting.stl as tfs
 
-import config
 import src.elements.gauge as ge
 import src.elements.master as mr
 import src.functions.objects
@@ -16,29 +15,29 @@ class Forecasts:
     Determines forecasts/predictions vis-à-vis a developed model; predictions.
     """
 
-    def __init__(self, master: mr.Master, arguments: dict, system: tfs.STLForecastResults):
+    def __init__(self, master: mr.Master, arguments: dict, system: tfs.STLForecastResults, path: str):
         """
 
-        :param master: A named tuple consisting of an institutions training & testing data
-        :param arguments: A set of model development, and supplementary, arguments.
-        :param system: The results of the seasonal component model
+        :param master: A named tuple consisting of training & testing data.<br>
+        :param arguments: A set of model development, and supplementary, arguments.<br>
+        :param system: The forecasting object.<br>
+        :param path: The storage path.<br>
         """
 
         self.__training = master.training
         self.__testing = master.testing
         self.__arguments = arguments
         self.__system = system
+        self.__path = path
 
-        self.__configurations = config.Config()
         self.__objects = src.functions.objects.Objects()
 
-    def __get_estimations(self) -> pd.DataFrame:
+    def __get_estimations(self, limit: datetime.datetime) -> pd.DataFrame:
         """
 
         :return:
         """
 
-        limit = self.__training['date'].max().to_pydatetime() + datetime.timedelta(hours=2*self.__arguments.get('ahead'))
         details = self.__system.get_prediction(end=limit)
 
         # Final State -> ['date', 'mean', 'mean_se', 'mean_ci_lower', 'mean_ci_upper']
@@ -85,18 +84,16 @@ class Forecasts:
         :return:
         """
 
-        estimations = self.__get_estimations()
+        limit: datetime.datetime = (self.__training['date'].max().to_pydatetime() +
+                 datetime.timedelta(hours=2*self.__arguments.get('ahead')))
+        estimations = self.__get_estimations(limit=limit)
 
         # Hence
-        nodes = {
-            'ts_id': gauge.ts_id,
-            'catchment_id': gauge.catchment_id,
-            'training': self.__get_training(estimations=estimations),
-            'testing': self.__get_testing(estimations=estimations),
-            'futures': self.__get_futures(estimations=estimations)}
-
-        root = os.path.join(
-            self.__configurations.artefacts_, 'models', str(gauge.catchment_id), str(gauge.ts_id))
-        message = self.__objects.write(nodes=nodes, path=os.path.join(root, 'scf_estimates.json'))
+        nodes = {'ts_id': gauge.ts_id,
+                 'catchment_id': gauge.catchment_id,
+                 'training': self.__get_training(estimations=estimations),
+                 'testing': self.__get_testing(estimations=estimations),
+                 'futures': self.__get_futures(estimations=estimations)}
+        message = self.__objects.write(nodes=nodes, path=os.path.join(self.__path, 'estimates.json'))
 
         return f'{message} ({gauge.ts_id} of {gauge.catchment_id})'
