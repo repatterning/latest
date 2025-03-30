@@ -35,6 +35,7 @@ class Forecasts:
     def __get_estimations(self, limit: datetime.datetime) -> pd.DataFrame:
         """
 
+        :param limit: Predictions will be until limit.
         :return:
         """
 
