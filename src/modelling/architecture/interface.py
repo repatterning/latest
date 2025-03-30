@@ -56,8 +56,8 @@ class Interface:
 
         # Next, extract forecasts/predictions and supplementary details, subsequently persist; via the
         # model's <page> & <forecasts>.
-        src.modelling.architecture.page.Page(system=system, gauge=gauge).exc()
+        src.modelling.architecture.page.Page(system=system, path=...).exc()
         message = src.modelling.architecture.forecasts.Forecasts(
-            master=master, arguments=self.__arguments, system=system).exc(gauge=gauge)
+            master=master, arguments=self.__arguments, system=system, path=...).exc(gauge=gauge)
 
         return message
