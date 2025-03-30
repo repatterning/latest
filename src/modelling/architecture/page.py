@@ -18,8 +18,8 @@ class Page:
     def __init__(self, system: tfs.STLForecastResults, path: str):
         """
 
-        :param system: The forecasts/predictions of the seasonal component model.
-        :param path: Storage path<br>
+        :param system: The forecasts/predictions of the seasonal component model.<br>
+        :param path: The storage path.<br>
         """
 
         self.__system = system
