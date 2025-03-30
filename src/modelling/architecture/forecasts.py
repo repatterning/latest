@@ -32,7 +32,7 @@ class Forecasts:
 
         self.__objects = src.functions.objects.Objects()
 
-    def __get_estimations(self, limit: datetime.datetime) -> pd.DataFrame:
+    def __get_predictions(self, limit: datetime.datetime) -> pd.DataFrame:
         """
 
         :param limit: Predictions will be until limit.
@@ -42,40 +42,40 @@ class Forecasts:
         details = self.__system.get_prediction(end=limit)
 
         # Final State -> ['date', 'mean', 'mean_se', 'mean_ci_lower', 'mean_ci_upper']
-        estimations = details.summary_frame()
-        estimations.reset_index(drop=False, inplace=True)
-        estimations.rename(columns={'index': 'date'}, inplace=True)
+        predictions = details.summary_frame()
+        predictions.reset_index(drop=False, inplace=True)
+        predictions.rename(columns={'index': 'date'}, inplace=True)
 
-        return estimations
+        return predictions
 
-    def __get_training(self, estimations: pd.DataFrame):
+    def __get_training(self, predictions: pd.DataFrame):
         """
 
-        :param estimations:
+        :param predictions:
         :return:
         """
 
-        _training = self.__training[['ts_id', 'timestamp', 'date', 'measure']].merge(estimations, how='left', on='date')
+        _training = self.__training[['ts_id', 'timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
         return _training.to_dict(orient='tight')
 
-    def __get_testing(self, estimations: pd.DataFrame):
+    def __get_testing(self, predictions: pd.DataFrame):
         """
 
-        :param estimations:
+        :param predictions:
         :return:
         """
 
-        _testing = self.__testing[['ts_id', 'timestamp', 'date', 'measure']].merge(estimations, how='left', on='date')
+        _testing = self.__testing[['ts_id', 'timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
         _testing.to_dict(orient='tight')
 
-    def __get_futures(self, estimations: pd.DataFrame):
+    def __get_futures(self, predictions: pd.DataFrame):
         """
 
-        :param estimations:
+        :param predictions:
         :return:
         """
 
-        _futures: pd.DataFrame = estimations[-self.__arguments.get('ahead'):]
+        _futures: pd.DataFrame = predictions[-self.__arguments.get('ahead'):]
         _futures.to_dict(orient='tight')
 
     def exc(self,  gauge: ge.Gauge) -> str:
@@ -87,14 +87,14 @@ class Forecasts:
 
         limit: datetime.datetime = (self.__training['date'].max().to_pydatetime() +
                  datetime.timedelta(hours=2*self.__arguments.get('ahead')))
-        estimations = self.__get_estimations(limit=limit)
+        predictions = self.__get_predictions(limit=limit)
 
         # Hence
         nodes = {'ts_id': gauge.ts_id,
                  'catchment_id': gauge.catchment_id,
-                 'training': self.__get_training(estimations=estimations),
-                 'testing': self.__get_testing(estimations=estimations),
-                 'futures': self.__get_futures(estimations=estimations)}
+                 'training': self.__get_training(predictions=predictions),
+                 'testing': self.__get_testing(predictions=predictions),
+                 'futures': self.__get_futures(predictions=predictions)}
         message = self.__objects.write(nodes=nodes, path=os.path.join(self.__path, 'estimates.json'))
 
         return f'{message} ({gauge.ts_id} of {gauge.catchment_id})'
