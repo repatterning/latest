@@ -48,7 +48,7 @@ class Interface:
         __modelling = dask.delayed(src.modelling.architecture.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
-        for gauge in self.__gauges[:8]:
+        for gauge in self.__gauges[:2]:
 
             logging.info(gauge)
             
