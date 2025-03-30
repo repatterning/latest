@@ -29,10 +29,21 @@ class Interface:
         self.__configurations = config.Config()
         self.__directories = src.functions.directories.Directories()
 
-    def __set_directory(self, gauge: ge.Gauge):
+    def __set_path(self, gauge: ge.Gauge):
 
-        root = os.path.join(self.__configurations.artefacts_, 'models',
+        path = os.path.join(self.__configurations.artefacts_, 'models',
                             str(gauge.catchment_id), str(gauge.ts_id))
+        self.__directories.create(path=path)
+
+        return path
+
+    def __restructure(self, training: pd.DataFrame):
+
+        training.set_index(keys='date', inplace=True)
+        training.sort_index(axis=0, ascending=True, inplace=True)
+        training.index.freq = self.__arguments.get('frequency')
+
+        return training
 
     def exc(self, master: mr.Master, gauge: ge.Gauge) -> str:
         """
@@ -42,12 +53,10 @@ class Interface:
         :return:
         """
 
-        _training: pd.DataFrame = master.training.copy()
-        _training.set_index(keys='date', inplace=True)
-        _training.sort_index(axis=0, ascending=True, inplace=True)
-        _training.index.freq = self.__arguments.get('frequency')
+        path = self.__set_path(gauge=gauge)
 
         # The forecasting algorithm
+        _training =  self.__restructure(training=master.training.copy())
         algorithm = src.modelling.architecture.algorithm.Algorithm(training=_training, arguments=self.__arguments, gauge=gauge)
         system = algorithm.exc()
 
@@ -56,8 +65,8 @@ class Interface:
 
         # Next, extract forecasts/predictions and supplementary details, subsequently persist; via the
         # model's <page> & <forecasts>.
-        src.modelling.architecture.page.Page(system=system, path=...).exc()
+        src.modelling.architecture.page.Page(system=system, path=path).exc()
         message = src.modelling.architecture.forecasts.Forecasts(
-            master=master, arguments=self.__arguments, system=system, path=...).exc(gauge=gauge)
+            master=master, arguments=self.__arguments, system=system, path=path).exc(gauge=gauge)
 
         return message
