@@ -48,7 +48,7 @@ class Forecasts:
 
         return predictions
 
-    def __get_training(self, predictions: pd.DataFrame):
+    def __get_training(self, predictions: pd.DataFrame) -> dict:
         """
 
         :param predictions:
@@ -56,9 +56,11 @@ class Forecasts:
         """
 
         _training = self.__training[['ts_id', 'timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
+        _training.drop(columns='date', inplace=True)
+
         return _training.to_dict(orient='tight')
 
-    def __get_testing(self, predictions: pd.DataFrame):
+    def __get_testing(self, predictions: pd.DataFrame) -> dict:
         """
 
         :param predictions:
@@ -66,17 +68,21 @@ class Forecasts:
         """
 
         _testing = self.__testing[['ts_id', 'timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
-        _testing.to_dict(orient='tight')
+        _testing.drop(columns='date', inplace=True)
 
-    def __get_futures(self, predictions: pd.DataFrame):
+        return _testing.to_dict(orient='tight')
+
+    def __get_futures(self, predictions: pd.DataFrame) -> dict:
         """
 
         :param predictions:
         :return:
         """
 
-        _futures: pd.DataFrame = predictions[-self.__arguments.get('ahead'):]
-        _futures.to_dict(orient='tight')
+        _futures: pd.DataFrame = predictions.copy()[-self.__arguments.get('ahead'):]
+        _futures.drop(columns='date', inplace=True)
+
+        return _futures.to_dict(orient='tight')
 
     def exc(self,  gauge: ge.Gauge) -> str:
         """
