@@ -1,10 +1,10 @@
 """Module codes.py"""
 import pandas as pd
 
-import src.elements.codes as ce
+import src.elements.gauge as ge
 
 
-class Codes:
+class Gauges:
     """
     Determines the unique set of health board & institution pairings
     """
@@ -13,24 +13,24 @@ class Codes:
         pass
 
     @staticmethod
-    def __structure(values: list[dict]) -> list[ce.Codes]:
+    def __structure(values: list[dict]) -> list[ge.Gauge]:
         """
 
         :param values:
         :return:
         """
 
-        return [ce.Codes(**value) for value in values]
+        return [ge.Gauge(**value) for value in values]
 
-    def exc(self, data: pd.DataFrame) -> list[ce.Codes]:
+    def exc(self, assets: pd.DataFrame) -> list[ge.Gauge]:
         """
 
-        :param data:
+        :param assets: Each instance summarises aspects of a gauge.
         :return:
         """
 
         # Codes
-        frame = data[['health_board_code', 'hospital_code']].drop_duplicates()
+        frame = assets[['catchment_id', 'ts_id', 'gauge_datum']].drop_duplicates()
         values: list[dict] = frame.reset_index(drop=True).to_dict(orient='records')
 
         return self.__structure(values=values)

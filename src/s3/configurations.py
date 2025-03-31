@@ -37,7 +37,7 @@ class Configurations:
         """
 
         buffer = src.s3.unload.Unload(s3_client=self.__s3_client).exc(
-            bucket_name=self.__secret.exc(secret_id='AccidentEmergency', node='configurations'),
+            bucket_name=self.__secret.exc(secret_id='HydrographyProject', node='configurations'),
             key_name=key_name)
 
         return buffer
@@ -55,7 +55,7 @@ class Configurations:
         except yaml.YAMLError as err:
             raise err from err
 
-        return data['parameters']
+        return data
 
     def objects(self, key_name: str):
         """

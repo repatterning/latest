@@ -2,7 +2,6 @@
 
 import boto3
 
-import config
 import src.functions.objects
 import src.s3.configurations
 
@@ -23,7 +22,6 @@ class Metadata:
         """
 
         self.__connector = connector
-        self.__configurations = config.Config()
 
     def exc(self, name: str) -> dict:
         """
@@ -32,6 +30,6 @@ class Metadata:
         """
 
         dictionary = src.s3.configurations.Configurations(connector=self.__connector).objects(
-            key_name=self.__configurations.artefacts_metadata_ + '/' + name)
+            key_name=f'artefacts/metadata/{name}')
 
         return dictionary

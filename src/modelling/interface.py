@@ -1,17 +1,14 @@
 """Module interface.py"""
+import logging
 
-import os
-import sys
-
+import dask
 import pandas as pd
 
-import config
-import src.elements.codes as ce
 import src.elements.master as mr
-import src.functions.directories
-import src.modelling.codes
-import src.modelling.core
-import src.modelling.initial
+import src.modelling.data
+import src.modelling.gauges
+import src.modelling.split
+import src.modelling.architecture.interface
 
 
 class Interface:
@@ -19,51 +16,47 @@ class Interface:
     The interface to the seasonal & trend component modelling steps.
     """
 
-    def __init__(self, data: pd.DataFrame, arguments: dict):
+    def __init__(self, assets: pd.DataFrame, arguments: dict):
         """
 
-        :param data: The weekly accidents & emergency data of institutions/hospitals
+        :param assets: Of assets
         :param arguments: A set of model development, and supplementary, arguments.
         """
 
-        self.__data = data
+        self.__assets = assets
         self.__arguments = arguments
 
-        # Instances
-        self.__configurations = config.Config()
-        self.__directories = src.functions.directories.Directories()
+        # The gauges
+        self.__gauges = src.modelling.gauges.Gauges().exc(assets=assets)
 
-    def __set_directories(self, codes: list[ce.Codes]):
-        """
+    @dask.delayed
+    def __get_sections(self, ts_id: int) -> list:
 
-        :param codes: The unique set of health board & institution pairings.
-        :return:
-        """
-
-        directories = [self.__directories.create(os.path.join(self.__configurations.artefacts_, section, c.hospital_code))
-                       for section in ['data', 'models'] for c in codes]
-
-        if not all(directories):
-            sys.exit('Missing Directories')
+        return self.__assets.loc[
+            self.__assets['ts_id'] == ts_id, 'uri'].to_list()
 
     def exc(self):
         """
-        Each instance of codes consists of the health board & institution/hospital codes of an institution/hospital.
-        
-        :return: 
+        Via dask dataframe, read-in a machine's set of measures files.  Subsequently, split, then add the
+        relevant features to the training data split.
+
+        :return:
         """
 
-        # Codes: The unique set of health board & institution pairings.
-        codes: list[ce.Codes] = src.modelling.codes.Codes().exc(data=self.__data)
-        codes = codes[:2]
+        __get_data = dask.delayed(src.modelling.data.Data(arguments=self.__arguments).exc)
+        __get_splits = dask.delayed(src.modelling.split.Split(arguments=self.__arguments).exc)
+        __modelling = dask.delayed(src.modelling.architecture.interface.Interface(arguments=self.__arguments).exc)
 
-        # Directories: Each institution will have a directory within (a) a data directory, and (b) a models directory
-        self.__set_directories(codes=codes)
+        computations = []
+        for gauge in self.__gauges:
 
-        # Seasonal Component Modelling
-        masters: list[mr.Master] = src.modelling.initial.Initial(
-            data=self.__data, codes=codes, arguments=self.__arguments).exc()
+            logging.info(gauge)
 
-        # Trend Component Modelling
-        src.modelling.core.Core(
-            arguments=self.__arguments).exc(masters=masters)
+            sections = self.__get_sections(ts_id=gauge.ts_id)
+            data = __get_data(sections=sections, gauge=gauge)
+            master: mr.Master = __get_splits(data=data, gauge=gauge)
+            message = __modelling(master=master, gauge=gauge)
+            computations.append(message)
+
+        messages = dask.compute(computations, scheduler='threads')[0]
+        logging.info(messages)

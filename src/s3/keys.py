@@ -29,18 +29,20 @@ class Keys:
         self.__s3_client = service.s3_client
         self.__bucket = self.__s3_resource.Bucket(name=self.__bucket_name)
 
-    def excerpt(self, prefix: str) -> list[str]:
+    def excerpt(self, prefix: str, delimiter: str = '') -> list[str]:
         """
         https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/list_objects_v2.html
 
-        :param prefix: Amazon S3 (Simple Storage Service) prefix.
+        :param prefix: An Amazon S3 (Simple Storage Service) prefix.
+        :param delimiter: Either '' or '/'
         :return:
             A list of Amazon S3 (Simple Storage Service) keys.
         """
 
         # Keys
         try:
-            dictionaries = self.__s3_client.list_objects_v2(Bucket=self.__bucket_name, Prefix=prefix)
+            dictionaries = self.__s3_client.list_objects_v2(
+                Bucket=self.__bucket_name, Prefix=prefix, Delimiter=delimiter)
         except botocore.exceptions.ClientError as err:
             raise err from err
 
@@ -48,8 +50,15 @@ class Keys:
         if dictionaries['KeyCount'] == 0:
             return []
 
-        return [dictionary['Key']
-                for dictionary in dictionaries['Contents']]
+        match delimiter:
+            case '':
+                return [dictionary['Key']
+                        for dictionary in dictionaries['Contents']]
+            case '/':
+                return [dictionary['Prefix']
+                        for dictionary in dictionaries['CommonPrefixes']]
+            case _:
+                return []
 
     def all(self) -> list[str]:
         """

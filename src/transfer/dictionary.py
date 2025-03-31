@@ -34,7 +34,7 @@ class Dictionary:
         details: list[dict] = [
             {'file': file,
              'vertex': file.rsplit(splitter, maxsplit=1)[1],
-             'section': os.path.basename(pathlib.PurePath(file).parent.parent)}
+             'section': os.path.basename(pathlib.PurePath(file).parent.parent.parent)}
             for file in files]
 
         return pd.DataFrame.from_records(details)

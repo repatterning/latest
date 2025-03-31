@@ -1,4 +1,4 @@
-name: 'Accident & Emergency: Bayesian & Naïve Forecasting via GPU/CPU'
+name: 'Hydrography: Predicting Water Levels'
 
 on: [push]
 
@@ -45,8 +45,8 @@ jobs:
           echo "Issues in relation to logic (F7), syntax (Python E9, Flake F7), mathematical
           formulae symbols (F63), undefined variable names (F82):"
           
-          printf "\n src/data "
-          flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/data
+          printf "\n src/assets "
+          flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/assets
           
           printf "\n src/elements "
           flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/elements
@@ -54,14 +54,14 @@ jobs:
           printf "\n src/functions "
           flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/functions
           
-          printf "\n src/modelling/sc "
-          flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/modelling/sc
-          
-          printf "\n src/modelling/tc "
-          flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/modelling/tc
+          printf "\n src/modelling/architecture "
+          flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/modelling/architecture
           
           printf "\n src/modelling/*.py "
           flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/modelling/*.py
+          
+          printf "\n src/preface "
+          flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/preface
           
           printf "\n src/s3 "
           flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/s3
@@ -74,8 +74,8 @@ jobs:
           printf "\n\n"
           echo "Complexity issues:"
           
-          printf "\n src/data "
-          flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/data
+          printf "\n src/assets "
+          flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/assets
           
           printf "\n src/elements "
           flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/elements
@@ -83,14 +83,14 @@ jobs:
           printf "\n src/functions "
           flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/functions
           
-          printf "\n src/modelling/sc "
-          flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/modelling/sc
-          
-          printf "\n src/modelling/tc "
-          flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/modelling/tc
+          printf "\n src/modelling/architecture "
+          flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/modelling/architecture
           
           printf "\n src/modelling/*.py "
           flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/modelling/*.py
+          
+          printf "\n src/preface "
+          flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/preface
           
           printf "\n src/s3 "
           flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/s3
@@ -104,8 +104,8 @@ jobs:
           printf "\n"
           echo "============================= pylint session starts =============================="
           
-          printf "\n Package src/data"
-          pylint --rcfile .pylintrc src/data
+          printf "\n Package src/assets"
+          pylint --rcfile .pylintrc src/assets
           
           printf "\n Package src/elements"
           pylint --rcfile .pylintrc src/elements
@@ -113,14 +113,14 @@ jobs:
           printf "\n Package src/functions"
           pylint --rcfile .pylintrc src/functions
           
-          printf "\n Package src/modelling/sc"
-          pylint --rcfile .pylintrc src/modelling/sc
-          
-          printf "\n Package src/modelling/tc"
-          pylint --rcfile .pylintrc src/modelling/tc
+          printf "\n Package src/modelling/architecture"
+          pylint --rcfile .pylintrc src/modelling/architecture
           
           printf "\n Package src/modelling/*.py"
           pylint --rcfile .pylintrc src/modelling/*.py
+          
+          printf "\n Package src/preface"
+          pylint --rcfile .pylintrc src/preface
           
           printf "\n Package src/s3"
           pylint --rcfile .pylintrc src/s3
@@ -184,10 +184,18 @@ jobs:
           docker build . --file Dockerfile --tag "$REGISTRY/$REPOSITORY:$IMAGE_TAG"
           docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
 
+      - name: Delete Packages
+        uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5
+        with:
+          package-name: ${{ github.event.repository.name }}
+          package-type: 'container'
+          min-versions-to-keep: 1
+          delete-only-untagged-versions: 'true'
+
   ecr:
     name: Amazon Elastic Container Registry
     needs: build
-    if: ${{ false }}
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
     permissions:

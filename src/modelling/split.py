@@ -4,8 +4,9 @@ import os
 import pandas as pd
 
 import config
-import src.elements.codes as ce
+import src.elements.gauge as ge
 import src.elements.master as mr
+import src.functions.directories
 import src.functions.streams
 
 
@@ -21,9 +22,10 @@ class Split:
         """
 
         self.__arguments = arguments
+
         self.__configurations = config.Config()
+        self.__directories = src.functions.directories.Directories()
         self.__streams = src.functions.streams.Streams()
-        self.__root = os.path.join(self.__configurations.artefacts_, 'data')
 
     def __include(self, blob: pd.DataFrame) -> pd.DataFrame:
         """
@@ -52,24 +54,29 @@ class Split:
         :return:
         """
 
-        self.__streams.write(blob=blob, path=os.path.join(self.__root, pathstr))
+        self.__streams.write(blob=blob, path=pathstr)
 
-    def exc(self, data: pd.DataFrame, code: ce.Codes) -> mr.Master:
+    def exc(self, data: pd.DataFrame, gauge: ge.Gauge) -> mr.Master:
         """
 
         :param data: The data set consisting of the attendance numbers of <b>an</b> institution/hospital.
-        :param code: The health board & institution/hospital codes of an institution/hospital.
+        :param gauge: The time series & catchment identification codes of a gauge.
         :return:
         """
 
         frame = data.copy()
+        frame.sort_values(by='timestamp', ascending=True, inplace=True)
 
         # Split
         training = self.__include(blob=frame)
         testing = self.__exclude(blob=frame)
 
+        # Path
+        path = os.path.join(self.__configurations.artefacts_, 'data', str(gauge.catchment_id), str(gauge.ts_id))
+        self.__directories.create(path=path)
+
         # Persist
         for instances, name in zip([frame, training, testing], ['data.csv', 'training.csv', 'testing.csv']):
-            self.__persist(blob=instances, pathstr=os.path.join(code.hospital_code, name))
+            self.__persist(blob=instances, pathstr=os.path.join(path, name))
 
         return mr.Master(training=training, testing=testing)

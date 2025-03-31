@@ -5,7 +5,7 @@ import warnings
 import statsmodels.tools.sm_exceptions as sme
 import statsmodels.tsa.forecasting.stl as tfc
 
-import src.elements.codes as ce
+import src.elements.gauge as ge
 
 
 class Control:
@@ -16,7 +16,7 @@ class Control:
     def __init__(self):
         pass
 
-    def __call__(self, architecture: tfc.STLForecast, method: str, covariance: str, code: ce.Codes) \
+    def __call__(self, architecture: tfc.STLForecast, method: str, covariance: str, gauge: ge.Gauge) \
             -> tfc.STLForecastResults | None:
         """
         issue = issubclass(el[-1].category, sme.ConvergenceWarning)
@@ -30,7 +30,7 @@ class Control:
             <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.fit.html">ARIMA</a>,
             <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.fit.html">
             Seasonal ARIMA</a>.
-        :param code: The health board & institution/hospital codes of an institution/hospital.<br>
+        :param gauge: Encodes the time series & catchment identification codes of a gauge.<br>
         :return:
         """
 
@@ -46,8 +46,8 @@ class Control:
                      str(el[-1].message).__contains__('error not necessarily achieved'))
 
             if query:
-                logging.info('Skip: %s, %s (method -> %s)',
-                             code.hospital_code, architecture.__getattribute__('_model'), method)
+                logging.info('Skip: %s (method -> %s), vis-à-vis %s of %s',
+                             architecture.__getattribute__('_model'), method, gauge.ts_id, gauge.catchment_id)
                 warnings.resetwarnings()
                 return None
 
