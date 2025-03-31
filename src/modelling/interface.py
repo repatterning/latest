@@ -42,7 +42,7 @@ class Interface:
 
         :return:
         """
-        
+
         __get_data = dask.delayed(src.modelling.data.Data(arguments=self.__arguments).exc)
         __get_splits = dask.delayed(src.modelling.split.Split(arguments=self.__arguments).exc)
         __modelling = dask.delayed(src.modelling.architecture.interface.Interface(arguments=self.__arguments).exc)
@@ -51,12 +51,12 @@ class Interface:
         for gauge in self.__gauges:
 
             logging.info(gauge)
-            
+
             sections = self.__get_sections(ts_id=gauge.ts_id)
             data = __get_data(sections=sections, gauge=gauge)
             master: mr.Master = __get_splits(data=data, gauge=gauge)
             message = __modelling(master=master, gauge=gauge)
             computations.append(message)
-            
+
         messages = dask.compute(computations, scheduler='threads')[0]
         logging.info(messages)
