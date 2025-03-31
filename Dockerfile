@@ -1,5 +1,5 @@
 # Pytorch
-FROM nvcr.io/nvidia/jax:25.01-py3
+FROM python:3.12.8-bookworm
 
 
 # Temporary
@@ -26,7 +26,8 @@ RUN groupadd --system automata --gid $GID && \
     unzip /tmp/awscliv2.zip -d /tmp/ && cd /tmp && sudo ./aws/install && cd ~ && \
     pip install --upgrade pip && \
     pip install --requirement /app/requirements.txt --no-cache-dir && \
-    mkdir /app/warehouse
+    mkdir /app/warehouse && mkdir /home/automaton && \
+    chown -R automaton:automata /app/warehouse && chown -R automaton:automata /home/automaton
 
 
 # Specific COPY
@@ -35,11 +36,10 @@ COPY config.py /app/config.py
 
 
 # Port
-EXPOSE 8000 8888
+EXPOSE 8000
 
 
 # Create mountpoint
-RUN chown -R automaton:automata /app/warehouse
 VOLUME /app/warehouse
 
 
