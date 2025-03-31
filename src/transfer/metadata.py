@@ -2,7 +2,6 @@
 
 import boto3
 
-import config
 import src.functions.objects
 import src.s3.configurations
 
@@ -23,7 +22,6 @@ class Metadata:
         """
 
         self.__connector = connector
-        self.__configurations = config.Config()
 
     def exc(self, name: str) -> dict:
         """
