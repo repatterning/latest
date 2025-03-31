@@ -1,5 +1,5 @@
 # Base Image
-FROM nvcr.io/nvidia/jax:25.01-py3
+FROM python:3.12.8-bookworm
 
 
 # If the steps of a `Dockerfile` use files that are different from the `context` file, COPY the
@@ -12,14 +12,6 @@ COPY /.devcontainer/requirements.txt /app
 SHELL [ "/bin/bash", "-c" ]
 
 
-# https://pytensor.readthedocs.io/en/latest/troubleshooting.html#how-do-i-configure-test-my-blas-library
-# https://superfastpython.com/numpy-number-blas-threads/
-# ENV PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
-# ENV OMP_NUM_THREADS=16
-ENV PYTENSOR_FLAGS="blas__ldflags='-llapack -lblas -lcblas'"
-ENV OMP_NUM_THREADS=16
-
-
 # Installation
 RUN apt update && apt -q -y upgrade && apt -y install sudo && sudo apt -y install graphviz && \
     sudo apt -y install wget && sudo apt -y install curl && sudo apt -y install unzip && \
@@ -30,7 +22,7 @@ RUN apt update && apt -q -y upgrade && apt -y install sudo && sudo apt -y instal
 
 
 # Port
-EXPOSE 8000 8888
+EXPOSE 8000
 
 
 # ENTRYPOINT
