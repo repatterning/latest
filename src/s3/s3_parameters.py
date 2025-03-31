@@ -31,10 +31,6 @@ class S3Parameters:
 
         self.__connector = connector
 
-        # An instance for S3 interactions
-        self.__s3_client: boto3.session.Session.client = connector.client(
-            service_name='s3')
-
         # Hence
         self.__configurations = config.Config()
         self.__secret = src.functions.secret.Secret(connector=connector)
@@ -45,7 +41,8 @@ class S3Parameters:
         :return:
         """
 
-        data = src.s3.configurations.Configurations(connector=self.__connector).serial(key_name=self.__configurations.s3_parameters_key)
+        data = src.s3.configurations.Configurations(connector=self.__connector).serial(
+            key_name=self.__configurations.s3_parameters_key)
 
         return data['parameters']
 
