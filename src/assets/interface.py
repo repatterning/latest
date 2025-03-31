@@ -1,9 +1,6 @@
 """Module interface.py"""
-import logging
-
 import pandas as pd
 
-import config
 import src.assets.gauges
 import src.assets.partitions
 import src.elements.s3_parameters as s3p
@@ -30,9 +27,6 @@ class Interface:
         self.__service = service
         self.__s3_parameters = s3_parameters
         self.__arguments = arguments
-
-        # Configurations
-        self.__configurations = config.Config()
 
     def __get_uri(self, catchment_id, ts_id, datestr):
         """
