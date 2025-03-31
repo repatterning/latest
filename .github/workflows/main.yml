@@ -1,4 +1,4 @@
-name: 'Accident & Emergency: Bayesian & Naïve Forecasting via GPU/CPU'
+name: 'Hydrography: Predicting H<sub>2</sub>O Levels'
 
 on: [push]
 
@@ -195,7 +195,7 @@ jobs:
   ecr:
     name: Amazon Elastic Container Registry
     needs: build
-    if: ${{ false }}
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
     permissions:
