@@ -72,4 +72,3 @@ class Interface:
             service=self.__service, bucket_name=self.__s3_parameters.internal).exc(
             strings=strings, tagging='project=emergency')
         logging.info(messages)
-
