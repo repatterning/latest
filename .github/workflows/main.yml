@@ -1,4 +1,4 @@
-name: 'Hydrography: Predicting H<sub>2</sub>O Levels'
+name: 'Hydrography: Predicting Water Levels'
 
 on: [push]
 
