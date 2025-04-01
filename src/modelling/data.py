@@ -1,4 +1,5 @@
 """Module data.py"""
+import logging
 import datetime
 import time
 
@@ -68,8 +69,10 @@ class Data:
         :return:
         """
 
+        logging.info(sections)
+
         try:
-            data = ddf.read_csv(urlpath=sections)
+            data = ddf.read_csv(sections)
         except ImportError as err:
             raise err from err
 
