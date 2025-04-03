@@ -56,7 +56,7 @@ class Forecasts:
         :return:
         """
 
-        _training = self.__training[['ts_id', 'timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
+        _training = self.__training[['timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
         _training.drop(columns='date', inplace=True)
 
         return _training.to_dict(orient='tight')
@@ -68,7 +68,7 @@ class Forecasts:
         :return:
         """
 
-        _testing = self.__testing[['ts_id', 'timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
+        _testing = self.__testing[['timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
         _testing.drop(columns='date', inplace=True)
 
         return _testing.to_dict(orient='tight')
