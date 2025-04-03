@@ -2,6 +2,7 @@
 import datetime
 import os
 
+import numpy as np
 import pandas as pd
 import statsmodels.tsa.forecasting.stl as tfs
 
@@ -55,7 +56,7 @@ class Forecasts:
         :return:
         """
 
-        _training = self.__training[['ts_id', 'timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
+        _training = self.__training[['timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
         _training.drop(columns='date', inplace=True)
 
         return _training.to_dict(orient='tight')
@@ -67,7 +68,7 @@ class Forecasts:
         :return:
         """
 
-        _testing = self.__testing[['ts_id', 'timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
+        _testing = self.__testing[['timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
         _testing.drop(columns='date', inplace=True)
 
         return _testing.to_dict(orient='tight')
@@ -80,6 +81,7 @@ class Forecasts:
         """
 
         _futures: pd.DataFrame = predictions.copy()[-self.__arguments.get('ahead'):]
+        _futures['timestamp'] = _futures['date'].astype(np.int64)//(10**6)
         _futures.drop(columns='date', inplace=True)
 
         return _futures.to_dict(orient='tight')
