@@ -2,6 +2,7 @@
 import datetime
 import os
 
+import numpy as np
 import pandas as pd
 import statsmodels.tsa.forecasting.stl as tfs
 
@@ -80,6 +81,7 @@ class Forecasts:
         """
 
         _futures: pd.DataFrame = predictions.copy()[-self.__arguments.get('ahead'):]
+        _futures['timestamp'] = _futures['date'].astype(np.int64)//(10**6)
         _futures.drop(columns='date', inplace=True)
 
         return _futures.to_dict(orient='tight')
