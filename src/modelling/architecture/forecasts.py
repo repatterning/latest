@@ -9,6 +9,7 @@ import statsmodels.tsa.forecasting.stl as tfs
 import src.elements.gauge as ge
 import src.elements.master as mr
 import src.functions.objects
+import src.modelling.architecture.restructure
 
 
 class Forecasts:
@@ -25,13 +26,13 @@ class Forecasts:
         :param path: The storage path.<br>
         """
 
-        self.__training = master.training
-        self.__testing = master.testing
+        self.__master = master
         self.__arguments = arguments
         self.__system = system
         self.__path = path
 
         self.__objects = src.functions.objects.Objects()
+        self.__restructure = src.modelling.architecture.restructure.Restructure()
 
     def __get_predictions(self, limit: datetime.datetime) -> pd.DataFrame:
         """
@@ -56,25 +57,27 @@ class Forecasts:
         :return:
         """
 
-        _training = self.__training[['timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
+        _training = self.__master.training[['timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
         _training.drop(columns='date', inplace=True)
 
-        return _training.to_dict(orient='tight')
+        return self.__restructure.exc(data=_training.copy())
 
     def __get_testing(self, predictions: pd.DataFrame) -> dict:
         """
+        _testing.to_dict(orient='tight')
 
         :param predictions:
         :return:
         """
 
-        _testing = self.__testing[['timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
+        _testing = self.__master.testing[['timestamp', 'date', 'measure']].merge(predictions, how='left', on='date')
         _testing.drop(columns='date', inplace=True)
 
-        return _testing.to_dict(orient='tight')
+        return self.__restructure.exc(data=_testing.copy())
 
     def __get_futures(self, predictions: pd.DataFrame) -> dict:
         """
+        _futures.to_dict(orient='tight')
 
         :param predictions:
         :return:
@@ -84,7 +87,7 @@ class Forecasts:
         _futures['timestamp'] = _futures['date'].astype(np.int64)//(10**6)
         _futures.drop(columns='date', inplace=True)
 
-        return _futures.to_dict(orient='tight')
+        return self.__restructure.exc(data=_futures.copy())
 
     def exc(self,  gauge: ge.Gauge) -> str:
         """
@@ -93,7 +96,7 @@ class Forecasts:
         :return:
         """
 
-        limit: datetime.datetime = (self.__training['date'].max().to_pydatetime() +
+        limit: datetime.datetime = (self.__master.training['date'].max().to_pydatetime() +
                  datetime.timedelta(hours=2*self.__arguments.get('ahead')))
         predictions = self.__get_predictions(limit=limit)
 
