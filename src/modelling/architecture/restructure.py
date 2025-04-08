@@ -23,7 +23,7 @@ class Restructure:
         string = data.to_json(orient='split')
         dictionary = json.loads(string)
 
-        dictionary['index_names'] = None
-        dictionary['column_names'] = None
+        dictionary['index_names'] = [None]
+        dictionary['column_names'] = [None]
 
         return dictionary
