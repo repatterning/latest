@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.tsa.forecasting.stl as tfs
 
-import src.elements.gauge as ge
+import src.elements.partitions as pr
 import src.elements.master as mr
 import src.functions.objects
 import src.modelling.architecture.restructure
@@ -87,10 +87,10 @@ class Forecasts:
 
         return self.__restructure.exc(data=_futures.copy())
 
-    def exc(self,  gauge: ge.Gauge) -> str:
+    def exc(self,  partition: pr.Partitions) -> str:
         """
 
-        :param gauge: Encodes the time series & catchment identification codes of a gauge, and its gauge datum.<br>
+        :param partition: Encodes the time series & catchment identification codes of a gauge, and its gauge datum.<br>
         :return:
         """
 
@@ -100,11 +100,11 @@ class Forecasts:
         predictions = self.__get_predictions(limit=limit)
 
         # Hence
-        nodes = {'ts_id': gauge.ts_id,
-                 'catchment_id': gauge.catchment_id,
+        nodes = {'ts_id': partition.ts_id,
+                 'catchment_id': partition.catchment_id,
                  'training': self.__get_training(predictions=predictions),
                  'testing': self.__get_testing(predictions=predictions),
                  'futures': self.__get_futures(predictions=predictions)}
         message = self.__objects.write(nodes=nodes, path=os.path.join(self.__path, 'estimates.json'))
 
-        return f'{message} ({gauge.ts_id} of {gauge.catchment_id})'
+        return f'{message} ({partition.ts_id} of {partition.catchment_id})'
