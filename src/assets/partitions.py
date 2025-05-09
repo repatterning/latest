@@ -1,7 +1,8 @@
 """Module partitions.py"""
+import typing
+import logging
 import datetime
-
-import dask
+import numpy as np
 import pandas as pd
 
 
@@ -10,41 +11,24 @@ class Partitions:
     Partitions for parallel computation.
     """
 
-    def __init__(self, data: pd.DataFrame):
+    def __init__(self, data: pd.DataFrame, arguments: dict):
         """
 
         :param data:
+        :param arguments:
         """
 
         self.__data = data
+        self.__arguments = arguments
 
-        # Fields
-        self.__fields = ['ts_id', 'catchment_id', 'gauge_datum', 'datestr']
-
-    @dask.delayed
-    def __matrix(self, start: str):
+    def __limits(self):
         """
 
-        :param start: The date string of the start date of a period; format YYYY-mm-dd.
-        :return:
-        """
-
-        data = self.__data.copy()
-
-        data = data.assign(datestr = str(start))
-        records: pd.DataFrame = data[self.__fields]
-
-        return records
-
-    def exc(self, arguments: dict) -> pd.DataFrame:
-        """
-
-        :param arguments:
         :return:
         """
 
         # The boundaries of the dates; datetime format
-        spanning = arguments.get('spanning')
+        spanning = self.__arguments.get('spanning')
         as_from = datetime.date.today() - datetime.timedelta(days=round(spanning*365))
         starting = datetime.datetime.strptime(f'{as_from.year}-01-01', '%Y-%m-%d')
 
@@ -52,15 +36,33 @@ class Partitions:
         ending = datetime.datetime.strptime(f'{_end}-01-01', '%Y-%m-%d')
 
         # Create series
-        frame = pd.date_range(start=starting, end=ending, freq=arguments.get('catchments').get('frequency')
+        limits = pd.date_range(start=starting, end=ending, freq='YS'
                               ).to_frame(index=False, name='date')
-        starts: pd.Series = frame['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
 
-        # Compute partitions matrix
-        computations = []
-        for start in starts.values:
-            matrix = self.__matrix(start=start)
-            computations.append(matrix)
-        calculations = dask.compute(computations, scheduler='threads')[0]
+        return limits
 
-        return pd.concat(calculations, axis=0, ignore_index=True)
+    def exc(self) -> typing.Tuple[pd.DataFrame, pd.DataFrame]:
+        """
+
+        :return:
+        """
+
+        # The years in focus, via the year start date, e.g., 2023-01-01
+        limits = self.__limits()
+        logging.info(limits)
+
+        # Focusing on ...
+        excerpt = self.__arguments.get('series').get('excerpt')
+        if excerpt is None:
+            data =  self.__data
+        else:
+            codes = np.unique(np.array(excerpt))
+            data = self.__data.copy().loc[self.__data['ts_id'].isin(codes), :]
+
+        # Hence, the data sets in focus vis-à-vis the years in focus
+        listings = limits.merge(data, how='left', on='date')
+
+        # ...
+        partitions = listings[['catchment_id', 'ts_id']].drop_duplicates()
+
+        return partitions, listings
