@@ -5,7 +5,7 @@ import warnings
 import statsmodels.tools.sm_exceptions as sme
 import statsmodels.tsa.forecasting.stl as tfc
 
-import src.elements.gauge as ge
+import src.elements.partitions as pr
 
 
 class Control:
@@ -16,7 +16,7 @@ class Control:
     def __init__(self):
         pass
 
-    def __call__(self, architecture: tfc.STLForecast, method: str, covariance: str, gauge: ge.Gauge) \
+    def __call__(self, architecture: tfc.STLForecast, method: str, covariance: str, partition: pr.Partitions) \
             -> tfc.STLForecastResults | None:
         """
         issue = issubclass(el[-1].category, sme.ConvergenceWarning)
@@ -30,7 +30,7 @@ class Control:
             <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.fit.html">ARIMA</a>,
             <a href="www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.fit.html">
             Seasonal ARIMA</a>.
-        :param gauge: Encodes the time series & catchment identification codes of a gauge.<br>
+        :param partition: Encodes the time series & catchment identification codes of a gauge.<br>
         :return:
         """
 
@@ -47,7 +47,7 @@ class Control:
 
             if query:
                 logging.info('Skip: %s (method -> %s), vis-à-vis %s of %s',
-                             architecture.__getattribute__('_model'), method, gauge.ts_id, gauge.catchment_id)
+                             architecture.__getattribute__('_model'), method, partition.ts_id, partition.catchment_id)
                 warnings.resetwarnings()
                 return None
 
