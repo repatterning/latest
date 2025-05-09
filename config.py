@@ -33,13 +33,22 @@ class Config:
 
 
         '''
-        The key of the Amazon S3 (Simple Storage Service) parameters.
+        Keys
         '''
         self.s3_parameters_key = 's3_parameters.yaml'
+        self.arguments_key = 'artefacts' + '/' + 'architecture' + '/' + 'autoregressive' + '/' + 'arguments.json'
+        self.metadata = 'artefacts/metadata.json'
 
 
         '''
         Local Paths
         '''
+        sections = ['assets', 'autoregressive', self.stamp]
         self.warehouse: str = os.path.join(os.getcwd(), 'warehouse')
-        self.artefacts_: str = os.path.join(self.warehouse, 'artefacts', self.stamp)
+        self.assets_ = os.path.join(self.warehouse, *sections)
+
+        '''
+        Cloud
+        '''
+        self.prefix = '/'.join(sections)
+
