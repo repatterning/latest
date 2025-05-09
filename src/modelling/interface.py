@@ -4,9 +4,9 @@ import logging
 import dask
 import pandas as pd
 
+import src.elements.partitions as pr
 import src.elements.master as mr
 import src.modelling.data
-import src.modelling.gauges
 import src.modelling.split
 import src.modelling.architecture.interface
 
@@ -16,26 +16,28 @@ class Interface:
     The interface to the seasonal & trend component modelling steps.
     """
 
-    def __init__(self, assets: pd.DataFrame, arguments: dict):
+    def __init__(self, listings: pd.DataFrame, arguments: dict):
         """
 
-        :param assets: Of assets
+        :param listings: List of files
         :param arguments: A set of model development, and supplementary, arguments.
         """
 
-        self.__assets = assets
+        self.__listings = listings
         self.__arguments = arguments
 
-        # The gauges
-        self.__gauges = src.modelling.gauges.Gauges().exc(assets=assets)
-
     @dask.delayed
-    def __get_sections(self, ts_id: int) -> list:
+    def __get_listing(self, ts_id: int) -> list[str]:
+        """
 
-        return self.__assets.loc[
-            self.__assets['ts_id'] == ts_id, 'uri'].to_list()
+        :param ts_id:
+        :return:
+        """
 
-    def exc(self):
+        return self.__listings.loc[
+            self.__listings['ts_id'] == ts_id, 'uri'].to_list()
+
+    def exc(self, partitions: list[pr.Partitions]):
         """
         Via dask dataframe, read-in a machine's set of measures files.  Subsequently, split, then add the
         relevant features to the training data split.
@@ -45,17 +47,15 @@ class Interface:
 
         __get_data = dask.delayed(src.modelling.data.Data(arguments=self.__arguments).exc)
         __get_splits = dask.delayed(src.modelling.split.Split(arguments=self.__arguments).exc)
-        __modelling = dask.delayed(src.modelling.architecture.interface.Interface(arguments=self.__arguments).exc)
+        __architecture = dask.delayed(src.modelling.architecture.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
-        for gauge in self.__gauges:
+        for partition in partitions:
 
-            logging.info(gauge)
-
-            sections = self.__get_sections(ts_id=gauge.ts_id)
-            data = __get_data(sections=sections, gauge=gauge)
-            master: mr.Master = __get_splits(data=data, gauge=gauge)
-            message = __modelling(master=master, gauge=gauge)
+            listing = self.__get_listing(ts_id=partition.ts_id)
+            data = __get_data(listing=listing)
+            master: mr.Master = __get_splits(data=data, partition=partition)
+            message = __architecture(master=master, partition=partition)
             computations.append(message)
 
         messages = dask.compute(computations, scheduler='threads')[0]
