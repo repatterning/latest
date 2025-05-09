@@ -1,91 +1,62 @@
 """Module data.py"""
-import logging
 import datetime
-import time
 
 import dask.dataframe as ddf
+import numpy as np
 import pandas as pd
-
-import src.elements.gauge as ge
 
 
 class Data:
     """
-    A gauge's data
+    Data
     """
 
     def __init__(self, arguments: dict):
         """
 
-        :param arguments:
+        :param arguments: A set of arguments vis-à-vis calculation & storage objectives.
         """
 
-        spanning = arguments.get('spanning')
-        as_from = datetime.date.today() - datetime.timedelta(days=round(spanning*365))
-        self.__starting = 1000 * time.mktime(as_from.timetuple())
+        # Focus
+        self.__dtype = {'timestamp': np.float64, 'ts_id': np.float64, 'measure': float}
 
-    @staticmethod
-    def __anomalies(frame: pd.DataFrame) -> pd.DataFrame:
+        # seconds, milliseconds
+        as_from: datetime.datetime = (datetime.datetime.now()
+                                      - datetime.timedelta(days=round(arguments.get('spanning')*365)))
+        self.__as_from = as_from.timestamp() * 1000
 
-        data = frame.copy().drop(columns='quality_code')
-        data.sort_values(by='timestamp', ascending=True, inplace=True)
-        data.drop_duplicates(keep='last', inplace=True)
-
-        return data
-
-    def __setting_up(self, frame: pd.DataFrame) -> pd.DataFrame:
+    def __get_data(self, listing: list[str]):
         """
 
-        :param frame:
+        :param listing:
         :return:
         """
-
-        frame['date'] = pd.to_datetime(frame['timestamp'], unit='ms')
-
-        return frame.loc[frame['timestamp'] >= self.__starting, :]
-
-    @staticmethod
-    def __timings(frame: pd.DataFrame):
-        """
-
-        :param frame:
-        :return:
-        """
-
-        dates = pd.date_range(start=frame['date'].min(), end=frame['date'].max(),
-                              freq='h', inclusive='left')
-        slices = pd.DataFrame(data={'date': dates})
-
-        data = slices.merge(frame, how='left', on='date')
-        data.sort_values(by=['ts_id', 'timestamp'], ascending=True, inplace=True)
-
-        return data
-
-    def exc(self, sections: list, gauge: ge.Gauge) -> pd.DataFrame:
-        """
-
-        :param sections:
-        :param gauge:
-        :return:
-        """
-
-        logging.info(sections)
 
         try:
-            data = ddf.read_csv(sections)
+            block: pd.DataFrame = ddf.read_csv(
+                listing, header=0, usecols=list(self.__dtype.keys()), dtype=self.__dtype).compute()
         except ImportError as err:
             raise err from err
 
-        frame: pd.DataFrame = data.compute()
+        block.reset_index(drop=True, inplace=True)
 
-        # Anomalies
-        frame = self.__anomalies(frame=frame)
+        return block
 
-        # Measure
-        frame['measure'] = frame['value'] + gauge.gauge_datum
+    def exc(self, listing: list[str]) -> pd.DataFrame:
+        """
 
-        # Setting up, focusing on hour points
-        frame = self.__setting_up(frame=frame.copy())
-        frame = self.__timings(frame=frame.copy())
+        :param listing:
+        :return:
+        """
 
-        return frame
+        # The data
+        data = self.__get_data(listing=listing)
+
+        # Filter
+        data = data.copy().loc[data['timestamp'] >= self.__as_from, :]
+
+        # Append a date of the format datetime64[]
+        data['date'] = pd.to_datetime(data['timestamp'], unit='ms')
+        data.sort_values(by=['ts_id', 'timestamp'], ascending=True, inplace=True)
+
+        return data
