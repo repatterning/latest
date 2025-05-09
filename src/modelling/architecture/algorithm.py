@@ -6,7 +6,7 @@ import pandas as pd
 import statsmodels.tsa.arima.model as tar
 import statsmodels.tsa.forecasting.stl as tfs
 
-import src.elements.gauge as ge
+import src.elements.partitions as pr
 import src.modelling.architecture.control
 
 
@@ -15,17 +15,17 @@ class Algorithm:
     Focus: Autoregressive Integrated Moving Average (ARIMA)
     """
 
-    def __init__(self, training: pd.DataFrame, arguments: dict, gauge: ge.Gauge):
+    def __init__(self, training: pd.DataFrame, arguments: dict, partition: pr.Partitions):
         """
         
         :param training: The data vis-à-vis a gauge.<br>
         :param arguments: A set of model development, and supplementary, arguments.<br>
-        :param gauge: Encodes the time series & catchment identification codes of a gauge, and its gauge datum.<br>
+        :param partition: Encodes the time series & catchment identification codes of a gauge.<br>
         """
 
         self.__training = training
         self.__arguments = arguments
-        self.__gauge = gauge
+        self.__partition = partition
 
         # Modelling Parameters
         self.__parameters: dict = self.__arguments.get('parameters')
@@ -47,7 +47,7 @@ class Algorithm:
         """
 
         system = self.__control(
-            architecture=architecture, method=method, covariance=self.__covariance, gauge=self.__gauge)
+            architecture=architecture, method=method, covariance=self.__covariance, partition=self.__partition)
 
         return system
 
@@ -70,7 +70,8 @@ class Algorithm:
             trend_deg=self.__parameters.get('degree_trend'),
             robust=self.__parameters.get('robust'))
 
-        logging.info('Modelling: %s of %s, ARIMA (method -> %s)', self.__gauge.ts_id, self.__gauge.catchment_id, method)
+        logging.info('Modelling: %s of %s, ARIMA (method -> %s)',
+                     self.__partition.ts_id, self.__partition.catchment_id, method)
 
         return self.__execute(architecture=architecture,  method=method)
 
