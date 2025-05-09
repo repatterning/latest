@@ -4,8 +4,8 @@ import os
 import pandas as pd
 
 import config
-import src.elements.gauge as ge
 import src.elements.master as mr
+import src.elements.partitions as pr
 import src.functions.directories
 import src.functions.streams
 
@@ -34,7 +34,7 @@ class Split:
         :return:
         """
 
-        return blob.copy()[:-self.__arguments.get('ahead')]
+        return blob.copy()[:-self.__arguments.get('testing')]
 
     def __exclude(self, blob: pd.DataFrame) -> pd.DataFrame:
         """
@@ -44,7 +44,7 @@ class Split:
         :return:
         """
 
-        return blob.copy()[-self.__arguments.get('ahead'):]
+        return blob.copy()[-self.__arguments.get('testing'):]
 
     def __persist(self, blob: pd.DataFrame, pathstr: str) -> None:
         """
@@ -56,11 +56,11 @@ class Split:
 
         self.__streams.write(blob=blob, path=pathstr)
 
-    def exc(self, data: pd.DataFrame, gauge: ge.Gauge) -> mr.Master:
+    def exc(self, data: pd.DataFrame, partition: pr.Partitions) -> mr.Master:
         """
 
         :param data: The data set consisting of the attendance numbers of <b>an</b> institution/hospital.
-        :param gauge: The time series & catchment identification codes of a gauge.
+        :param partition: The time series & catchment identification codes of a gauge.
         :return:
         """
 
@@ -72,11 +72,11 @@ class Split:
         testing = self.__exclude(blob=frame)
 
         # Path
-        path = os.path.join(self.__configurations.artefacts_, 'data', str(gauge.catchment_id), str(gauge.ts_id))
+        path = os.path.join(self.__configurations.assets_, str(partition.catchment_id), str(partition.ts_id))
         self.__directories.create(path=path)
 
         # Persist
         for instances, name in zip([frame, training, testing], ['data.csv', 'training.csv', 'testing.csv']):
-            self.__persist(blob=instances, pathstr=os.path.join(path, name))
+            self.__persist(blob=instances.drop(columns='date'), pathstr=os.path.join(path, name))
 
         return mr.Master(training=training, testing=testing)
