@@ -29,7 +29,7 @@ class Unload:
     def __init__(self, s3_client: boto3.session.Session.client):
         """
 
-        :param s3_client: An S3 (Simple Storage Service) client instance.
+        :param s3_client: An S3 (Simple Storage Service) client instance
         """
 
         self.__s3_client = s3_client
