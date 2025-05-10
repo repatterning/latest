@@ -51,4 +51,3 @@ class Config:
         Cloud
         '''
         self.prefix = '/'.join(sections)
-
