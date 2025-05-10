@@ -12,7 +12,7 @@ For this Python project/template, the remote development environment requires
 An image is built via the command
 
 ```shell
-docker build . --file .devcontainer/Dockerfile -t uncertainty
+docker build . --file .devcontainer/Dockerfile -t mathematica
 ```
 
 On success, the output of
@@ -27,30 +27,30 @@ should include
 
 | repository  | tag    | image id | created  | size     |
 |:------------|:-------|:---------|:---------|:---------|
-| uncertainty | latest | $\ldots$ | $\ldots$ | $\ldots$ |
+| mathematica | latest | $\ldots$ | $\ldots$ | $\ldots$ |
 
 
 <br>
 
-Subsequently, run an instance of the image `uncertainty` via:
+Subsequently, run an instance of the image `mathematica` via:
 
 
 ```shell
-docker run --rm --gpus all -i -t -p 8000:8000 -w /app --mount
-    type=bind,src="$(pwd)",target=/app uncertainty
+docker run --rm --gpus all -i -t -p 8050:8050 -w /app --mount
+    type=bind,src="$(pwd)",target=/app mathematica
 ```
 
 or
 
 ```shell
-docker run --rm --gpus all -i -t -p 8000:8000 -w /app --mount
+docker run --rm --gpus all -i -t -p 8050:8050 -w /app --mount
     type=bind,src="$(pwd)",target=/app 
-    -v ~/.aws:/root/.aws uncertainty
+    -v ~/.aws:/root/.aws mathematica
 ```
 
 <br>
 
-Herein, `-p 8000:8000` maps the host port `8000` to container port `8000`.  Note, the container's working environment,
+Herein, `-p 8050:8050` maps the host port `8050` to container port `8050`.  Note, the container's working environment,
 i.e., `-w`, must be inline with this project's top directory.  Additionally, visit the links for more about the flags/options $\rightarrow$
 
 * --rm: [automatically remove container](https://docs.docker.com/engine/reference/commandline/run/#:~:text=a%20container%20exits-,%2D%2Drm,-Automatically%20remove%20the)
@@ -62,13 +62,13 @@ i.e., `-w`, must be inline with this project's top directory.  Additionally, vis
 
 <br>
 
-Get the name of a running instance of ``uncertainty`` via:
+Get the name of a running instance of ``mathematica`` via:
 
 ```shell
 docker ps --all
 ```
 
-Never deploy a root container, study the production [Dockerfile](../Dockerfile); cf. remote [.devcontainer/Dockerfile](../.devcontainer/Dockerfile)
+**Never deploy a root container**, study the production [Dockerfile](../Dockerfile); cf. remote [.devcontainer/Dockerfile](../.devcontainer/Dockerfile)
 
 <br>
 
