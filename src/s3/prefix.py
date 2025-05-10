@@ -40,13 +40,14 @@ class Prefix:
 
         return response
 
-    def objects(self, prefix: str) -> list[str]:
+    def objects(self, prefix: str, delimiter: str = '') -> list[str]:
         """
 
         :param prefix: An Amazon S3 (Simple Storage Service) prefix.
+        :param delimiter: Either '' or '/'
         :return:
         """
 
         instance = src.s3.keys.Keys(service=self.__service, bucket_name=self.__bucket_name)
 
-        return instance.excerpt(prefix=prefix)
+        return instance.excerpt(prefix=prefix, delimiter=delimiter)
