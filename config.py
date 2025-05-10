@@ -36,7 +36,7 @@ class Config:
         Keys
         '''
         self.s3_parameters_key = 's3_parameters.yaml'
-        self.arguments_key = 'artefacts' + '/' + 'architecture' + '/' + 'autoregressive' + '/' + 'arguments.json'
+        self.arguments_key = 'artefacts' + '/' + 'architecture' + '/' + 'autoregressive' + '/' + 'temporary.json'
         self.metadata = 'artefacts/metadata.json'
 
 
