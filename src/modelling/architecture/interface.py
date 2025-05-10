@@ -10,7 +10,6 @@ import src.elements.master as mr
 import src.modelling.architecture.algorithm
 import src.modelling.architecture.forecasts
 import src.modelling.architecture.page
-import src.functions.directories
 
 
 class Interface:
@@ -27,7 +26,6 @@ class Interface:
         self.__arguments = arguments
 
         self.__configurations = config.Config()
-        self.__directories = src.functions.directories.Directories()
 
     def __restructure(self, training: pd.DataFrame):
 
