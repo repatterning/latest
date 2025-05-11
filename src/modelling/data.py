@@ -1,6 +1,6 @@
 """Module data.py"""
-import logging
 import datetime
+import logging
 
 import dask.dataframe as ddf
 import numpy as np
@@ -57,7 +57,6 @@ class Data:
         logging.info(data.loc[states, :])
 
         data['measure'] = data['measure'].ffill().values
-        logging.info(data.loc[states, :])
 
         return data
 
