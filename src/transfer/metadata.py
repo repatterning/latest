@@ -1,5 +1,4 @@
 """Module metadata.py"""
-
 import boto3
 
 import config
