@@ -4,11 +4,11 @@ import logging
 import dask
 import pandas as pd
 
-import src.elements.partitions as pr
 import src.elements.master as mr
+import src.elements.partitions as pr
+import src.modelling.architecture.interface
 import src.modelling.data
 import src.modelling.split
-import src.modelling.architecture.interface
 
 
 class Interface:
