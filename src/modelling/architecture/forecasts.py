@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 import statsmodels.tsa.forecasting.stl as tfs
 
-import src.elements.partitions as pr
 import src.elements.master as mr
+import src.elements.partitions as pr
 import src.functions.objects
 import src.modelling.architecture.restructure
 
