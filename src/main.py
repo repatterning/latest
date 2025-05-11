@@ -12,7 +12,6 @@ def main():
 
     # Logging
     logger: logging.Logger = logging.getLogger(__name__)
-    logger.info(__name__)
 
     # Data
     partitions, listings = src.assets.interface.Interface(service=service, s3_parameters=s3_parameters, arguments=arguments).exc()
