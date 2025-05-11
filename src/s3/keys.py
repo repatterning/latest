@@ -56,7 +56,7 @@ class Keys:
                         for dictionary in dictionaries['Contents']]
             case '/':
                 return [dictionary['Prefix']
-                        for dictionary in dictionaries['CommonPrefixes']]
+                    for dictionary in dictionaries['CommonPrefixes']]
             case _:
                 return []
 

@@ -1,4 +1,4 @@
-name: 'Hydrography: Predicting Water Levels'
+name: 'Hydrography: Approximate Autoregressive Modelling for Urgent Cases'
 
 on: [push]
 

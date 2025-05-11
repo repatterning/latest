@@ -11,10 +11,10 @@ class Master(typing.NamedTuple):
     Attributes<br>
     ----------<br>
     <b>training</b> : pandas.DataFrame
-        The training data of an institution<br>
+        The training data of a gauge<br>
 
     <b>testing</b> : pandas.DataFrame
-        The testing data of an institution
+        The testing data of a gauge<br>
 
     """
 

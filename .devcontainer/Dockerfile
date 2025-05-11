@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.12.8-bookworm
+FROM python:3.12.10-bookworm
 
 
 # If the steps of a `Dockerfile` use files that are different from the `context` file, COPY the
@@ -22,7 +22,7 @@ RUN apt update && apt -q -y upgrade && apt -y install sudo && sudo apt -y instal
 
 
 # Port
-EXPOSE 8000
+EXPOSE 8050
 
 
 # ENTRYPOINT

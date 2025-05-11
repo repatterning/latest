@@ -5,12 +5,11 @@ import os
 import pandas as pd
 
 import config
-import src.elements.gauge as ge
 import src.elements.master as mr
+import src.elements.partitions as pr
 import src.modelling.architecture.algorithm
 import src.modelling.architecture.forecasts
 import src.modelling.architecture.page
-import src.functions.directories
 
 
 class Interface:
@@ -27,19 +26,17 @@ class Interface:
         self.__arguments = arguments
 
         self.__configurations = config.Config()
-        self.__directories = src.functions.directories.Directories()
 
-    def __set_path(self, gauge: ge.Gauge):
+    def __frequency(self, training: pd.DataFrame):
+        """
 
-        path = os.path.join(self.__configurations.artefacts_, 'models',
-                            str(gauge.catchment_id), str(gauge.ts_id))
-        self.__directories.create(path=path)
+        :param training:
+        :return:
+        """
 
-        return path
 
-    def __restructure(self, training: pd.DataFrame):
-
-        training.set_index(keys='date', inplace=True)
+        training.set_index(keys='date', drop=False, inplace=True)
+        training.index.rename('index', inplace=True)
         training.sort_index(axis=0, ascending=True, inplace=True)
 
         try:
@@ -49,34 +46,36 @@ class Interface:
 
         return training
 
-    def exc(self, master: mr.Master, gauge: ge.Gauge) -> str:
+    def exc(self, master: mr.Master, partition: pr.Partitions) -> str:
         """
 
         :param master: A named tuple consisting of a gauge's training & testing data.<br>
-        :param gauge: Encodes the time series & catchment identification codes of a gauge.<br>
+        :param partition: Encodes the time series & catchment identification codes of a gauge.<br>
         :return:
         """
 
-        path = self.__set_path(gauge=gauge)
+        master.training.info()
+
+        path = os.path.join(self.__configurations.assets_, str(partition.catchment_id), str(partition.ts_id))
 
         # Structuring
-        _training =  self.__restructure(training=master.training.copy())
+        _training =  self.__frequency(training=master.training.copy())
         if _training.empty:
-            logging.info('Skipping %s of %s -> frequency issues.', gauge.ts_id, gauge.catchment_id)
-            return f'Frequency problems: {gauge.ts_id} of {gauge.catchment_id}'
+            logging.info('Skipping %s of %s -> frequency issues.', partition.ts_id, partition.catchment_id)
+            return f'Frequency issues: {partition.ts_id} of {partition.catchment_id} (no model)'
 
-        # The forecasting algorithm
+        # The model
         algorithm = src.modelling.architecture.algorithm.Algorithm(
-            training=_training, arguments=self.__arguments, gauge=gauge)
+            training=_training, arguments=self.__arguments, partition=partition)
         system = algorithm.exc()
 
         if system is None:
-            return f'Unable to develop a model for {gauge.ts_id} of {gauge.catchment_id}'
+            return f'Unable to develop a model for {partition.ts_id} of {partition.catchment_id}'
 
         # Next, extract forecasts/predictions and supplementary details, subsequently persist; via the
         # model's <page> & <forecasts>.
         src.modelling.architecture.page.Page(system=system, path=path).exc()
         message = src.modelling.architecture.forecasts.Forecasts(
-            master=master, arguments=self.__arguments, system=system, path=path).exc(gauge=gauge)
+            master=master, arguments=self.__arguments, system=system, path=path).exc(partition=partition)
 
         return message

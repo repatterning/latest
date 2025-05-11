@@ -1,7 +1,7 @@
 """Module dictionary.py"""
 import glob
+import logging
 import os
-import pathlib
 
 import pandas as pd
 
@@ -12,9 +12,7 @@ class Dictionary:
     """
 
     def __init__(self):
-        """
-        Constructor
-        """
+        pass
 
     @staticmethod
     def __local(path: str, extension: str) -> pd.DataFrame:
@@ -25,32 +23,50 @@ class Dictionary:
         :return:
         """
 
+        # This will be warehouse/
         splitter = os.path.basename(path) + os.path.sep
+        logging.info('SPLITTER: %s', splitter)
 
         # The list of files within the path directory, including its child directories.
-        files: list[str] = glob.glob(pathname=os.path.join(path, '**', f'*.{extension}'),
-                                     recursive=True)
+        files: list[str] = glob.glob(pathname=os.path.join(path, '**', f'*.{extension}'), recursive=True)
 
-        details: list[dict] = [
-            {'file': file,
-             'vertex': file.rsplit(splitter, maxsplit=1)[1],
-             'section': os.path.basename(pathlib.PurePath(file).parent.parent.parent)}
-            for file in files]
+        # Hence
+        if len(files) == 0:
+            return pd.DataFrame()
+
+        details: list[dict] = [{'file': file,
+                                'vertex': file.rsplit(splitter, maxsplit=1)[1]}
+                               for file in files]
 
         return pd.DataFrame.from_records(details)
 
-    def exc(self, path: str, extension: str, prefix: str):
+    @staticmethod
+    def __sections(local: pd.DataFrame) -> pd.DataFrame:
+        """
+
+        :param local:
+        :return:
+        """
+
+        local['section'] = local['vertex'].apply(os.path.basename)
+
+        return local
+
+    def exc(self, path: str, extension: str, prefix: str) -> pd.DataFrame:
         """
 
         :param path: The path wherein the files of interest lie
         :param extension: The extension type of the files of interest
-        :param prefix: The Amazon S3 (Simple Storage Service) prefix where the files of path are heading
+        :param prefix: The Amazon S3 (Simple Storage Service) where the files of path are heading
         :return:
         """
 
         local: pd.DataFrame = self.__local(path=path, extension=extension)
+        if local.empty:
+            return pd.DataFrame()
 
         # Building the Amazon S3 strings
+        local = self.__sections(local=local.copy())
         frame = local.assign(key=prefix + local["vertex"])
 
-        return frame[['file', 'key', 'section']]
+        return frame
