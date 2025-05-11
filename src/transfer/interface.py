@@ -63,7 +63,6 @@ class Interface:
         logging.info(strings)
 
         # Transfer
-        '''
         if strings.empty:
             logging.info('Empty')
         else:
@@ -73,5 +72,3 @@ class Interface:
                 service=self.__service, bucket_name=self.__s3_parameters.internal).exc(
                 strings=strings, tags={'project': 'hydrography'})
             logging.info(messages)
-        '''
-
