@@ -27,9 +27,16 @@ class Interface:
 
         self.__configurations = config.Config()
 
-    def __restructure(self, training: pd.DataFrame):
+    def __frequency(self, training: pd.DataFrame):
+        """
 
-        training.set_index(keys='date', inplace=True)
+        :param training:
+        :return:
+        """
+
+
+        training.set_index(keys='date', drop=False, inplace=True)
+        training.index.rename('index', inplace=True)
         training.sort_index(axis=0, ascending=True, inplace=True)
 
         try:
@@ -47,15 +54,17 @@ class Interface:
         :return:
         """
 
+        master.training.info()
+
         path = os.path.join(self.__configurations.assets_, str(partition.catchment_id), str(partition.ts_id))
 
         # Structuring
-        _training =  self.__restructure(training=master.training.copy())
+        _training =  self.__frequency(training=master.training.copy())
         if _training.empty:
             logging.info('Skipping %s of %s -> frequency issues.', partition.ts_id, partition.catchment_id)
-            return f'Frequency problems: {partition.ts_id} of {partition.catchment_id}'
+            return f'Frequency issues: {partition.ts_id} of {partition.catchment_id} (no model)'
 
-        # The forecasting algorithm
+        # The model
         algorithm = src.modelling.architecture.algorithm.Algorithm(
             training=_training, arguments=self.__arguments, partition=partition)
         system = algorithm.exc()
