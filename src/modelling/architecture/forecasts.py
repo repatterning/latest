@@ -81,7 +81,7 @@ class Forecasts:
         :return:
         """
 
-        _futures: pd.DataFrame = predictions.copy()[-self.__arguments.get('future'):]
+        _futures: pd.DataFrame = predictions.copy()[-self.__arguments.get('ahead'):]
         _futures['timestamp'] = _futures['date'].astype(np.int64)//(10**6)
         _futures.drop(columns='date', inplace=True)
 
@@ -94,7 +94,7 @@ class Forecasts:
         :return:
         """
 
-        hours = self.__arguments.get('ahead') + self.__arguments.get('future')
+        hours = self.__arguments.get('testing') + self.__arguments.get('ahead')
         limit: datetime.datetime = (self.__master.training['date'].max().to_pydatetime() +
                  datetime.timedelta(hours=hours))
         predictions = self.__get_predictions(limit=limit)
