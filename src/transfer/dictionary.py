@@ -1,6 +1,6 @@
 """Module dictionary.py"""
-import logging
 import glob
+import logging
 import os
 
 import pandas as pd
