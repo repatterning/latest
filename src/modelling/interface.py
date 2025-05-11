@@ -50,7 +50,7 @@ class Interface:
         __architecture = dask.delayed(src.modelling.architecture.interface.Interface(arguments=self.__arguments).exc)
 
         computations = []
-        for partition in partitions:
+        for partition in partitions[:2]:
 
             listing = self.__get_listing(ts_id=partition.ts_id)
             data = __get_data(listing=listing)
