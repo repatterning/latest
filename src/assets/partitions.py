@@ -1,7 +1,7 @@
 """Module partitions.py"""
-import typing
-import logging
 import datetime
+import typing
+
 import numpy as np
 import pandas as pd
 
@@ -49,7 +49,6 @@ class Partitions:
 
         # The years in focus, via the year start date, e.g., 2023-01-01
         limits = self.__limits()
-        logging.info(limits)
 
         # Focusing on ...
         excerpt = self.__arguments.get('series').get('excerpt')
