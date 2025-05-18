@@ -9,8 +9,6 @@ import src.s3.bucket
 import src.s3.keys
 import src.s3.prefix
 
-import config
-
 
 class Cloud:
     """
@@ -32,28 +30,6 @@ class Cloud:
         self.__s3_parameters: s3p.S3Parameters = s3_parameters
         self.__bucket_name = self.__s3_parameters.internal
 
-        # Configurations, etc.
-        self.__configurations = config.Config()
-
-    def __clear_prefix(self) -> bool:
-        """
-
-        :return:
-        """
-
-        # An instance for interacting with objects within an Amazon S3 prefix
-        instance = src.s3.prefix.Prefix(service=self.__service, bucket_name=self.__bucket_name)
-
-        # Get the keys therein
-        keys: list[str] = instance.objects(prefix=self.__configurations.prefix)
-
-        if len(keys) > 0:
-            objects = [{'Key' : key} for key in keys]
-            state = instance.delete(objects=objects)
-            return bool(state)
-
-        return True
-
     def __s3(self) -> bool:
         """
         Prepares an Amazon S3 (Simple Storage Service) bucket.
@@ -65,9 +41,9 @@ class Cloud:
         bucket = src.s3.bucket.Bucket(service=self.__service, location_constraint=self.__s3_parameters.location_constraint,
                                       bucket_name=self.__bucket_name)
 
-        # If the bucket exist, the prefix path is cleared.  Otherwise, the bucket is created.
+        # Strategy Switch: If the bucket exist, do not clear the target prefix, overwrite files instead.
         if bucket.exists():
-            self.__clear_prefix()
+            return True
 
         return bucket.create()
 
