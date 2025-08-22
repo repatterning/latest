@@ -1,6 +1,6 @@
 <br>
 
-Autoregressive
+Latest
 
 <br>
 <br>
