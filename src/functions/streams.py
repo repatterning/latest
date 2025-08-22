@@ -60,8 +60,10 @@ class Streams:
             parse_dates = text.date_fields
 
         try:
-            return pd.read_csv(filepath_or_buffer=text.uri, header=text.header, usecols=text.usecols, dtype=text.dtype,
-                               encoding='utf-8', parse_dates=parse_dates, date_format=text.date_format)
+            return pd.read_csv(filepath_or_buffer=text.uri, header=text.header,
+                               sep=text.sep, usecols=text.usecols, dtype=text.dtype,
+                               encoding='utf-8', parse_dates=parse_dates,
+                               date_format=text.date_format)
         except ImportError:
             return pd.DataFrame()
 
