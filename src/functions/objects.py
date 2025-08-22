@@ -3,7 +3,6 @@ Module objects.py
 """
 import json
 import pathlib
-
 import pandas as pd
 
 import src.functions.api
@@ -39,13 +38,13 @@ class Objects:
 
         try:
             with open(file=path, mode='w', encoding='utf-8') as disk:
-                json.dump(obj=nodes, fp=disk, ensure_ascii=False, indent=4, allow_nan=False)
+                json.dump(obj=nodes, fp=disk, ensure_ascii=False, indent=4)
             return f'{name}: succeeded'
         except IOError as err:
             raise err from err
 
     @staticmethod
-    def api(url: str) -> dict:
+    def api(url: str) -> dict | list[dict]:
         """
 
         :param url: An online data source URL (Uniform Resource Locator)
@@ -58,7 +57,7 @@ class Objects:
         return json.loads(content)
 
     @staticmethod
-    def read(uri: str) -> dict:
+    def read(uri: str) -> dict | list[dict]:
         """
 
         :param uri: A file's URI (Uniform Resource Identifier)
