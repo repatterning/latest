@@ -1,7 +1,7 @@
 """Module partitions.py"""
-import datetime
 import typing
-
+import logging
+import datetime
 import numpy as np
 import pandas as pd
 
@@ -49,6 +49,7 @@ class Partitions:
 
         # The years in focus, via the year start date, e.g., 2023-01-01
         limits = self.__limits()
+        logging.info(limits)
 
         # Focusing on ...
         excerpt = self.__arguments.get('series').get('excerpt')
@@ -57,6 +58,7 @@ class Partitions:
         else:
             codes = np.unique(np.array(excerpt))
             data = self.__data.copy().loc[self.__data['ts_id'].isin(codes), :]
+            data = data if data.shape[0] > 0 else self.__data
 
         # Hence, the data sets in focus vis-à-vis the years in focus
         listings = limits.merge(data, how='left', on='date')
