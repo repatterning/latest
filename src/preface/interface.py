@@ -15,15 +15,11 @@ import src.s3.s3_parameters
 class Interface:
     """
     Interface
-
-    https://docs.python.org/3/library/multiprocessing.html
-    https://superfastpython.com/multiprocessing-in-python
-    https://superfastpython.com/multiprocessing-pool-python/
     """
 
     def __init__(self):
         """
-
+        Constructor
         """
 
         self.__configurations = config.Config()
@@ -31,6 +27,7 @@ class Interface:
     def __get_arguments(self, connector: boto3.session.Session) -> dict:
         """
 
+        :param connector:
         :return:
         """
 
@@ -48,13 +45,17 @@ class Interface:
         """
 
         connector = boto3.session.Session()
-        s3_parameters: s3p.S3Parameters = src.s3.s3_parameters.S3Parameters(connector=connector).exc()
-        service: sr.Service = src.functions.service.Service(
-            connector=connector, region_name=s3_parameters.region_name).exc()
-        arguments: dict = self.__get_arguments(connector=connector)
 
+        # Arguments
+        arguments: dict = self.__get_arguments(connector=connector)
         if codes is not None:
             arguments['series']['excerpt'] = codes
+
+        # Interaction Instances: Amazon
+        s3_parameters: s3p.S3Parameters = src.s3.s3_parameters.S3Parameters(
+            connector=connector, project_key_name=arguments.get('project_key_name')).exc()
+        service: sr.Service = src.functions.service.Service(
+            connector=connector, region_name=s3_parameters.region_name).exc()
 
         src.preface.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
 
