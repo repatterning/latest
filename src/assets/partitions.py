@@ -1,10 +1,12 @@
 """Module partitions.py"""
+import sys
 import typing
 import logging
 import datetime
 import numpy as np
 import pandas as pd
 
+import src.functions.cache
 
 class Partitions:
     """
@@ -54,16 +56,20 @@ class Partitions:
         # Focusing on ...
         excerpt = self.__arguments.get('series').get('excerpt')
         if excerpt is None:
-            data =  self.__data
-        else:
-            codes = np.unique(np.array(excerpt))
-            data = self.__data.copy().loc[self.__data['ts_id'].isin(codes), :]
-            data = data if data.shape[0] > 0 else self.__data
+            logging.info('If the forecasts of one or more locations are of interest, ...')
+            src.functions.cache.Cache().exc()
+            sys.exit(0)
+
+        # Inspecting ...
+        codes = np.unique(np.array(excerpt))
+        data = self.__data.copy().loc[self.__data['ts_id'].isin(codes), :]
+        if data.shape[0] == 0:
+            logging.info('None of the codes time series codes id valid.')
+            src.functions.cache.Cache().exc()
+            sys.exit(0)
 
         # Hence, the data sets in focus vis-à-vis the years in focus
         listings = limits.merge(data, how='left', on='date')
-
-        # ...
         partitions = listings[['catchment_id', 'ts_id']].drop_duplicates()
 
         return partitions, listings
