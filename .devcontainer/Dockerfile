@@ -24,7 +24,8 @@ RUN apt update && apt -q -y upgrade && apt -y install sudo && \
     unzip /tmp/awscliv2.zip -d /tmp/ && cd /tmp && sudo ./aws/install && cd ~ && \
     python3 -m venv $PYTHON_VIRTUAL_ENV && \
     $PYTHON_VIRTUAL_ENV/bin/pip install --upgrade pip && \
-    $PYTHON_VIRTUAL_ENV/bin/pip install --requirement /app/requirements.txt --no-cache-dir
+    $PYTHON_VIRTUAL_ENV/bin/pip install --requirement /app/requirements.txt --no-cache-dir && \
+    $PYTHON_VIRTUAL_ENV/bin/pip install --upgrade tf-keras --no-cache-dir
 
 
 # Hence
