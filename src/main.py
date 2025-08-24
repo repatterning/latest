@@ -31,9 +31,9 @@ def main():
     src.modelling.interface.Interface(
         listings=listings, arguments=arguments).exc(partitions=partitions)
 
-
+    # Transfer
     src.transfer.interface.Interface(
-        connector=connector, service=service, s3_parameters=s3_parameters).exc()
+       connector=connector, service=service, s3_parameters=s3_parameters).exc()
 
     # Deleting __pycache__
     src.functions.cache.Cache().exc()
@@ -73,6 +73,7 @@ if __name__ == '__main__':
     connector, s3_parameters, service, arguments = src.preface.interface.Interface().exc(codes=args.codes)
 
     # Devices
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
     gpu = tf.config.list_physical_devices('GPU')
 
     if arguments.get('cpu') | (not gpu):
