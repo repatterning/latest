@@ -1,4 +1,4 @@
-# FROM tensorflow/tensorflow:latest-gpu
+# Base
 FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04
 
 
@@ -11,7 +11,10 @@ COPY /.devcontainer/requirements.txt /app
 # Environment
 SHELL [ "/bin/bash", "-c" ]
 
+
+# Virtual Environment
 ENV PYTHON_VIRTUAL_ENV=/opt/environment
+
 
 # Setting-up
 RUN apt update && apt -q -y upgrade && apt -y install sudo && \
