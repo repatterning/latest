@@ -6,21 +6,24 @@ import pandas as pd
 
 import src.elements.master as mr
 import src.elements.partitions as pr
-import src.modelling.architecture.interface
 import src.modelling.data
 import src.modelling.split
+import src.modelling.architecture
+import src.modelling.persist
 
 
 class Interface:
     """
-    The interface to the seasonal & trend component modelling steps.
+    <b>Notes</b><br>
+    ------<br>
+    The interface to drift score programs.<br>
     """
 
     def __init__(self, listings: pd.DataFrame, arguments: dict):
         """
 
         :param listings: List of files
-        :param arguments: A set of model development, and supplementary, arguments.
+        :param arguments: The arguments.
         """
 
         self.__listings = listings
@@ -39,24 +42,26 @@ class Interface:
 
     def exc(self, partitions: list[pr.Partitions]):
         """
-        Via dask dataframe, read-in a machine's set of measures files.  Subsequently, split, then add the
-        relevant features to the training data split.
 
+        :param partitions:
         :return:
         """
 
-        __get_data = dask.delayed(src.modelling.data.Data(arguments=self.__arguments).exc)
+        # Delayed Functions
+        __data = dask.delayed(src.modelling.data.Data(arguments=self.__arguments).exc)
         __get_splits = dask.delayed(src.modelling.split.Split(arguments=self.__arguments).exc)
-        __architecture = dask.delayed(src.modelling.architecture.interface.Interface(arguments=self.__arguments).exc)
+        __architecture = dask.delayed(src.modelling.architecture.Architecture(arguments=self.__arguments).exc)
+        __persist = dask.delayed(src.modelling.persist.Persist().exc)
 
+        # Compute
         computations = []
         for partition in partitions:
-
             listing = self.__get_listing(ts_id=partition.ts_id)
-            data = __get_data(listing=listing)
+            data = __data(listing=listing)
             master: mr.Master = __get_splits(data=data, partition=partition)
-            message = __architecture(master=master, partition=partition)
+            inference = __architecture(master=master)
+            message = __persist(inference=inference, partition=partition)
             computations.append(message)
+        latest = dask.compute(computations, scheduler='threads')[0]
 
-        messages = dask.compute(computations, scheduler='threads')[0]
-        logging.info(messages)
+        logging.info(latest)

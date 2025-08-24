@@ -1,6 +1,7 @@
 """Module setup.py"""
 import sys
 
+import config
 import src.elements.s3_parameters as s3p
 import src.elements.service as sr
 import src.functions.cache
@@ -30,6 +31,28 @@ class Cloud:
         self.__s3_parameters: s3p.S3Parameters = s3_parameters
         self.__bucket_name = self.__s3_parameters.internal
 
+        # Configurations, etc.
+        self.__configurations = config.Config()
+
+    def __clear_prefix(self) -> bool:
+        """
+
+        :return:
+        """
+
+        # An instance for interacting with objects within an Amazon S3 prefix
+        instance = src.s3.prefix.Prefix(service=self.__service, bucket_name=self.__bucket_name)
+
+        # Get the keys therein
+        keys: list[str] = instance.objects(prefix=self.__configurations.prefix)
+
+        if len(keys) > 0:
+            objects = [{'Key' : key} for key in keys]
+            state = instance.delete(objects=objects)
+            return bool(state)
+
+        return True
+
     def __s3(self) -> bool:
         """
         Prepares an Amazon S3 (Simple Storage Service) bucket.
@@ -43,7 +66,7 @@ class Cloud:
 
         # Strategy Switch: If the bucket exist, do not clear the target prefix, overwrite files instead.
         if bucket.exists():
-            return True
+            return self.__clear_prefix()
 
         return bucket.create()
 

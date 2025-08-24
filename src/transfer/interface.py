@@ -33,7 +33,7 @@ class Interface:
         self.__configurations = config.Config()
 
         # Metadata dictionary
-        self.__metadata = src.transfer.metadata.Metadata(connector=connector).exc(architecture='autoregressive')
+        self.__metadata = src.transfer.metadata.Metadata(connector=connector).exc(architecture='latest')
 
     def __set_metadata(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
@@ -60,7 +60,6 @@ class Interface:
         # The strings for transferring data to Amazon S3 (Simple Storage Service)
         strings: pd.DataFrame = src.transfer.dictionary.Dictionary().exc(
             path=self.__configurations.warehouse, extension='*', prefix='')
-        logging.info(strings)
 
         # Transfer
         if strings.empty:

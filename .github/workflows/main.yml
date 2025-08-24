@@ -1,4 +1,4 @@
-name: 'Hydrography: Approximate Autoregressive Modelling for Urgent Cases'
+name: 'Hydrography: Latest'
 
 on: [push]
 
@@ -14,7 +14,7 @@ jobs:
       max-parallel: 4
       fail-fast: false
       matrix:
-        python-version: ['3.12']
+        python-version: ['3.11']
 
     permissions:
       contents: read
@@ -54,9 +54,6 @@ jobs:
           printf "\n src/functions "
           flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/functions
           
-          printf "\n src/modelling/architecture "
-          flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/modelling/architecture
-          
           printf "\n src/modelling/*.py "
           flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src/modelling/*.py
           
@@ -82,9 +79,6 @@ jobs:
           
           printf "\n src/functions "
           flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/functions
-          
-          printf "\n src/modelling/architecture "
-          flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/modelling/architecture
           
           printf "\n src/modelling/*.py "
           flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics src/modelling/*.py
@@ -112,9 +106,6 @@ jobs:
           
           printf "\n Package src/functions"
           pylint --rcfile .pylintrc src/functions
-          
-          printf "\n Package src/modelling/architecture"
-          pylint --rcfile .pylintrc src/modelling/architecture
           
           printf "\n Package src/modelling/*.py"
           pylint --rcfile .pylintrc src/modelling/*.py
@@ -195,7 +186,7 @@ jobs:
   ecr:
     name: Amazon Elastic Container Registry
     needs: build
-    if: github.ref == 'refs/heads/master'
+    if: ${{ false }}
     runs-on: ubuntu-latest
 
     permissions:
