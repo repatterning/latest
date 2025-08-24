@@ -5,6 +5,8 @@
 > [!NOTE]
 > [NVIDIA Images](https://catalog.ngc.nvidia.com/containers?filters=&orderBy=scoreDESC&query=tensorflow&page=&pageSize=)
 
+<br>
+
 ### Remote Development
 
 For this Python project/template, the remote development environment requires
@@ -35,7 +37,7 @@ should include
 
 <br>
 
-Subsequently, run a container, i.e., an instance, of the image `posteriors` via:
+Subsequently, run a container, i.e., an instance, of the image `posteriors` via variations of:
 
 <br>
 
@@ -60,7 +62,7 @@ i.e., `-w`, must be inline with this project's top directory.  Additionally, vis
 
 <br>
 
-Get the name of a running instance of ``mathematica`` via:
+The part `-v ~/.aws:/root/.aws` ascertains Amazon Web Services interactions via containers.  Get the name of a running instance of ``posteriors`` via:
 
 ```shell
 docker ps --all
