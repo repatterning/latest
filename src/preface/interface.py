@@ -37,10 +37,9 @@ class Interface:
 
         return arguments
 
-    def exc(self, codes: list[int] | None) -> typing.Tuple[boto3.session.Session, s3p.S3Parameters, sr.Service, dict]:
+    def exc(self) -> typing.Tuple[boto3.session.Session, s3p.S3Parameters, sr.Service, dict]:
         """
 
-        :param codes:
         :return:
         """
 
@@ -48,8 +47,6 @@ class Interface:
 
         # Arguments
         arguments: dict = self.__get_arguments(connector=connector)
-        if codes is not None:
-            arguments['series']['excerpt'] = codes
 
         # Interaction Instances: Amazon
         s3_parameters: s3p.S3Parameters = src.s3.s3_parameters.S3Parameters(
