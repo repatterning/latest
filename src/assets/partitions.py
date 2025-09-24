@@ -13,14 +13,16 @@ class Partitions:
     Partitions for parallel computation.
     """
 
-    def __init__(self, data: pd.DataFrame, arguments: dict):
+    def __init__(self, gauges: pd.DataFrame, foci: pd.DataFrame, arguments: dict):
         """
 
-        :param data:
+        :param gauges:
+        :param foci:
         :param arguments:
         """
 
-        self.__data = data
+        self.__gauges = gauges
+        self.__foci = foci
         self.__arguments = arguments
 
     def __limits(self):
@@ -53,23 +55,15 @@ class Partitions:
         limits = self.__limits()
         logging.info(limits)
 
-        # Focusing on ...
-        excerpt = self.__arguments.get('series').get('excerpt')
-        if excerpt is None:
-            logging.info('If the forecasts of one or more locations are of interest, ...')
-            src.functions.cache.Cache().exc()
-            sys.exit(0)
-
         # Inspecting ...
-        codes = np.unique(np.array(excerpt))
-        data = self.__data.copy().loc[self.__data['ts_id'].isin(codes), :]
-        if data.shape[0] == 0:
-            logging.info('None of the codes time series codes id valid.')
+        codes = self.__gauges.merge(self.__foci[['catchment_id', 'ts_id']], how='right', on=['catchment_id', 'ts_id'])
+        if codes.shape[0] == 0:
+            logging.info('None valid codes.')
             src.functions.cache.Cache().exc()
             sys.exit(0)
 
-        # Hence, the data sets in focus vis-à-vis the years in focus
-        listings = limits.merge(data, how='left', on='date')
+        # Hence, the gauges in focus vis-à-vis the years in focus
+        listings = limits.merge(codes, how='left', on='date')
         partitions = listings[['catchment_id', 'ts_id']].drop_duplicates()
 
         return partitions, listings
