@@ -26,8 +26,7 @@ class Gauges:
 
         # An instance for interacting with objects within an Amazon S3 prefix
         self.__pre = src.s3.prefix.Prefix(
-            service=self.__service,
-            bucket_name=self.__s3_parameters._asdict()[arguments['s3']['p_bucket']])
+            service=self.__service, bucket_name=self.__s3_parameters.internal)
 
     @staticmethod
     def __get_elements(objects: list[str]) -> pd.DataFrame:
@@ -60,8 +59,7 @@ class Gauges:
         """
 
         paths = self.__pre.objects(
-            prefix=(self.__s3_parameters._asdict()[self.__arguments['s3']['p_prefix']]
-                    + f"{self.__arguments['s3']['affix']}/"),
+            prefix=(self.__s3_parameters.path_internal_data + f"{self.__arguments['s3']['affix']}/"),
             delimiter='/')
 
         computations = []
@@ -75,7 +73,12 @@ class Gauges:
     def exc(self) -> pd.DataFrame:
         """
 
-        :return:
+        :return: The fields &Rarr; <br>
+            <ul><li>uri</li>
+                <li>catchment_id</li>
+                <li>ts_id</li>
+                <li>date</li>
+            </ul>
         """
 
         keys = self.__get_keys()
