@@ -24,8 +24,6 @@ def main():
     # partitions: catchment & time series codes, listings: list of files and supplementary data
     partitions, listings = src.assets.interface.Interface(
         service=service, s3_parameters=s3_parameters, arguments=arguments).exc()
-    logger.info(partitions)
-    logger.info(listings)
 
     # Modelling
     src.modelling.interface.Interface(
