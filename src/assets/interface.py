@@ -53,8 +53,7 @@ class Interface:
         """
 
         # Warning data
-        src.assets.foci.Foci(s3_parameters=self.__s3_parameters).exc()
-
+        foci = src.assets.foci.Foci(s3_parameters=self.__s3_parameters).exc()
 
         # Applicable time series metadata, i.e., gauge, identification codes
         gauges = src.assets.gauges.Gauges(
@@ -63,9 +62,7 @@ class Interface:
             src.functions.cache.Cache().exc()
             sys.exit('There are no data sets for model development.')
 
-        '''
         partitions, listings = src.assets.partitions.Partitions(
-            gauges=gauges, foci=pd.DataFrame(), arguments=self.__arguments).exc()
+            gauges=gauges, foci=foci, arguments=self.__arguments).exc()
 
         return self.__structure(partitions=partitions), listings
-        '''
