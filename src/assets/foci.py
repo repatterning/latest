@@ -87,4 +87,4 @@ class Foci:
             src.functions.cache.Cache().exc()
             sys.exit(0)
 
-        return warnings
+        return warnings[['catchment_id', 'ts_id']].drop_duplicates()
