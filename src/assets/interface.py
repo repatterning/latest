@@ -1,9 +1,9 @@
 """Module interface.py"""
 import sys
-import typing
 
 import pandas as pd
 
+import src.assets.foci
 import src.assets.gauges
 import src.assets.partitions
 import src.elements.partitions as pr
@@ -45,11 +45,14 @@ class Interface:
 
         return [pr.Partitions(**value) for value in values]
 
-    def exc(self) -> typing.Tuple[list[pr.Partitions], pd.DataFrame]:
+    def exc(self):
         """
 
         :return:
         """
+
+        # Warning data
+        foci = src.assets.foci.Foci(s3_parameters=self.__s3_parameters).exc()
 
         # Applicable time series metadata, i.e., gauge, identification codes
         gauges = src.assets.gauges.Gauges(
@@ -58,8 +61,7 @@ class Interface:
             src.functions.cache.Cache().exc()
             sys.exit('There are no data sets for model development.')
 
-        # Strings for data reading.  If self.__arguments.get('reacquire') is False, the partitions will be those
-        # of excerpt ...
-        partitions, listings = src.assets.partitions.Partitions(data=gauges, arguments=self.__arguments).exc()
+        partitions, listings = src.assets.partitions.Partitions(
+            gauges=gauges, foci=foci, arguments=self.__arguments).exc()
 
         return self.__structure(partitions=partitions), listings

@@ -64,7 +64,7 @@ class Streams:
                                sep=text.sep, usecols=text.usecols, dtype=text.dtype,
                                encoding='utf-8', parse_dates=parse_dates,
                                date_format=text.date_format)
-        except ImportError:
+        except OSError:
             return pd.DataFrame()
 
     def api(self, text: txa.TextAttributes) -> pd.DataFrame:
