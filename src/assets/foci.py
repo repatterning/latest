@@ -4,7 +4,6 @@ import logging
 import sys
 
 import pandas as pd
-import pytz
 
 import src.elements.s3_parameters as s3p
 import src.elements.text_attributes as txa
@@ -31,9 +30,8 @@ class Foci:
         self.__doublet = {'issued_date': 'ISO8601', 'modified': 'ISO8601',
                           'starting': 'ISO8601', 'ending': 'ISO8601'}
 
-        # Time
-        self.__stamp = datetime.datetime.now(tz=pytz.utc)
-        logging.info('date & time: %s\n\n', self.__stamp)
+        # Time: Or datetime.datetime.now(tz=pytz.utc)
+        self.__stamp = pd.Timestamp(datetime.datetime.now(), tz='UTC')
 
     def __filtering(self, warnings: pd.DataFrame) -> pd.DataFrame:
         """
@@ -86,5 +84,8 @@ class Foci:
             logging.info('No warnings')
             src.functions.cache.Cache().exc()
             sys.exit(0)
+
+        if sum(warnings['warning_level'].str.upper() == 'AMBER') > 0:
+            warnings = warnings.copy().loc[warnings['warning_level'].str.upper() == 'AMBER', :]
 
         return warnings[['catchment_id', 'ts_id']].drop_duplicates()
