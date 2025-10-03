@@ -54,7 +54,6 @@ class Partitions:
 
         # The years in focus, via the year start date, e.g., 2023-01-01
         limits = self.__limits()
-        logging.info(limits)
 
         # Inspecting ...
         codes = self.__gauges.merge(self.__foci[['catchment_id', 'ts_id']], how='right', on=['catchment_id', 'ts_id'])
